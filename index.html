@@ -205,6 +205,15 @@
   .logrow:hover{background:var(--surface2)}
   .logrow .rep{color:var(--lime);font-size:10px;opacity:.55;width:12px;flex:0 0 auto}
   .logrow:hover .rep{opacity:1}
+  .devsec{margin-top:14px}
+  .devhead{font-weight:700;color:var(--chalk);font-size:14px;margin-bottom:8px}
+  .devhead.pos{color:var(--pos)}
+  .devchip{display:inline-block;background:color-mix(in srgb,var(--pos) 16%,transparent);color:var(--pos);border:1px solid color-mix(in srgb,var(--pos) 40%,transparent);border-radius:999px;padding:5px 12px;font-size:13px;font-weight:600;margin:0 6px 6px 0}
+  .devcard{border:1px solid var(--line);border-left:3px solid var(--warn);border-radius:10px;padding:11px 13px;margin-bottom:10px;background:var(--surface2)}
+  .devtitle{font-weight:700;color:var(--chalk);font-size:14px;display:flex;align-items:center;gap:8px}
+  .devtag{font-family:var(--mono);font-size:12px;color:var(--warn);background:color-mix(in srgb,var(--warn) 15%,transparent);padding:1px 7px;border-radius:6px}
+  .devwhy,.devwork{font-size:13px;color:var(--chalk);margin-top:6px;line-height:1.5}
+  .devwhy b,.devwork b{color:var(--muted);font-weight:600}
   .logrow .t{font-family:var(--mono);font-size:13px;color:var(--lime);width:50px;cursor:pointer;text-align:left;background:none;border:0;padding:0;text-decoration:underline;text-underline-offset:2px}
   .logrow .t:hover{text-decoration:underline}
   .logrow .pn{font-family:var(--mono);font-weight:700;width:24px;text-align:right}
@@ -513,6 +522,7 @@
         <div class="seg" id="repType">
           <button data-rep="match" data-i18n="rep_match">Match report</button>
           <button data-rep="player" data-i18n="rep_player">Player report</button>
+          <button data-rep="develop" data-i18n="rep_develop">Development</button>
           <button data-rep="compare" data-i18n="rep_compare">Compare</button>
         </div>
         <div style="margin-left:auto;display:flex;gap:8px"><button class="runbtn" id="repExport" data-i18n="exp_session">Match/Training file</button><button class="runbtn" id="repPrint" data-i18n="exp_print">Print / PDF</button></div>
@@ -889,7 +899,7 @@ const I18N={
   h_summary:"Match summary",dash_goals:"Goals",dash_shots:"Shots",dash_passpct:"Pass accuracy",dash_intobox:"Into the box",dash_attduel:"Attacking duels",dash_defduel:"Defensive duels",dash_recoveries:"Recoveries",dash_savepct:"Save rate",
   dash_all:"All",lbl_period:"Period",lbl_periods:"Periods (e.g. 4 quarters)",
   h_top:"Top performers",top_scorer:"Top scorer",top_involved:"Most involved",top_passer:"Best passer",top_duels:"Most duels won",exp_summary:"Summary CSV",exp_print:"Print / PDF",none_yet:"—",
-  tab_reports:"Reports",rep_match:"Match report",rep_player:"Player report",rep_compare:"Compare",
+  tab_reports:"Reports",rep_match:"Match report",rep_player:"Player report",rep_compare:"Compare",rep_develop:"Development",dev_strengths:"Strengths",dev_develop:"Areas to develop",dev_why:"Why:",dev_work:"Work on:",dev_tags:"tags",dev_lowdata:"Not enough tags yet for this player. Tag a few more actions and the suggestions will get sharper.",dev_allround:"Well-rounded so far — keep tagging to surface specific areas.",dev_scope_note:"Suggestions are generated from this player\u2019s tagged actions across all matches. They\u2019re a starting point for the coach, not a verdict.",
   rep_ai_title:"AI summary",rep_ai_note:"Coming next: turn the numbers on this page into a short write-up for coaches and parents. The figures above are computed on-device; AI only phrases them.",rep_ai_btn:"Write summary (soon)",
   rep_areas:"Areas to work on",rep_per_match:"Per match",rep_totals:"Totals",rep_choose_player:"Choose a player",rep_no_data:"No tagged data yet.",rep_played:"matches",
   cmp_mode:"Compare",cmp_players:"Players",cmp_matches:"Matches",cmp_across:"One player, across matches",
@@ -961,7 +971,7 @@ const I18N={
   h_summary:"สรุปแมตช์",dash_goals:"ประตู",dash_shots:"การยิง",dash_passpct:"ความแม่นการจ่าย",dash_intobox:"เข้าเขตโทษ",dash_attduel:"ดวลเกมรุก",dash_defduel:"ดวลเกมรับ",dash_recoveries:"แย่งบอลคืน",dash_savepct:"อัตราการเซฟ",
   dash_all:"ทั้งหมด",lbl_period:"ช่วง",lbl_periods:"จำนวนช่วง (เช่น 4 ควอเตอร์)",
   h_top:"ผู้เล่นเด่น",top_scorer:"ดาวซัลโว",top_involved:"มีส่วนร่วมมากสุด",top_passer:"จ่ายแม่นสุด",top_duels:"ชนะดวลมากสุด",exp_summary:"สรุป CSV",exp_print:"พิมพ์ / PDF",none_yet:"—",
-  tab_reports:"รายงาน",rep_match:"รายงานรายเกม",rep_player:"รายงานรายคน",rep_compare:"เปรียบเทียบ",
+  tab_reports:"รายงาน",rep_match:"รายงานรายเกม",rep_player:"รายงานรายคน",rep_compare:"เปรียบเทียบ",rep_develop:"พัฒนาการ",dev_strengths:"จุดแข็ง",dev_develop:"จุดที่ควรพัฒนา",dev_why:"ทำไม:",dev_work:"ควรฝึก:",dev_tags:"แท็ก",dev_lowdata:"ข้อมูลของผู้เล่นคนนี้ยังน้อย แท็กเพิ่มอีกหน่อยแล้วคำแนะนำจะแม่นขึ้น",dev_allround:"ทำได้ดีรอบด้าน เก็บข้อมูลเพิ่มเพื่อเจาะลึกแต่ละด้าน",dev_scope_note:"คำแนะนำสร้างจากแท็กของผู้เล่นคนนี้รวมทุกแมตช์ ใช้เป็นจุดเริ่มต้นให้โค้ช ไม่ใช่คำตัดสิน",
   rep_ai_title:"สรุปด้วย AI",rep_ai_note:"จะเพิ่มขั้นถัดไป: ให้ AI เรียบเรียงตัวเลขในหน้านี้เป็นข้อความสั้นๆ ส่งโค้ช/ผู้ปกครอง · ตัวเลขด้านบนคำนวณในเครื่อง AI แค่เรียบเรียง",rep_ai_btn:"เขียนสรุป (เร็วๆ นี้)",
   rep_areas:"จุดที่ควรพัฒนา",rep_per_match:"รายเกม",rep_totals:"รวม",rep_choose_player:"เลือกผู้เล่น",rep_no_data:"ยังไม่มีข้อมูลที่ติดแท็ก",rep_played:"แมตช์",
   cmp_mode:"เปรียบเทียบ",cmp_players:"ผู้เล่น",cmp_matches:"แมตช์",cmp_across:"คนเดียว ข้ามหลายแมตช์",
@@ -2000,10 +2010,93 @@ function renderPlayerReport(){
   $("rep-body").innerHTML=`<section class="card noprint"><div class="replabel">${t("rep_choose_player")}</div>${sel}</section><section class="card">${body}</section>`;
   const ps=$("repPlayer");if(ps)ps.onchange=()=>{repState.player=ps.value;renderPlayerReport();};
 }
+/* ===== Development insights (rule-based coaching suggestions per player) ===== */
+function playerInsights(c,gk){
+  const L=(th,en)=>settings.lang==="th"?th:en;
+  const pct=(a,b)=>b?Math.round(a/b*100):0;
+  const strengths=[],develop=[];
+  const passes=c.pass_complete+c.pass_incomplete;
+  const ad=c.att_won+c.att_lost, dd=c.def_won+c.def_lost;
+  // Passing
+  if(passes>=6){const pp=pct(c.pass_complete,passes);
+    if(pp<60)develop.push({title:L("การจ่ายบอล","Passing"),tag:pp+"%",
+      why:L("จ่ายพลาดบ่อย อาจมาจากการตัดสินใจภายใต้แรงกดดัน น้ำหนัก/ทิศทางการส่ง หรือไม่ได้มองสนามก่อนรับบอล",
+            "Frequent misplaced passes — could be decision-making under pressure, pass weight/direction, or not scanning before receiving."),
+      work:L("ฝึกจ่ายบอลสั้นแม่นยำ, สแกนสนามก่อนรับบอล, เลือกจังหวะส่ง vs ครองบอล",
+             "Short passing accuracy drills, scan before receiving, choosing when to pass vs hold.")});
+    else if(pp>=80)strengths.push(L("จ่ายบอลแม่นยำ ("+pp+"%)","Accurate passing ("+pp+"%)"));}
+  // Attacking duels / 1v1
+  if(ad>=4){const ap=pct(c.att_won,ad);
+    if(ap<45)develop.push({title:L("ดวลเกมรุก / 1v1","Attacking duels / 1v1"),tag:ap+"%",
+      why:L("ชนะ 1v1 เกมรุกน้อย อาจมาจากการควบคุมบอลระยะประชิด การเปลี่ยนจังหวะ/ความเร็ว หรือการตัดสินใจเลี้ยง vs จ่าย",
+            "Low 1v1 success — could be close control, change of pace, or the decision to dribble vs pass."),
+      work:L("ฝึก 1v1, เลี้ยงเปลี่ยนทิศ/หลอก, การใช้จังหวะเร่ง",
+             "1v1 drills, change-of-direction dribbling and feints, explosive acceleration.")});
+    else if(ap>=60)strengths.push(L("เก่งดวลเกมรุก ("+ap+"%)","Strong in attacking duels ("+ap+"%)"));}
+  // Defensive duels
+  if(dd>=4){const dp=pct(c.def_won,dd);
+    if(dp<45)develop.push({title:L("เกมรับ / ดวลรับ","Defending / defensive duels"),tag:dp+"%",
+      why:L("ชนะดวลรับน้อย มักมาจากตำแหน่งยืน จังหวะเข้าสกัด หรือการประกบ/หน่วงเวลา",
+            "Low defensive-duel success — often positioning, tackle timing, or jockeying/containing."),
+      work:L("ฝึกป้องกัน 1v1, หน่วงเวลา-ไม่พุ่งเข้าปะทะ, อ่านเกมล่วงหน้า",
+             "Defending 1v1, delay & contain (don't dive in), reading the play early.")});
+    else if(dp>=60)strengths.push(L("เกมรับแน่น ("+dp+"%)","Solid defending ("+dp+"%)"));}
+  // Finishing
+  if(c.shot>=3){const cv=pct(c.score,c.shot);
+    if(cv<20)develop.push({title:L("การจบสกอร์","Finishing"),tag:cv+"%",
+      why:L("ยิงเข้าน้อยเมื่อเทียบกับจำนวนยิง อาจมาจากความนิ่ง/สมาธิหน้าประตู การเลือกช็อต หรือเทคนิคการยิง",
+            "Low conversion — could be composure in front of goal, shot selection, or shooting technique."),
+      work:L("ฝึกจบสกอร์หลายรูปแบบ, เลือกมุม/ยิงเร็ว 1–2 จังหวะ, ยิงด้วยความมั่นใจ",
+             "Varied finishing drills, pick your corner / quick 1–2 touch finishes, shoot with conviction.")});
+    else if(cv>=40)strengths.push(L("จบสกอร์เฉียบ ("+cv+"%)","Clinical finishing ("+cv+"%)"));}
+  else if(c.shot===0 && (c.into_box+c.key_pass)>=3)
+    develop.push({title:L("กล้ายิงให้มากขึ้น","Take more shots"),tag:"0",
+      why:L("มีส่วนร่วมเกมรุกดี (เข้าเขตโทษ/คีย์พาส) แต่ยังไม่ลองจบสกอร์เอง",
+            "Good attacking involvement (box entries / key passes) but isn't shooting."),
+      work:L("ฝึกจบสกอร์ในเขตโทษ, กล้าตัดสินใจยิงเมื่อมีช่อง",
+             "Finishing in the box, back yourself to shoot when the chance is on.")});
+  // Goalkeeper
+  if(gk){const sv=c.gk_save+c.gk_conceded;
+    if(sv>=3){const sp=pct(c.gk_save,sv);
+      if(sp<50)develop.push({title:L("การเซฟ (ผู้รักษาประตู)","Goalkeeping / saves"),tag:sp+"%",
+        why:L("เปอร์เซ็นต์เซฟต่ำ อาจมาจากตำแหน่งยืน การอ่านจังหวะ หรือฟุตเวิร์ก",
+              "Low save %, possibly positioning, reading the shot, or footwork."),
+        work:L("ฝึกตำแหน่งยืน, รีแอคชัน, การตัดสินใจออกบอล/อยู่เส้น",
+               "Positioning, reaction saves, deciding when to come out vs stay.")});
+      else if(sp>=70)strengths.push(L("มือเซฟดี ("+sp+"%)","Reliable shot-stopper ("+sp+"%)"));}}
+  // Strength: defensive workrate
+  if((c.interception+c.block+c.recovery)>=5)strengths.push(L("ขยันแย่ง/สกัด/บล็อก","High defensive work-rate (interceptions/blocks/recoveries)"));
+  // Strength: creativity
+  if((c.key_pass+c.into_box)>=4)strengths.push(L("สร้างสรรค์เกมรุก (คีย์พาส/เข้าเขตโทษ)","Creative threat (key passes / box entries)"));
+  return {strengths,develop};
+}
+function renderDevelopReport(){
+  if(!repState.player||!P(repState.player))repState.player=(ordered()[0]||{}).id;
+  const sel=`<select id="repPlayer">`+ordered().map(p=>`<option value="${p.id}" ${p.id===repState.player?"selected":""}>#${p.no||"–"} ${p.name}</option>`).join("")+`</select>`;
+  const pid=repState.player,p=P(pid);
+  let body=`<div class="muted">${t("rep_no_data")}</div>`;
+  if(p){
+    const c=playerCountsAll(pid);
+    const total=Object.values(c).reduce((a,b)=>a+b,0);
+    const played=matchesPlayedBy(pid).length;
+    const ins=playerInsights(c,isGK(p));
+    const head=`<div class="dashhead"><h2 style="margin:0">${hasPhoto(p)?`<img src="${p.photo}" style="width:26px;height:26px;border-radius:50%;vertical-align:middle;margin-right:6px">`:""}#${p.no||"–"} ${p.name}</h2><div class="dashscore">${played} ${t("rep_played")} · ${total} ${t("dev_tags")}</div></div>`;
+    if(total<5){
+      body=head+`<div class="muted" style="margin-top:10px">${t("dev_lowdata")}</div>`;
+    }else{
+      const str=ins.strengths.length?`<div class="devsec"><div class="devhead pos">★ ${t("dev_strengths")}</div>${ins.strengths.map(s=>`<div class="devchip">${s}</div>`).join("")}</div>`:"";
+      const dev=ins.develop.length?ins.develop.map(d=>`<div class="devcard"><div class="devtitle">${d.title}${d.tag?`<span class="devtag">${d.tag}</span>`:""}</div><div class="devwhy"><b>${t("dev_why")}</b> ${d.why}</div><div class="devwork"><b>${t("dev_work")}</b> ${d.work}</div></div>`).join(""):`<div class="muted">${t("dev_allround")}</div>`;
+      body=head+str+`<div class="devsec"><div class="devhead">${t("dev_develop")}</div>${dev}</div><p class="note" style="margin-top:10px">${t("dev_scope_note")}</p>`;
+    }
+  }
+  $("rep-body").innerHTML=`<section class="card noprint"><div class="replabel">${t("rep_choose_player")}</div>${sel}</section><section class="card">${body}</section>`;
+  const ps=$("repPlayer");if(ps)ps.onchange=()=>{repState.player=ps.value;renderDevelopReport();};
+}
 function renderReports(){
   $("repType").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.rep===repState.type));
   if(repState.type==="match")renderMatchReport();
   else if(repState.type==="player")renderPlayerReport();
+  else if(repState.type==="develop")renderDevelopReport();
   else renderCompare();
 }
 $("repType").querySelectorAll("button").forEach(b=>b.onclick=()=>{repState.type=b.dataset.rep;renderReports();});
