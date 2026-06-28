@@ -370,6 +370,17 @@
   body.lang-th .runbtn,body.lang-th .btnlime{font-size:13px}
   body.lang-th .grouplab{font-size:11px}
   /* ===== login / register gate ===== */
+  /* ===== mobile-mode on/off switch ===== */
+  .modesw{display:inline-flex;align-items:center;gap:9px;border:0;background:transparent;cursor:pointer;padding:0;color:var(--chalk);font-weight:700;font-size:13px;-webkit-tap-highlight-color:transparent}
+  .modesw-track{width:42px;height:25px;border-radius:13px;background:var(--surface2);border:1px solid var(--line);position:relative;flex:0 0 auto;transition:background .15s,border-color .15s}
+  .modesw-knob{position:absolute;top:3px;left:3px;width:17px;height:17px;border-radius:50%;background:var(--muted);transition:left .15s,background .15s}
+  .modesw.on .modesw-track{background:var(--lime);border-color:var(--lime)}
+  .modesw.on .modesw-knob{left:20px;background:#11200a}
+  .modeswrow{display:flex;align-items:center;gap:12px;justify-content:space-between;width:100%;margin-bottom:12px;padding:11px 13px;border:1px solid var(--line);border-radius:11px;background:var(--surface2);cursor:pointer}
+  .modeswrow:hover{border-color:var(--lime)}
+  .modeswttl{font-weight:700;color:var(--chalk);font-size:14px}
+  .modeswsub{font-size:12px;color:var(--muted);margin-top:1px}
+  .fbar-sw{padding:4px 6px}
   #authgate{position:fixed;inset:0;z-index:240;background:var(--bg);display:none;align-items:center;justify-content:center;padding:20px}
   #authgate.on{display:flex}
   #pingate{position:fixed;inset:0;z-index:250;background:var(--bg);display:none;align-items:center;justify-content:center;padding:20px}
@@ -430,7 +441,10 @@
       </section>
       <section class="card">
         <h2 data-i18n="h_tag">Tag an action</h2>
-        <button class="btnlime" id="enterField" style="width:100%;margin-bottom:12px" data-i18n="field_mode">Field mode (big buttons)</button>
+        <div class="modeswrow" id="enterField" role="button" tabindex="0">
+          <div><div class="modeswttl" data-i18n="field_label">Mobile mode</div><div class="modeswsub" data-i18n="field_sub">Big buttons for pitchside tagging</div></div>
+          <span class="modesw" aria-hidden="true"><span class="modesw-track"><span class="modesw-knob"></span></span></span>
+        </div>
         <div id="periodBar" style="display:none;margin-bottom:12px"></div>
         <div id="exerciseBar" style="display:none;margin-bottom:12px"></div>
         <div class="activebar"><div class="jersey" id="actJersey">–</div><div class="who"><small data-i18n="active_player">Active player</small><strong id="actName">—</strong></div></div>
@@ -666,7 +680,7 @@
 <!-- FIELD MODE (pitchside capture overlay) -->
 <div id="fieldmode">
   <div class="fbar">
-    <button class="fbtn warn" id="fExit">✕</button>
+    <button class="modesw on fbar-sw" id="fExit" aria-label="Mobile mode on — tap to turn off"><span class="modesw-track"><span class="modesw-knob"></span></span><span class="modesw-lbl" data-i18n="field_label">Mobile mode</span></button>
     <span class="fttl" id="fTitle"></span>
     <span class="fclock" id="fClock">00:00</span>
     <button class="fbtn" id="fStart">▶</button>
@@ -828,7 +842,7 @@ const I18N={
   new_session:"+ New",wiz_title:"New session",wiz_sub:"What do you want to record?",sess_match:"Match",sess_training_short:"Training",wiz_notes:"Notes / comments",wiz_notes_ph:"Anything to remember about this session…",wiz_create:"Create & start",cancel:"Cancel",back:"Back",lbl_match_notes:"Notes / comments",
   wiz_match_sub:"Quarters, opponent, score",wiz_train_sub:"Finishing & duels",lbl_quarters:"Quarters",lbl_video_opt:"Video link (optional)",
   lbl_datetime:"Date & time",lbl_minper:"Min / quarter",lbl_time:"Time",wiz_total:"Total play time: {n} min ({q}×{m})",lbl_format:"Format (e.g. 7v7)",
-  field_mode:"Field mode (big buttons)",field_hint:"Tap a player, then tap an action.",
+  field_mode:"Field mode (big buttons)",field_label:"Mobile mode",field_sub:"Big buttons for pitchside tagging",field_hint:"Tap a player, then tap an action.",
   lbl_exercise:"Exercise",ex_finishing:"Finishing",ex_1v1:"1v1 duel",ex_2v1:"2v1 duel",
   lbl_train_details:"Training details",train_details_ph:"Drills, focus, notes for this session…",
   s_fin_on:"On target",s_fin_off:"Off target",s_d1_att:"1v1 attack won",s_d1_def:"1v1 defence won",s_d2_att:"2v1 attack won",s_d2_def:"2v1 defence won",
@@ -892,7 +906,7 @@ const I18N={
   h_conn:"Connection (Supabase)",conn_note:"Leave empty to keep working offline on this device. Enter your project URL and anon key to sync data across devices.",conn_url_ph:"https://xxxx.supabase.co",conn_key_ph:"anon public key",conn_connect:"Connect",conn_disconnect:"Disconnect",conn_email_ph:"email",conn_pwd_ph:"password",conn_login:"Sign in",conn_sync:"Sync now",conn_logout:"Sign out",
   conn_user_ph:"username",conn_signup:"Create account",conn_need_user:"Enter a username.",conn_signup_hint:"Pick a username and a password of at least 6 characters.",conn_signup_ok:"Account created — waiting for an admin to approve it.",conn_pending:"Your account is waiting for an admin to approve it.",conn_pending_short:"Pending approval",conn_rejected:"This account was not approved. Contact your admin.",
   h_members:"Members (admin)",members_note:"Approve new sign-ups and manage roles. Each member only sees their own teams, matches and sessions.",mem_none:"No members yet.",mem_approve:"Approve",mem_reject:"Reject",mem_promote:"Make admin",mem_demote:"Remove admin",mem_admin:"admin",mem_you:"you",st_pending:"pending",st_approved:"approved",st_rejected:"rejected",
-  conn_connecting:"Connecting…",conn_need_login:"Connected. Now sign in with your Supabase user.",conn_loading_lib:"Loading library…",conn_lib_fail:"Couldn't load the Supabase library here — this usually works only when the file is downloaded or hosted, not in the preview.",conn_bad:"Connection failed. Check the URL and key.",conn_login_fail:"Sign-in failed. Check your email and password.",conn_no_org:"Signed in, but no organisation/team is linked to this user yet.",conn_synced:"Synced · {n} players · {m} matches",conn_offline:"Offline mode (data stays on this device).",conn_live:"Live sync on",ag_sub_login:"Sign in to continue",ag_sub_signup:"Create your account",ag_to_signup:"New here?",ag_to_login:"Already have an account?",ag_offline:"Use offline (no sync)",conn_slow:"Still connecting… your network looks slow, please wait a moment.",pin_sub:"Enter the access PIN to use offline",pin_ph:"PIN",pin_enter:"Enter",pin_wrong:"Wrong PIN. Try again.",pin_back:"Back to login",h_pin:"Offline access PIN",pin_note:"People must enter this PIN to use the app offline (without signing in). Change it to keep it private.",pin_label:"PIN",pin_saved:"PIN saved.",pin_min:"PIN must be at least 4 characters.",
+  conn_connecting:"Connecting…",conn_need_login:"Connected. Now sign in with your Supabase user.",conn_loading_lib:"Loading library…",conn_lib_fail:"Couldn't load the Supabase library here — this usually works only when the file is downloaded or hosted, not in the preview.",conn_bad:"Connection failed. Check the URL and key.",conn_login_fail:"Sign-in failed. Check your email and password.",conn_no_org:"Signed in, but no organisation/team is linked to this user yet.",conn_synced:"Synced · {n} players · {m} matches",conn_offline:"Offline mode (data stays on this device).",conn_live:"Live sync on",ag_sub_login:"Sign in to continue",ag_sub_signup:"Create your account",ag_to_signup:"New here?",ag_to_login:"Already have an account?",ag_offline:"Use offline (no sync)",conn_slow:"Still connecting… your network looks slow, please wait a moment.",pin_sub:"Enter the access PIN to use offline",pin_ph:"PIN",pin_enter:"Enter",pin_wrong:"Wrong PIN. Try again.",pin_back:"Back to login",h_pin:"Offline access PIN",pin_note:"People must enter this PIN to use the app offline (without signing in). Change it to keep it private.",pin_label:"PIN",pin_saved:"PIN saved.",pin_min:"PIN must be at least 4 characters.",conn_timeout:"Connection timed out. Check your network, or the project key may be wrong. Tell your admin.",
   h_account:"My account",acc_photo:"Change photo",acc_username:"Username",acc_newpwd:"New password",acc_save:"Save",acc_change:"Change",acc_pwd_ok:"Password changed.",acc_user_ok:"Username (display name) updated.",acc_photo_ok:"Photo updated.",
   s_pass_complete:"Pass completed",s_pass_incomplete:"Pass incomplete",s_att_won:"Attacking duel won",s_att_lost:"Attacking duel lost",s_def_won:"Defensive duel won",s_def_lost:"Defensive duel lost",s_into_box:"Entry into the box",s_key_pass:"Key pass",s_shot:"Shot",s_score:"Goal",s_recovery:"Ball recovery",s_gk_save:"Save",s_gk_conceded:"Goal conceded"},
  th:{app_title:"วิเคราะห์ฟุตบอลเยาวชน",mode:"easy analyze",newmatch:"+ แมตช์",untitled:"(แมตช์ยังไม่ตั้งชื่อ)",vs:"พบ",
@@ -900,7 +914,7 @@ const I18N={
   new_session:"+ ใหม่",wiz_title:"สร้างเซสชันใหม่",wiz_sub:"อยากเก็บข้อมูลแบบไหน?",sess_match:"แมตช์",sess_training_short:"เทรนนิ่ง",wiz_notes:"โน้ต / คอมเมนต์",wiz_notes_ph:"สิ่งที่อยากจำเกี่ยวกับเซสชันนี้…",wiz_create:"สร้าง & เริ่ม",cancel:"ยกเลิก",back:"ย้อนกลับ",lbl_match_notes:"โน้ต / คอมเมนต์",
   wiz_match_sub:"ควอเตอร์ คู่แข่ง สกอร์",wiz_train_sub:"จบสกอร์ & ดวล",lbl_quarters:"ควอเตอร์",lbl_video_opt:"ลิงก์วิดีโอ (ไม่บังคับ)",
   lbl_datetime:"วันที่ & เวลา",lbl_minper:"นาที / ควอเตอร์",lbl_time:"เวลา",wiz_total:"เวลารวมที่เล่น: {n} นาที ({q}×{m})",lbl_format:"รูปแบบ (เช่น 7v7)",
-  field_mode:"โหมดข้างสนาม (ปุ่มใหญ่)",field_hint:"แตะเลือกนักเตะ แล้วแตะการกระทำ",
+  field_mode:"โหมดข้างสนาม (ปุ่มใหญ่)",field_label:"โหมดมือถือ",field_sub:"ปุ่มใหญ่ แท็กข้างสนามสะดวก",field_hint:"แตะเลือกนักเตะ แล้วแตะการกระทำ",
   lbl_exercise:"แบบฝึก",ex_finishing:"จบสกอร์",ex_1v1:"ดวล 1v1",ex_2v1:"ดวล 2v1",
   lbl_train_details:"รายละเอียดเทรนนิ่ง",train_details_ph:"แบบฝึก จุดเน้น โน้ตของเซสชันนี้…",
   s_fin_on:"ยิงเข้ากรอบ",s_fin_off:"ยิงไม่เข้ากรอบ",s_d1_att:"1v1 ชนะเกมรุก",s_d1_def:"1v1 ชนะเกมรับ",s_d2_att:"2v1 ชนะเกมรุก",s_d2_def:"2v1 ชนะเกมรับ",
@@ -964,7 +978,7 @@ const I18N={
   h_conn:"การเชื่อมต่อ (Supabase)",conn_note:"เว้นว่างไว้เพื่อใช้งานออฟไลน์ในเครื่องนี้ · ใส่ Project URL และ anon key เพื่อซิงค์ข้อมูลข้ามอุปกรณ์",conn_url_ph:"https://xxxx.supabase.co",conn_key_ph:"anon public key",conn_connect:"เชื่อมต่อ",conn_disconnect:"ตัดการเชื่อมต่อ",conn_email_ph:"อีเมล",conn_pwd_ph:"รหัสผ่าน",conn_login:"เข้าสู่ระบบ",conn_sync:"ซิงค์เดี๋ยวนี้",conn_logout:"ออกจากระบบ",
   conn_user_ph:"ชื่อผู้ใช้ (username)",conn_signup:"สมัครสมาชิก",conn_need_user:"กรุณาใส่ชื่อผู้ใช้",conn_signup_hint:"ตั้งชื่อผู้ใช้ และรหัสผ่านอย่างน้อย 6 ตัวอักษร",conn_signup_ok:"สมัครเรียบร้อย — รอแอดมินอนุมัติบัญชี",conn_pending:"บัญชีของคุณกำลังรอแอดมินอนุมัติ",conn_pending_short:"รออนุมัติ",conn_rejected:"บัญชีนี้ไม่ได้รับอนุมัติ ติดต่อแอดมิน",
   h_members:"สมาชิก (แอดมิน)",members_note:"อนุมัติผู้สมัครใหม่และจัดการสิทธิ์ · สมาชิกแต่ละคนเห็นเฉพาะทีม แมตช์ และการซ้อมของตัวเอง",mem_none:"ยังไม่มีสมาชิก",mem_approve:"อนุมัติ",mem_reject:"ปฏิเสธ",mem_promote:"ตั้งเป็นแอดมิน",mem_demote:"ถอนแอดมิน",mem_admin:"แอดมิน",mem_you:"คุณ",st_pending:"รออนุมัติ",st_approved:"อนุมัติแล้ว",st_rejected:"ถูกปฏิเสธ",
-  conn_connecting:"กำลังเชื่อมต่อ…",conn_need_login:"เชื่อมต่อแล้ว เข้าสู่ระบบด้วยผู้ใช้ Supabase ของคุณ",conn_loading_lib:"กำลังโหลดไลบรารี…",conn_lib_fail:"โหลดไลบรารี Supabase ตรงนี้ไม่ได้ — มักใช้ได้เฉพาะตอนดาวน์โหลดไฟล์ไปเปิดหรือ host เอง ไม่ใช่ในพรีวิว",conn_bad:"เชื่อมต่อไม่สำเร็จ ตรวจ URL และ key",conn_login_fail:"เข้าสู่ระบบไม่สำเร็จ ตรวจอีเมลและรหัสผ่าน",conn_no_org:"เข้าสู่ระบบแล้ว แต่ผู้ใช้นี้ยังไม่ได้ผูกกับองค์กร/ทีม",conn_synced:"ซิงค์แล้ว · {n} นักเตะ · {m} แมตช์",conn_offline:"โหมดออฟไลน์ (ข้อมูลอยู่ในเครื่องนี้)",conn_live:"ซิงค์สดเปิดอยู่",ag_sub_login:"เข้าสู่ระบบเพื่อใช้งาน",ag_sub_signup:"สร้างบัญชีของคุณ",ag_to_signup:"ยังไม่มีบัญชี?",ag_to_login:"มีบัญชีอยู่แล้ว?",ag_offline:"ใช้งานแบบออฟไลน์ (ไม่ซิงค์)",conn_slow:"กำลังเชื่อมต่อ… เครือข่ายอาจช้า รอสักครู่นะครับ",pin_sub:"ใส่รหัส PIN เพื่อใช้งานแบบออฟไลน์",pin_ph:"PIN",pin_enter:"เข้าใช้งาน",pin_wrong:"PIN ไม่ถูกต้อง ลองใหม่",pin_back:"กลับไปหน้าล็อกอิน",h_pin:"PIN สำหรับใช้งานออฟไลน์",pin_note:"ผู้ใช้ต้องใส่ PIN นี้เพื่อใช้งานแบบออฟไลน์ (ไม่ล็อกอิน) เปลี่ยนเพื่อความเป็นส่วนตัว",pin_label:"PIN",pin_saved:"บันทึก PIN แล้ว",pin_min:"PIN ต้องยาวอย่างน้อย 4 ตัว",
+  conn_connecting:"กำลังเชื่อมต่อ…",conn_need_login:"เชื่อมต่อแล้ว เข้าสู่ระบบด้วยผู้ใช้ Supabase ของคุณ",conn_loading_lib:"กำลังโหลดไลบรารี…",conn_lib_fail:"โหลดไลบรารี Supabase ตรงนี้ไม่ได้ — มักใช้ได้เฉพาะตอนดาวน์โหลดไฟล์ไปเปิดหรือ host เอง ไม่ใช่ในพรีวิว",conn_bad:"เชื่อมต่อไม่สำเร็จ ตรวจ URL และ key",conn_login_fail:"เข้าสู่ระบบไม่สำเร็จ ตรวจอีเมลและรหัสผ่าน",conn_no_org:"เข้าสู่ระบบแล้ว แต่ผู้ใช้นี้ยังไม่ได้ผูกกับองค์กร/ทีม",conn_synced:"ซิงค์แล้ว · {n} นักเตะ · {m} แมตช์",conn_offline:"โหมดออฟไลน์ (ข้อมูลอยู่ในเครื่องนี้)",conn_live:"ซิงค์สดเปิดอยู่",ag_sub_login:"เข้าสู่ระบบเพื่อใช้งาน",ag_sub_signup:"สร้างบัญชีของคุณ",ag_to_signup:"ยังไม่มีบัญชี?",ag_to_login:"มีบัญชีอยู่แล้ว?",ag_offline:"ใช้งานแบบออฟไลน์ (ไม่ซิงค์)",conn_slow:"กำลังเชื่อมต่อ… เครือข่ายอาจช้า รอสักครู่นะครับ",pin_sub:"ใส่รหัส PIN เพื่อใช้งานแบบออฟไลน์",pin_ph:"PIN",pin_enter:"เข้าใช้งาน",pin_wrong:"PIN ไม่ถูกต้อง ลองใหม่",pin_back:"กลับไปหน้าล็อกอิน",h_pin:"PIN สำหรับใช้งานออฟไลน์",pin_note:"ผู้ใช้ต้องใส่ PIN นี้เพื่อใช้งานแบบออฟไลน์ (ไม่ล็อกอิน) เปลี่ยนเพื่อความเป็นส่วนตัว",pin_label:"PIN",pin_saved:"บันทึก PIN แล้ว",pin_min:"PIN ต้องยาวอย่างน้อย 4 ตัว",conn_timeout:"เชื่อมต่อหมดเวลา ลองเช็กเน็ต หรือคีย์โปรเจกต์อาจไม่ถูก แจ้งแอดมิน",
   h_account:"บัญชีของฉัน",acc_photo:"เปลี่ยนรูป",acc_username:"ชื่อผู้ใช้",acc_newpwd:"รหัสผ่านใหม่",acc_save:"บันทึก",acc_change:"เปลี่ยน",acc_pwd_ok:"เปลี่ยนรหัสผ่านแล้ว",acc_user_ok:"อัปเดตชื่อผู้ใช้แล้ว",acc_photo_ok:"อัปเดตรูปแล้ว",
   s_pass_complete:"จ่ายบอลสำเร็จ",s_pass_incomplete:"จ่ายบอลพลาด",s_att_won:"เกมรุกชนะ",s_att_lost:"เกมรุกแพ้",s_def_won:"เกมรับชนะ",s_def_lost:"เกมรับแพ้",s_into_box:"เข้าเขตโทษ",s_key_pass:"คีย์พาส",s_shot:"ยิงประตู",s_score:"ทำประตู",s_recovery:"แย่งบอลคืน",s_gk_save:"เซฟประตู",s_gk_conceded:"เสียประตู"}
 };
@@ -1295,25 +1309,32 @@ const EMBED_SUPABASE_URL = "https://nuzaocpuykeojyttteod.supabase.co";
 const EMBED_SUPABASE_KEY = "sb_publishable_4Pcnx5nszUqHLS3YRQu6qA_rnqE39TN";
 const cloud={lib:null,sb:null,user:null,profile:null,orgId:null,teamId:null,seasonId:null,active:false,channel:null};
 function cstat(msg,cls){const el=$("connStatus");if(el){el.textContent=msg;el.className="connstatus"+(cls?" "+cls:"");}}
-async function loadLib(){ if(cloud.lib)return cloud.lib; cstat(t("conn_loading_lib")); cloud.lib=await import("https://esm.sh/@supabase/supabase-js@2"); return cloud.lib; }
+function withTimeout(p,ms,label){return Promise.race([p,new Promise((_,rej)=>setTimeout(()=>rej(new Error((label||"request")+" timeout")),ms))]);}
+async function loadLib(){ if(cloud.lib)return cloud.lib; cstat(t("conn_loading_lib")); cloud.lib=await withTimeout(import("https://esm.sh/@supabase/supabase-js@2"),20000,"library"); return cloud.lib; }
 async function cloudConnect(url,key){
   settings.supaUrl=url;settings.supaKey=key;saveSettings();
   const {createClient}=await loadLib();
   cloud.sb=createClient(url,key);
   $("supaDisconnect").style.display="";
-  const {data:{session}}=await cloud.sb.auth.getSession();
+  let session=null;
+  try{const r=await withTimeout(cloud.sb.auth.getSession(),12000,"session");session=r.data.session;}catch(e){}
   if(session&&session.user){cloud.user=session.user;await cloudAfterLogin();}
   else{$("loginBox").style.display="";cstat(t("conn_need_login"));showGate();}
 }
 async function cloudLogin(email,pwd){
-  const {data,error}=await cloud.sb.auth.signInWithPassword({email,password:pwd});
-  if(error||!data.user){loginMsg(t("conn_login_fail"),"err");return;}
+  let res;
+  try{res=await withTimeout(cloud.sb.auth.signInWithPassword({email,password:pwd}),15000,"login");}
+  catch(e){loginMsg(t("conn_timeout"),"err");return;}
+  const {data,error}=res;
+  if(error||!data||!data.user){loginMsg(t("conn_login_fail"),"err");return;}
   cloud.user=data.user;await cloudAfterLogin();
 }
 async function cloudAfterLogin(){
   // who am I? (approval status + role)
-  let prof=null;
-  try{const r=await cloud.sb.from("profiles").select("username,status,app_role,avatar_url").eq("id",cloud.user.id).single();prof=r.data;}catch(e){}
+  let prof=null,profErr=false;
+  try{const r=await withTimeout(cloud.sb.from("profiles").select("username,status,app_role,avatar_url").eq("id",cloud.user.id).single(),12000,"profile");prof=r.data;}
+  catch(e){profErr=true;}
+  if(profErr){loginMsg(t("conn_timeout"),"err");showGate();return;}
   cloud.profile=prof||{status:"pending",app_role:"user"};
   if(cloud.profile.status!=="approved"){
     cloud.active=false;
@@ -1326,7 +1347,9 @@ async function cloudAfterLogin(){
     return;
   }
   // each approved user has their OWN org → their data is isolated by RLS
-  let {data:mem}=await cloud.sb.from("org_members").select("org_id").limit(1);
+  let mem=null;
+  try{const r=await withTimeout(cloud.sb.from("org_members").select("org_id").limit(1),12000,"org");mem=r.data;}
+  catch(e){loginMsg(t("conn_timeout"),"err");showGate();return;}
   if(!mem||!mem.length){
     const co=await cloud.sb.from("organizations").insert({name:(cloud.profile.username||"my")+"-team"}).select("id").single();
     if(co.error||!co.data){cstat(t("conn_no_org"),"err");return;}
@@ -1604,6 +1627,7 @@ function renderField(flashKey){
   if(flashKey){const el=$("fActions").querySelector('[data-key="'+flashKey+'"]');if(el){el.classList.add("flash");setTimeout(()=>el.classList.remove("flash"),400);}}
 }
 $("enterField").onclick=fieldEnter;
+$("enterField").addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();fieldEnter();}});
 const _fTop=$("fieldTop");if(_fTop)_fTop.onclick=fieldEnter;
 $("fExit").onclick=fieldExit;
 $("fUndo").onclick=()=>{doUndo();renderField();};
