@@ -175,6 +175,9 @@
   .fmtseg button{flex:0 0 auto;padding:7px 11px;border-radius:9px;border:1px solid var(--line);background:var(--surface2);color:var(--chalk);font-size:12.5px;font-weight:600;cursor:pointer;font-family:var(--mono);touch-action:manipulation}
   .fmtseg button[aria-pressed="true"]{border-color:var(--lime);background:color-mix(in srgb,var(--lime) 16%,var(--surface));color:var(--lime)}
   .setup-row .fmtseg{flex:1 1 auto;min-width:0}
+  .acctrow{display:flex;gap:13px;align-items:center;margin-bottom:14px}
+  .meav{width:56px;height:56px;border-radius:50%;object-fit:cover;background:var(--surface2);border:1px solid var(--line)}
+  .acctname{font-weight:700;color:var(--chalk);font-size:15px}
   .member-row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:9px 0;border-bottom:1px solid var(--line)}
   .member-row:last-child{border-bottom:0}
   .minfo{font-size:13px;color:var(--chalk)}
@@ -621,6 +624,17 @@
       <p class="note" data-i18n="members_note">Approve new sign-ups and manage roles. Each member only sees their own teams, matches and sessions.</p>
       <div id="membersList"></div>
     </section>
+    <section class="card" id="accountCard" style="display:none">
+      <h2 data-i18n="h_account">My account</h2>
+      <div class="acctrow">
+        <img id="meAvatar" class="meav" alt="">
+        <div><div class="acctname" id="meName">—</div>
+          <label class="cb" style="cursor:pointer;display:inline-block;margin-top:4px"><span data-i18n="acc_photo">Change photo</span><input id="meAvatarFile" type="file" accept="image/*" hidden></label></div>
+      </div>
+      <div class="setup-row"><label data-i18n="acc_username">Username</label><input id="meUser" style="width:auto;flex:1"><button class="iconbtn" id="meUserBtn" data-i18n="acc_save">Save</button></div>
+      <div class="setup-row"><label data-i18n="acc_newpwd">New password</label><input id="mePwd" type="password" style="width:auto;flex:1" autocomplete="new-password"><button class="iconbtn" id="mePwdBtn" data-i18n="acc_change">Change</button></div>
+      <div id="meMsg" class="note"></div>
+    </section>
     <section class="card">
       <h2 data-i18n="h_prefs">Preferences</h2>
       <label class="toggle"><input type="checkbox" id="kbToggle"><span data-i18n="kbhints">Show keyboard hints</span></label>
@@ -858,6 +872,7 @@ const I18N={
   conn_user_ph:"username",conn_signup:"Create account",conn_need_user:"Enter a username.",conn_signup_hint:"Pick a username and a password of at least 6 characters.",conn_signup_ok:"Account created — waiting for an admin to approve it.",conn_pending:"Your account is waiting for an admin to approve it.",conn_pending_short:"Pending approval",conn_rejected:"This account was not approved. Contact your admin.",
   h_members:"Members (admin)",members_note:"Approve new sign-ups and manage roles. Each member only sees their own teams, matches and sessions.",mem_none:"No members yet.",mem_approve:"Approve",mem_reject:"Reject",mem_promote:"Make admin",mem_demote:"Remove admin",mem_admin:"admin",mem_you:"you",st_pending:"pending",st_approved:"approved",st_rejected:"rejected",
   conn_connecting:"Connecting…",conn_need_login:"Connected. Now sign in with your Supabase user.",conn_loading_lib:"Loading library…",conn_lib_fail:"Couldn't load the Supabase library here — this usually works only when the file is downloaded or hosted, not in the preview.",conn_bad:"Connection failed. Check the URL and key.",conn_login_fail:"Sign-in failed. Check your email and password.",conn_no_org:"Signed in, but no organisation/team is linked to this user yet.",conn_synced:"Synced · {n} players · {m} matches",conn_offline:"Offline mode (data stays on this device).",conn_live:"Live sync on",ag_sub_login:"Sign in to continue",ag_sub_signup:"Create your account",ag_to_signup:"New here?",ag_to_login:"Already have an account?",ag_offline:"Use offline (no sync)",
+  h_account:"My account",acc_photo:"Change photo",acc_username:"Username",acc_newpwd:"New password",acc_save:"Save",acc_change:"Change",acc_pwd_ok:"Password changed.",acc_user_ok:"Username (display name) updated.",acc_photo_ok:"Photo updated.",
   s_pass_complete:"Pass completed",s_pass_incomplete:"Pass incomplete",s_att_won:"Attacking duel won",s_att_lost:"Attacking duel lost",s_def_won:"Defensive duel won",s_def_lost:"Defensive duel lost",s_into_box:"Entry into the box",s_key_pass:"Key pass",s_shot:"Shot",s_score:"Goal",s_recovery:"Ball recovery",s_gk_save:"Save",s_gk_conceded:"Goal conceded"},
  th:{app_title:"วิเคราะห์ฟุตบอลเยาวชน",mode:"easy analyze",newmatch:"+ แมตช์",untitled:"(แมตช์ยังไม่ตั้งชื่อ)",vs:"พบ",
   newtraining:"+ เทรนนิ่ง",train_tag:"เทรนนิ่ง",sess_training:"เซสชันเทรนนิ่ง",
@@ -929,6 +944,7 @@ const I18N={
   conn_user_ph:"ชื่อผู้ใช้ (username)",conn_signup:"สมัครสมาชิก",conn_need_user:"กรุณาใส่ชื่อผู้ใช้",conn_signup_hint:"ตั้งชื่อผู้ใช้ และรหัสผ่านอย่างน้อย 6 ตัวอักษร",conn_signup_ok:"สมัครเรียบร้อย — รอแอดมินอนุมัติบัญชี",conn_pending:"บัญชีของคุณกำลังรอแอดมินอนุมัติ",conn_pending_short:"รออนุมัติ",conn_rejected:"บัญชีนี้ไม่ได้รับอนุมัติ ติดต่อแอดมิน",
   h_members:"สมาชิก (แอดมิน)",members_note:"อนุมัติผู้สมัครใหม่และจัดการสิทธิ์ · สมาชิกแต่ละคนเห็นเฉพาะทีม แมตช์ และการซ้อมของตัวเอง",mem_none:"ยังไม่มีสมาชิก",mem_approve:"อนุมัติ",mem_reject:"ปฏิเสธ",mem_promote:"ตั้งเป็นแอดมิน",mem_demote:"ถอนแอดมิน",mem_admin:"แอดมิน",mem_you:"คุณ",st_pending:"รออนุมัติ",st_approved:"อนุมัติแล้ว",st_rejected:"ถูกปฏิเสธ",
   conn_connecting:"กำลังเชื่อมต่อ…",conn_need_login:"เชื่อมต่อแล้ว เข้าสู่ระบบด้วยผู้ใช้ Supabase ของคุณ",conn_loading_lib:"กำลังโหลดไลบรารี…",conn_lib_fail:"โหลดไลบรารี Supabase ตรงนี้ไม่ได้ — มักใช้ได้เฉพาะตอนดาวน์โหลดไฟล์ไปเปิดหรือ host เอง ไม่ใช่ในพรีวิว",conn_bad:"เชื่อมต่อไม่สำเร็จ ตรวจ URL และ key",conn_login_fail:"เข้าสู่ระบบไม่สำเร็จ ตรวจอีเมลและรหัสผ่าน",conn_no_org:"เข้าสู่ระบบแล้ว แต่ผู้ใช้นี้ยังไม่ได้ผูกกับองค์กร/ทีม",conn_synced:"ซิงค์แล้ว · {n} นักเตะ · {m} แมตช์",conn_offline:"โหมดออฟไลน์ (ข้อมูลอยู่ในเครื่องนี้)",conn_live:"ซิงค์สดเปิดอยู่",ag_sub_login:"เข้าสู่ระบบเพื่อใช้งาน",ag_sub_signup:"สร้างบัญชีของคุณ",ag_to_signup:"ยังไม่มีบัญชี?",ag_to_login:"มีบัญชีอยู่แล้ว?",ag_offline:"ใช้งานแบบออฟไลน์ (ไม่ซิงค์)",
+  h_account:"บัญชีของฉัน",acc_photo:"เปลี่ยนรูป",acc_username:"ชื่อผู้ใช้",acc_newpwd:"รหัสผ่านใหม่",acc_save:"บันทึก",acc_change:"เปลี่ยน",acc_pwd_ok:"เปลี่ยนรหัสผ่านแล้ว",acc_user_ok:"อัปเดตชื่อผู้ใช้แล้ว",acc_photo_ok:"อัปเดตรูปแล้ว",
   s_pass_complete:"จ่ายบอลสำเร็จ",s_pass_incomplete:"จ่ายบอลพลาด",s_att_won:"เกมรุกชนะ",s_att_lost:"เกมรุกแพ้",s_def_won:"เกมรับชนะ",s_def_lost:"เกมรับแพ้",s_into_box:"เข้าเขตโทษ",s_key_pass:"คีย์พาส",s_shot:"ยิงประตู",s_score:"ทำประตู",s_recovery:"แย่งบอลคืน",s_gk_save:"เซฟประตู",s_gk_conceded:"เสียประตู"}
 };
 let settings={theme:"dark",accent:"#C9F25E",lang:"th",kbhints:true,supaUrl:"",supaKey:""};
@@ -1276,7 +1292,7 @@ async function cloudLogin(email,pwd){
 async function cloudAfterLogin(){
   // who am I? (approval status + role)
   let prof=null;
-  try{const r=await cloud.sb.from("profiles").select("username,status,app_role").eq("id",cloud.user.id).single();prof=r.data;}catch(e){}
+  try{const r=await cloud.sb.from("profiles").select("username,status,app_role,avatar_url").eq("id",cloud.user.id).single();prof=r.data;}catch(e){}
   cloud.profile=prof||{status:"pending",app_role:"user"};
   if(cloud.profile.status!=="approved"){
     cloud.active=false;
@@ -1315,8 +1331,46 @@ async function cloudAfterLogin(){
   loginMsg("");
   $("membersCard").style.display=cloud.profile.app_role==="admin"?"":"none";
   if(cloud.profile.app_role==="admin")loadMembers();
+  fillAccountCard();
   await cloudPull();cloudSubscribe();
 }
+function fillAccountCard(){
+  const c=$("accountCard");if(!c)return;c.style.display="";
+  const p=cloud.profile||{};
+  $("meName").textContent=p.username||"—";
+  $("meUser").value=p.username||"";
+  const av=$("meAvatar");
+  if(p.avatar_url){av.src=p.avatar_url;av.style.display="";}else{av.removeAttribute("src");}
+  $("meMsg").textContent="";
+}
+function accMsg(s,cls){const el=$("meMsg");if(el){el.textContent=s;el.style.color=cls==="err"?"var(--neg)":cls==="ok"?"var(--pos)":"var(--muted)";}}
+$("mePwdBtn").onclick=async()=>{
+  const p=$("mePwd").value;if(p.length<6){accMsg(t("conn_signup_hint"),"err");return;}
+  accMsg(t("conn_connecting"));
+  const {error}=await cloud.sb.auth.updateUser({password:p});
+  if(error){accMsg(error.message,"err");return;}
+  $("mePwd").value="";accMsg(t("acc_pwd_ok"),"ok");
+};
+$("meUserBtn").onclick=async()=>{
+  const u=$("meUser").value.trim();if(!u){accMsg(t("conn_need_user"),"err");return;}
+  accMsg(t("conn_connecting"));
+  const up=await cloud.sb.from("profiles").update({username:u}).eq("id",cloud.user.id);
+  if(up.error){accMsg(up.error.message,"err");return;}
+  // keep the login name in sync (email is derived from username)
+  try{await cloud.sb.auth.updateUser({email:emailFor(u)});}catch(e){}
+  cloud.profile.username=u;$("meName").textContent=u;accMsg(t("acc_user_ok"),"ok");
+};
+$("meAvatarFile").onchange=e=>{
+  const f=e.target.files[0];if(!f)return;
+  downscale(f,async data=>{
+    if(!data)return;
+    accMsg(t("conn_connecting"));
+    const {error}=await cloud.sb.from("profiles").update({avatar_url:data}).eq("id",cloud.user.id);
+    if(error){accMsg(error.message,"err");return;}
+    cloud.profile.avatar_url=data;$("meAvatar").src=data;accMsg(t("acc_photo_ok"),"ok");
+  });
+  e.target.value="";
+};
 /* ---- admin: members management ---- */
 async function loadMembers(){
   const box=$("membersList");if(!box)return;
@@ -1419,7 +1473,7 @@ async function cloudSignup(email,pwd,username){
   if(data&&data.session&&data.user){cloud.user=data.user;await cloudAfterLogin();}
 }
 $("supaSync").onclick=()=>{cstat(t("conn_connecting"));cloudPull().catch(()=>cstat(t("conn_bad"),"err"));};
-$("supaLogout").onclick=async()=>{try{if(cloud.sb)await cloud.sb.auth.signOut();}catch(e){}cloud.active=false;cloud.user=null;cloud.profile=null;$("connActions").style.display="none";$("loginBox").style.display="";$("membersCard").style.display="none";loginMsg("");cstat(t("conn_offline"));if(cloud.sb){$("agUser").value="";$("agPwd").value="";setAuthMode("login");showGate();}};
+$("supaLogout").onclick=async()=>{try{if(cloud.sb)await cloud.sb.auth.signOut();}catch(e){}cloud.active=false;cloud.user=null;cloud.profile=null;$("connActions").style.display="none";$("loginBox").style.display="";$("membersCard").style.display="none";$("accountCard").style.display="none";loginMsg("");cstat(t("conn_offline"));if(cloud.sb){$("agUser").value="";$("agPwd").value="";setAuthMode("login");showGate();}};
 $("supaDisconnect").onclick=()=>{settings.supaUrl="";settings.supaKey="";saveSettings();location.reload();};
 
 function curPeriod(){const m=curMatch();return (m&&m.kind!=="training"&&(m.periods||4)>1)?(m.curP||1):0;}
@@ -2173,6 +2227,13 @@ const _repE=$("repExport");if(_repE)_repE.onclick=exportSession;
 
 /* init + light migration from the earlier prototype */
 (async function(){
+  // Accounts enabled? Show the login gate IMMEDIATELY (before the app paints),
+  // unless a saved session exists (then we auto-login and the app shows).
+  if(EMBED_SUPABASE_URL&&EMBED_SUPABASE_KEY){
+    try{const ref=EMBED_SUPABASE_URL.split("//")[1].split(".")[0];
+      if(!localStorage.getItem("sb-"+ref+"-auth-token"))showGate();
+    }catch(e){showGate();}
+  }
   const sv=await store.get(K_SET);if(sv)settings=Object.assign(settings,sv);
   qaDismissed=await store.get(K_DISMISS)||[];
   veoByMatch=await store.get(K_VEO)||{};
