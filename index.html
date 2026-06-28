@@ -1,5 +1,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="preconnect" href="https://esm.sh" crossorigin>
+<link rel="preconnect" href="https://nuzaocpuykeojyttteod.supabase.co" crossorigin>
+<link rel="dns-prefetch" href="https://esm.sh">
+<link rel="modulepreload" href="https://esm.sh/@supabase/supabase-js@2">
 <title>easy analyze — match tagging</title>
 <meta name="theme-color" content="#0E1613">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -106,17 +110,13 @@
   .factive .nm{font-size:14px;font-weight:700;color:var(--chalk)}
   .fscroll{flex:1;overflow-y:auto;padding:10px 12px}
   .fmain{flex:1;display:flex;flex-direction:column;min-height:0;overflow:hidden}
-  .fleft{flex:0 0 auto;max-height:34vh;overflow-y:auto;padding:10px 12px;border-bottom:1px solid var(--line)}
+  .fleft{flex:0 0 auto;overflow-x:auto;overflow-y:hidden;padding:8px 10px;border-bottom:1px solid var(--line);-webkit-overflow-scrolling:touch}
+  .fleft::-webkit-scrollbar{height:0}
+  .fleft .fgrid{display:flex;flex-wrap:nowrap;gap:8px}
+  .fleft .ftile{flex:0 0 auto;width:76px;min-height:auto;padding:7px 5px;gap:5px}
+  .fleft .ftile .av,.fleft .ftile .no{width:42px;height:42px;font-size:16px}
+  .fleft .ftile .pn{font-size:11px;font-weight:600}
   .factions{flex:1;overflow-y:auto}
-  @media (min-width:700px){
-    .fmain{flex-direction:row}
-    .fleft{flex:0 0 230px;max-height:none;height:100%;border-bottom:0;border-right:1px solid var(--line)}
-    .fleft .fgrid{grid-template-columns:1fr;gap:6px}
-    .fleft .ftile{flex-direction:row;justify-content:flex-start;min-height:56px;gap:11px;padding:6px 9px}
-    .fleft .ftile .av,.fleft .ftile .no{width:48px;height:48px;font-size:17px;flex:0 0 auto}
-    .fleft .ftile .pn{font-size:11px;font-weight:600;white-space:normal;text-align:left;max-width:none;line-height:1.15;overflow:visible}
-    .factions .fhint{display:none}
-  }
   .fhint{font-size:12px;color:var(--muted);margin:0 0 6px}
   .fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px}
   .ftile{min-height:74px;border-radius:14px;border:2px solid var(--line);background:var(--surface);color:var(--chalk);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;padding:6px;touch-action:manipulation;user-select:none;-webkit-user-select:none}
@@ -372,6 +372,8 @@
   /* ===== login / register gate ===== */
   #authgate{position:fixed;inset:0;z-index:240;background:var(--bg);display:none;align-items:center;justify-content:center;padding:20px}
   #authgate.on{display:flex}
+  #pingate{position:fixed;inset:0;z-index:250;background:var(--bg);display:none;align-items:center;justify-content:center;padding:20px}
+  #pingate.on{display:flex}
   .agcard{width:100%;max-width:360px;background:linear-gradient(180deg,var(--surface),color-mix(in srgb,var(--surface2) 60%,var(--surface)));border:1px solid var(--line);border-radius:22px;padding:30px 24px;box-shadow:0 24px 70px rgba(0,0,0,.5);text-align:center}
   .aglogo{width:54px;height:54px;border-radius:15px;background:var(--lime);color:var(--accent-fg);font-weight:800;font-size:22px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px}
   .agttl{font-size:22px;font-weight:800;color:var(--chalk);letter-spacing:-.01em}
@@ -635,6 +637,12 @@
       <div class="setup-row"><label data-i18n="acc_newpwd">New password</label><input id="mePwd" type="password" style="width:auto;flex:1" autocomplete="new-password"><button class="iconbtn" id="mePwdBtn" data-i18n="acc_change">Change</button></div>
       <div id="meMsg" class="note"></div>
     </section>
+    <section class="card" id="pinCard" style="display:none">
+      <h2 data-i18n="h_pin">Offline access PIN</h2>
+      <p class="note" data-i18n="pin_note">People must enter this PIN to use the app offline (without signing in). Change it to keep it private.</p>
+      <div class="setup-row"><label data-i18n="pin_label">PIN</label><input id="setPin" style="width:auto;flex:1" autocapitalize="off" spellcheck="false"><button class="iconbtn" id="setPinBtn" data-i18n="acc_save">Save</button></div>
+      <div id="pinSetMsg" class="note"></div>
+    </section>
     <section class="card">
       <h2 data-i18n="h_prefs">Preferences</h2>
       <label class="toggle"><input type="checkbox" id="kbToggle"><span data-i18n="kbhints">Show keyboard hints</span></label>
@@ -735,6 +743,19 @@
     <div class="agswitch"><span id="agSwitchTxt" data-i18n="ag_to_signup">New here?</span> <a id="agToggle" data-i18n="conn_signup">Create account</a></div>
     <div id="agMsg" class="agmsg"></div>
     <a id="agOffline" class="agoffline" data-i18n="ag_offline">Use offline (no sync)</a>
+  </div>
+</div>
+
+<!-- OFFLINE PIN GATE -->
+<div id="pingate">
+  <div class="agcard">
+    <div class="aglogo">EA</div>
+    <div class="agttl">easy analyze</div>
+    <div class="agsub" data-i18n="pin_sub">Enter the access PIN to use offline</div>
+    <input id="pinInput" type="password" data-i18n-ph="pin_ph" placeholder="PIN" autocomplete="off" autocapitalize="off" spellcheck="false">
+    <button class="btnlime agbtn" id="pinBtn" data-i18n="pin_enter">Enter</button>
+    <div id="pinMsg" class="agmsg"></div>
+    <a id="pinBack" class="agoffline" data-i18n="pin_back" style="display:none">Back to login</a>
   </div>
 </div>
 
@@ -871,7 +892,7 @@ const I18N={
   h_conn:"Connection (Supabase)",conn_note:"Leave empty to keep working offline on this device. Enter your project URL and anon key to sync data across devices.",conn_url_ph:"https://xxxx.supabase.co",conn_key_ph:"anon public key",conn_connect:"Connect",conn_disconnect:"Disconnect",conn_email_ph:"email",conn_pwd_ph:"password",conn_login:"Sign in",conn_sync:"Sync now",conn_logout:"Sign out",
   conn_user_ph:"username",conn_signup:"Create account",conn_need_user:"Enter a username.",conn_signup_hint:"Pick a username and a password of at least 6 characters.",conn_signup_ok:"Account created — waiting for an admin to approve it.",conn_pending:"Your account is waiting for an admin to approve it.",conn_pending_short:"Pending approval",conn_rejected:"This account was not approved. Contact your admin.",
   h_members:"Members (admin)",members_note:"Approve new sign-ups and manage roles. Each member only sees their own teams, matches and sessions.",mem_none:"No members yet.",mem_approve:"Approve",mem_reject:"Reject",mem_promote:"Make admin",mem_demote:"Remove admin",mem_admin:"admin",mem_you:"you",st_pending:"pending",st_approved:"approved",st_rejected:"rejected",
-  conn_connecting:"Connecting…",conn_need_login:"Connected. Now sign in with your Supabase user.",conn_loading_lib:"Loading library…",conn_lib_fail:"Couldn't load the Supabase library here — this usually works only when the file is downloaded or hosted, not in the preview.",conn_bad:"Connection failed. Check the URL and key.",conn_login_fail:"Sign-in failed. Check your email and password.",conn_no_org:"Signed in, but no organisation/team is linked to this user yet.",conn_synced:"Synced · {n} players · {m} matches",conn_offline:"Offline mode (data stays on this device).",conn_live:"Live sync on",ag_sub_login:"Sign in to continue",ag_sub_signup:"Create your account",ag_to_signup:"New here?",ag_to_login:"Already have an account?",ag_offline:"Use offline (no sync)",
+  conn_connecting:"Connecting…",conn_need_login:"Connected. Now sign in with your Supabase user.",conn_loading_lib:"Loading library…",conn_lib_fail:"Couldn't load the Supabase library here — this usually works only when the file is downloaded or hosted, not in the preview.",conn_bad:"Connection failed. Check the URL and key.",conn_login_fail:"Sign-in failed. Check your email and password.",conn_no_org:"Signed in, but no organisation/team is linked to this user yet.",conn_synced:"Synced · {n} players · {m} matches",conn_offline:"Offline mode (data stays on this device).",conn_live:"Live sync on",ag_sub_login:"Sign in to continue",ag_sub_signup:"Create your account",ag_to_signup:"New here?",ag_to_login:"Already have an account?",ag_offline:"Use offline (no sync)",conn_slow:"Still connecting… your network looks slow, please wait a moment.",pin_sub:"Enter the access PIN to use offline",pin_ph:"PIN",pin_enter:"Enter",pin_wrong:"Wrong PIN. Try again.",pin_back:"Back to login",h_pin:"Offline access PIN",pin_note:"People must enter this PIN to use the app offline (without signing in). Change it to keep it private.",pin_label:"PIN",pin_saved:"PIN saved.",pin_min:"PIN must be at least 4 characters.",
   h_account:"My account",acc_photo:"Change photo",acc_username:"Username",acc_newpwd:"New password",acc_save:"Save",acc_change:"Change",acc_pwd_ok:"Password changed.",acc_user_ok:"Username (display name) updated.",acc_photo_ok:"Photo updated.",
   s_pass_complete:"Pass completed",s_pass_incomplete:"Pass incomplete",s_att_won:"Attacking duel won",s_att_lost:"Attacking duel lost",s_def_won:"Defensive duel won",s_def_lost:"Defensive duel lost",s_into_box:"Entry into the box",s_key_pass:"Key pass",s_shot:"Shot",s_score:"Goal",s_recovery:"Ball recovery",s_gk_save:"Save",s_gk_conceded:"Goal conceded"},
  th:{app_title:"วิเคราะห์ฟุตบอลเยาวชน",mode:"easy analyze",newmatch:"+ แมตช์",untitled:"(แมตช์ยังไม่ตั้งชื่อ)",vs:"พบ",
@@ -943,7 +964,7 @@ const I18N={
   h_conn:"การเชื่อมต่อ (Supabase)",conn_note:"เว้นว่างไว้เพื่อใช้งานออฟไลน์ในเครื่องนี้ · ใส่ Project URL และ anon key เพื่อซิงค์ข้อมูลข้ามอุปกรณ์",conn_url_ph:"https://xxxx.supabase.co",conn_key_ph:"anon public key",conn_connect:"เชื่อมต่อ",conn_disconnect:"ตัดการเชื่อมต่อ",conn_email_ph:"อีเมล",conn_pwd_ph:"รหัสผ่าน",conn_login:"เข้าสู่ระบบ",conn_sync:"ซิงค์เดี๋ยวนี้",conn_logout:"ออกจากระบบ",
   conn_user_ph:"ชื่อผู้ใช้ (username)",conn_signup:"สมัครสมาชิก",conn_need_user:"กรุณาใส่ชื่อผู้ใช้",conn_signup_hint:"ตั้งชื่อผู้ใช้ และรหัสผ่านอย่างน้อย 6 ตัวอักษร",conn_signup_ok:"สมัครเรียบร้อย — รอแอดมินอนุมัติบัญชี",conn_pending:"บัญชีของคุณกำลังรอแอดมินอนุมัติ",conn_pending_short:"รออนุมัติ",conn_rejected:"บัญชีนี้ไม่ได้รับอนุมัติ ติดต่อแอดมิน",
   h_members:"สมาชิก (แอดมิน)",members_note:"อนุมัติผู้สมัครใหม่และจัดการสิทธิ์ · สมาชิกแต่ละคนเห็นเฉพาะทีม แมตช์ และการซ้อมของตัวเอง",mem_none:"ยังไม่มีสมาชิก",mem_approve:"อนุมัติ",mem_reject:"ปฏิเสธ",mem_promote:"ตั้งเป็นแอดมิน",mem_demote:"ถอนแอดมิน",mem_admin:"แอดมิน",mem_you:"คุณ",st_pending:"รออนุมัติ",st_approved:"อนุมัติแล้ว",st_rejected:"ถูกปฏิเสธ",
-  conn_connecting:"กำลังเชื่อมต่อ…",conn_need_login:"เชื่อมต่อแล้ว เข้าสู่ระบบด้วยผู้ใช้ Supabase ของคุณ",conn_loading_lib:"กำลังโหลดไลบรารี…",conn_lib_fail:"โหลดไลบรารี Supabase ตรงนี้ไม่ได้ — มักใช้ได้เฉพาะตอนดาวน์โหลดไฟล์ไปเปิดหรือ host เอง ไม่ใช่ในพรีวิว",conn_bad:"เชื่อมต่อไม่สำเร็จ ตรวจ URL และ key",conn_login_fail:"เข้าสู่ระบบไม่สำเร็จ ตรวจอีเมลและรหัสผ่าน",conn_no_org:"เข้าสู่ระบบแล้ว แต่ผู้ใช้นี้ยังไม่ได้ผูกกับองค์กร/ทีม",conn_synced:"ซิงค์แล้ว · {n} นักเตะ · {m} แมตช์",conn_offline:"โหมดออฟไลน์ (ข้อมูลอยู่ในเครื่องนี้)",conn_live:"ซิงค์สดเปิดอยู่",ag_sub_login:"เข้าสู่ระบบเพื่อใช้งาน",ag_sub_signup:"สร้างบัญชีของคุณ",ag_to_signup:"ยังไม่มีบัญชี?",ag_to_login:"มีบัญชีอยู่แล้ว?",ag_offline:"ใช้งานแบบออฟไลน์ (ไม่ซิงค์)",
+  conn_connecting:"กำลังเชื่อมต่อ…",conn_need_login:"เชื่อมต่อแล้ว เข้าสู่ระบบด้วยผู้ใช้ Supabase ของคุณ",conn_loading_lib:"กำลังโหลดไลบรารี…",conn_lib_fail:"โหลดไลบรารี Supabase ตรงนี้ไม่ได้ — มักใช้ได้เฉพาะตอนดาวน์โหลดไฟล์ไปเปิดหรือ host เอง ไม่ใช่ในพรีวิว",conn_bad:"เชื่อมต่อไม่สำเร็จ ตรวจ URL และ key",conn_login_fail:"เข้าสู่ระบบไม่สำเร็จ ตรวจอีเมลและรหัสผ่าน",conn_no_org:"เข้าสู่ระบบแล้ว แต่ผู้ใช้นี้ยังไม่ได้ผูกกับองค์กร/ทีม",conn_synced:"ซิงค์แล้ว · {n} นักเตะ · {m} แมตช์",conn_offline:"โหมดออฟไลน์ (ข้อมูลอยู่ในเครื่องนี้)",conn_live:"ซิงค์สดเปิดอยู่",ag_sub_login:"เข้าสู่ระบบเพื่อใช้งาน",ag_sub_signup:"สร้างบัญชีของคุณ",ag_to_signup:"ยังไม่มีบัญชี?",ag_to_login:"มีบัญชีอยู่แล้ว?",ag_offline:"ใช้งานแบบออฟไลน์ (ไม่ซิงค์)",conn_slow:"กำลังเชื่อมต่อ… เครือข่ายอาจช้า รอสักครู่นะครับ",pin_sub:"ใส่รหัส PIN เพื่อใช้งานแบบออฟไลน์",pin_ph:"PIN",pin_enter:"เข้าใช้งาน",pin_wrong:"PIN ไม่ถูกต้อง ลองใหม่",pin_back:"กลับไปหน้าล็อกอิน",h_pin:"PIN สำหรับใช้งานออฟไลน์",pin_note:"ผู้ใช้ต้องใส่ PIN นี้เพื่อใช้งานแบบออฟไลน์ (ไม่ล็อกอิน) เปลี่ยนเพื่อความเป็นส่วนตัว",pin_label:"PIN",pin_saved:"บันทึก PIN แล้ว",pin_min:"PIN ต้องยาวอย่างน้อย 4 ตัว",
   h_account:"บัญชีของฉัน",acc_photo:"เปลี่ยนรูป",acc_username:"ชื่อผู้ใช้",acc_newpwd:"รหัสผ่านใหม่",acc_save:"บันทึก",acc_change:"เปลี่ยน",acc_pwd_ok:"เปลี่ยนรหัสผ่านแล้ว",acc_user_ok:"อัปเดตชื่อผู้ใช้แล้ว",acc_photo_ok:"อัปเดตรูปแล้ว",
   s_pass_complete:"จ่ายบอลสำเร็จ",s_pass_incomplete:"จ่ายบอลพลาด",s_att_won:"เกมรุกชนะ",s_att_lost:"เกมรุกแพ้",s_def_won:"เกมรับชนะ",s_def_lost:"เกมรับแพ้",s_into_box:"เข้าเขตโทษ",s_key_pass:"คีย์พาส",s_shot:"ยิงประตู",s_score:"ทำประตู",s_recovery:"แย่งบอลคืน",s_gk_save:"เซฟประตู",s_gk_conceded:"เสียประตู"}
 };
@@ -1286,7 +1307,7 @@ async function cloudConnect(url,key){
 }
 async function cloudLogin(email,pwd){
   const {data,error}=await cloud.sb.auth.signInWithPassword({email,password:pwd});
-  if(error||!data.user){cstat(t("conn_login_fail"),"err");return;}
+  if(error||!data.user){loginMsg(t("conn_login_fail"),"err");return;}
   cloud.user=data.user;await cloudAfterLogin();
 }
 async function cloudAfterLogin(){
@@ -1312,14 +1333,16 @@ async function cloudAfterLogin(){
     mem=[{org_id:co.data.id}];
   }
   cloud.orgId=mem[0].org_id;
-  let {data:teams}=await cloud.sb.from("teams").select("id").eq("org_id",cloud.orgId).limit(1);
+  let [{data:teams},{data:seas}]=await Promise.all([
+    cloud.sb.from("teams").select("id").eq("org_id",cloud.orgId).limit(1),
+    cloud.sb.from("seasons").select("id").eq("org_id",cloud.orgId).limit(1)
+  ]);
   if(!teams||!teams.length){
     const ct=await cloud.sb.from("teams").insert({org_id:cloud.orgId,name:"My team",age_group:"U12"}).select("id").single();
     if(ct.error){cstat(ct.error.message,"err");return;}
     teams=[ct.data];
   }
   cloud.teamId=teams[0].id;
-  let {data:seas}=await cloud.sb.from("seasons").select("id").eq("org_id",cloud.orgId).limit(1);
   if(!seas||!seas.length){
     const cs=await cloud.sb.from("seasons").insert({org_id:cloud.orgId,name:"2025/26"}).select("id").single();
     seas=cs.error?[]:[cs.data];
@@ -1332,7 +1355,7 @@ async function cloudAfterLogin(){
   $("membersCard").style.display=cloud.profile.app_role==="admin"?"":"none";
   if(cloud.profile.app_role==="admin")loadMembers();
   fillAccountCard();
-  await cloudPull();cloudSubscribe();
+  cloudPull().then(cloudSubscribe);   // pull data in the background (don't block the UI)
 }
 function fillAccountCard(){
   const c=$("accountCard");if(!c)return;c.style.display="";
@@ -1450,18 +1473,35 @@ const cw={
 $("supaConnect").onclick=async()=>{const url=$("supaUrl").value.trim(),key=$("supaKey").value.trim();if(!url||!key){cstat(t("conn_bad"),"err");return;}cstat(t("conn_connecting"));try{await cloudConnect(url,key);}catch(e){cstat(t("conn_lib_fail"),"err");}};
 function emailFor(u){u=(u||"").trim();return u.includes("@")?u:(u.toLowerCase().replace(/\s+/g,"")+"@easyanalyze.app");}
 function loginMsg(s,cls){const col=cls==="err"?"var(--neg)":cls==="ok"?"var(--pos)":"var(--muted)";["loginMsg","agMsg"].forEach(id=>{const el=$(id);if(el){el.textContent=s;el.style.color=col;}});}
-let agMode="login";
+let agMode="login",_slowTimer=null;
 function showGate(){$("authgate").classList.add("on");}
-function hideGate(){$("authgate").classList.remove("on");}
+function hideGate(){clearTimeout(_slowTimer);$("authgate").classList.remove("on");}
+function startSlow(){clearTimeout(_slowTimer);_slowTimer=setTimeout(()=>{if($("authgate").classList.contains("on"))loginMsg(t("conn_slow"));},6000);}
+async function ensureClient(){if(cloud.sb)return true;if(!(settings.supaUrl&&settings.supaKey))return false;try{const {createClient}=await loadLib();cloud.sb=createClient(settings.supaUrl,settings.supaKey);}catch(e){return false;}return !!cloud.sb;}
 function setAuthMode(m){agMode=m;const login=m==="login";$("agPrimary").textContent=t(login?"conn_login":"conn_signup");$("agSub").textContent=t(login?"ag_sub_login":"ag_sub_signup");$("agSwitchTxt").textContent=t(login?"ag_to_signup":"ag_to_login");$("agToggle").textContent=t(login?"conn_signup":"conn_login");$("agPwd").setAttribute("autocomplete",login?"current-password":"new-password");$("agMsg").textContent="";}
 $("agToggle").onclick=()=>setAuthMode(agMode==="login"?"signup":"login");
-$("agOffline").onclick=()=>hideGate();
+$("agOffline").onclick=()=>{ if(offlineUnlocked()){hideGate();return;} showPin(); };
+/* ---- offline PIN lock ---- */
+const DEFAULT_PIN="easyanalyze1999";
+function getPin(){return (settings.offlinePin!=null&&settings.offlinePin!=="")?settings.offlinePin:DEFAULT_PIN;}
+function offlineUnlocked(){try{return sessionStorage.getItem("ea_offline_ok")==="1";}catch(e){return true;}}
+function showPin(){const back=$("pinBack");if(back)back.style.display=(EMBED_SUPABASE_URL&&EMBED_SUPABASE_KEY)?"inline-block":"none";$("pinInput").value="";$("pinMsg").textContent="";$("pingate").classList.add("on");setTimeout(()=>{try{$("pinInput").focus();}catch(e){}},60);}
+function hidePin(){$("pingate").classList.remove("on");}
+$("pinBtn").onclick=()=>{
+  if($("pinInput").value===getPin()){try{sessionStorage.setItem("ea_offline_ok","1");}catch(e){}hidePin();hideGate();}
+  else{$("pinMsg").textContent=t("pin_wrong");$("pinMsg").style.color="var(--neg)";}
+};
+$("pinInput").addEventListener("keydown",e=>{if(e.key==="Enter")$("pinBtn").onclick();});
+$("pinBack").onclick=()=>{hidePin();showGate();};
+$("setPinBtn").onclick=()=>{const v=$("setPin").value.trim();if(v.length<4){$("pinSetMsg").textContent=t("pin_min");$("pinSetMsg").style.color="var(--neg)";return;}settings.offlinePin=v;saveSettings();$("pinSetMsg").textContent=t("pin_saved");$("pinSetMsg").style.color="var(--pos)";};
 $("agPrimary").onclick=async()=>{
   const u=$("agUser").value.trim(),p=$("agPwd").value;
   if(!u){loginMsg(t("conn_need_user"),"err");return;}
-  if(!cloud.sb){loginMsg(t("conn_offline"),"err");return;}
-  if(agMode==="signup"){if(p.length<6){loginMsg(t("conn_signup_hint"),"err");return;}loginMsg(t("conn_connecting"));try{await cloudSignup(emailFor(u),p,u);}catch(e){loginMsg(t("conn_login_fail"),"err");}}
-  else{loginMsg(t("conn_connecting"));try{await cloudLogin(emailFor(u),p);}catch(e){loginMsg(t("conn_login_fail"),"err");}}
+  if(agMode==="signup"&&p.length<6){loginMsg(t("conn_signup_hint"),"err");return;}
+  loginMsg(t("conn_connecting"));startSlow();
+  if(!await ensureClient()){clearTimeout(_slowTimer);loginMsg(t("conn_offline"),"err");return;}
+  try{ if(agMode==="signup")await cloudSignup(emailFor(u),p,u); else await cloudLogin(emailFor(u),p);}catch(e){loginMsg(t("conn_login_fail"),"err");}
+  clearTimeout(_slowTimer);
 };
 $("supaLogin").onclick=async()=>{const u=$("supaUser").value.trim();if(!u){loginMsg(t("conn_need_user"),"err");return;}loginMsg(t("conn_connecting"));try{await cloudLogin(emailFor(u),$("supaPwd").value);}catch(e){loginMsg(t("conn_login_fail"),"err");}};
 $("supaSignup").onclick=async()=>{const u=$("supaUser").value.trim(),p=$("supaPwd").value;if(!u||p.length<6){loginMsg(t("conn_signup_hint"),"err");return;}loginMsg(t("conn_connecting"));try{await cloudSignup(emailFor(u),p,u);}catch(e){loginMsg(t("conn_login_fail"),"err");}};
@@ -2131,6 +2171,8 @@ function renderSettings(){
   $("loginBox").style.display=(cloud.sb&&!cloud.active)?"":"none";
   if(!cloud.sb&&!$("connStatus").textContent)cstat(t("conn_offline"));
   renderHelpGlossary();renderBackupStatus();
+  const showPinCard=!(EMBED_SUPABASE_URL&&EMBED_SUPABASE_KEY)||(cloud.profile&&cloud.profile.app_role==="admin");
+  if($("pinCard")){$("pinCard").style.display=showPinCard?"":"none";$("setPin").value=getPin();}
 }
 function renderHelpGlossary(){
   const box=$("helpGlossary");if(!box)return;
@@ -2256,7 +2298,11 @@ const _repE=$("repExport");if(_repE)_repE.onclick=exportSession;
     if(embed&&!settings.onboarded)settings.onboarded=true;   // skip the wizard; login comes first
     try{await cloudConnect(settings.supaUrl,settings.supaKey);}catch(e){cstat(t("conn_lib_fail"),"err");if(embed){loginMsg(t("conn_lib_fail"),"err");showGate();}}
     renderSettings();
-  } else if(!settings.onboarded){openWizard();}
+  } else {
+    // pure offline (no cloud configured): require the access PIN first
+    if(!offlineUnlocked())showPin();
+    else if(!settings.onboarded)openWizard();
+  }
   setInterval(flush,15000);                                   // auto-save every 15s (only when dirty)
   window.addEventListener("beforeunload",flush);              // flush on exit
   document.addEventListener("visibilitychange",()=>{if(document.hidden)flush();});
