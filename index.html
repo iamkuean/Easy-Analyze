@@ -20,6 +20,7 @@
     --bg:#0E1613;--surface:#15201B;--surface2:#1B2922;--line:#26342D;
     --chalk:#E8F0E8;--muted:#8DA597;--faint:#5E7065;--lime:#C9F25E;
     --goal:#FF7A45;--danger:#FF6B6B;--ok:#6FCF97;--warn:#F2C94C;
+    --accent-ink:var(--lime);--accent-soft:color-mix(in srgb,var(--lime) 16%,var(--surface));--shadow:none;--shadow-sm:none;
     --r:12px;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
     --sans:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
   }
@@ -49,6 +50,21 @@
   select:hover{border-color:color-mix(in srgb,var(--lime) 45%,var(--line))}
   select:focus{outline:none;border-color:var(--lime);box-shadow:0 0 0 3px color-mix(in srgb,var(--lime) 18%,transparent)}
   select option{background:var(--surface);color:var(--chalk);padding:8px}
+  .csel{position:relative;display:flex;flex:1 1 auto;min-width:0}
+  .csel > select{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
+  .csel-btn{flex:1 1 auto;display:flex;align-items:center;justify-content:space-between;gap:8px;background:linear-gradient(var(--surface2),color-mix(in srgb,var(--surface2) 86%,#000));border:1px solid var(--line);color:var(--chalk);border-radius:11px;padding:10px 12px;font-size:14px;font-family:var(--sans);font-weight:500;cursor:pointer;min-width:0;transition:border-color .15s,box-shadow .15s,background .15s}
+  .csel-btn:hover{border-color:color-mix(in srgb,var(--lime) 50%,var(--line))}
+  .csel.open .csel-btn{border-color:var(--lime);box-shadow:0 0 0 3px color-mix(in srgb,var(--lime) 18%,transparent)}
+  .csel-btn .lbl{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .csel-btn .chev{flex:0 0 auto;display:flex;color:var(--muted);transition:transform .18s,color .15s}
+  .csel.open .csel-btn .chev{transform:rotate(180deg);color:var(--lime)}
+  .csel-pop{position:absolute;top:calc(100% + 6px);left:0;min-width:100%;max-width:min(86vw,360px);background:var(--surface);border:1px solid var(--line);border-radius:13px;box-shadow:0 14px 36px rgba(0,0,0,.45);padding:6px;z-index:260;max-height:54vh;overflow:auto;display:none;animation:cselin .13s ease}
+  @keyframes cselin{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+  .csel.open .csel-pop{display:block}
+  .csel-opt{display:flex;align-items:center;gap:8px;padding:10px 11px;border-radius:9px;color:var(--chalk);font-size:14px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .csel-opt:hover{background:var(--surface2)}
+  .csel-opt.sel{background:color-mix(in srgb,var(--lime) 16%,transparent);font-weight:600}
+  .csel-opt.sel::after{content:"✓";margin-left:auto;color:var(--lime);font-weight:700}
   .urlrow input{flex:1;min-width:0;background:var(--surface2);border:1px solid var(--line);color:var(--chalk);border-radius:9px;padding:10px 12px;font-size:14px}
   input::placeholder{color:var(--faint)}
   .btnlime{background:var(--lime);color:#11200a;border:0;border-radius:9px;padding:0 16px;font-weight:600;font-size:14px;cursor:pointer}
@@ -266,9 +282,26 @@
   :root{--accent-fg:#11200a;--pos:#34D399;--neg:#F87171}
   :root[data-theme="light"]{
     color-scheme:light;
-    --bg:#F4F6F3;--surface:#FFFFFF;--surface2:#EEF1ED;--line:#DCE2DC;
-    --chalk:#1B231F;--muted:#5C6B62;--faint:#94A29A;
+    --bg:#E7EDE7;--surface:#FFFFFF;--surface2:#F0F4EF;--line:#D0D9D0;
+    --chalk:#14201A;--muted:#51635A;--faint:#859389;
+    --accent-ink:color-mix(in srgb,var(--lime) 58%,#0a2e16);
+    --accent-soft:color-mix(in srgb,var(--lime) 26%,#fff);
+    --shadow:0 1px 2px rgba(18,38,28,.05),0 8px 22px rgba(18,38,28,.07);
+    --shadow-sm:0 1px 2px rgba(18,38,28,.06);
+    --goal:#E8612E;--danger:#E2453F;--ok:#2F9E63;--warn:#C9971A;
   }
+  :root[data-theme="light"] body{background:linear-gradient(180deg,#EAF0EA,#E4EAE4 60%);}
+  :root[data-theme="light"] .card{box-shadow:var(--shadow)}
+  :root[data-theme="light"] .tab[aria-selected="true"],
+  :root[data-theme="light"] .chip[aria-pressed="true"]{background:var(--accent-soft)}
+  :root[data-theme="light"] .eyebrow,
+  :root[data-theme="light"] .chip .n,
+  :root[data-theme="light"] .tab[aria-selected="true"],
+  :root[data-theme="light"] .cb.run,
+  :root[data-theme="light"] .csel.open .csel-btn .chev,
+  :root[data-theme="light"] .csel-opt.sel::after{color:var(--accent-ink)}
+  :root[data-theme="light"] .csel-btn{background:linear-gradient(#fff,#F4F7F3)}
+  :root[data-theme="light"] .csel-opt.sel{background:color-mix(in srgb,var(--lime) 24%,#fff)}
   /* accent-tinted soft backgrounds adapt to both theme and chosen accent */
   .tab[aria-selected="true"]{background:color-mix(in srgb,var(--lime) 16%,var(--surface));}
   .chip[aria-pressed="true"]{background:color-mix(in srgb,var(--lime) 16%,var(--surface));}
@@ -440,6 +473,7 @@
   </div>
   <div class="matchbar">
     <select id="teamsel" style="display:none" title="Team"></select>
+    <button class="iconbtn" id="renameTeam" style="display:none" title="Rename team">✎</button>
     <button class="iconbtn" id="newTeam" style="display:none" data-i18n="new_team">+ Team</button>
     <select id="matchsel"></select>
     <button class="iconbtn" id="newSession" data-i18n="new_session">+ New</button>
@@ -684,7 +718,7 @@
     <section class="card" id="teamsAdminCard" style="display:none">
       <h2 data-i18n="h_teams">Teams &amp; access (admin)</h2>
       <p class="note" data-i18n="teams_note">Pick a team, then grant or revoke each user's access. Users can also create their own teams from the top bar.</p>
-      <div class="setup-row"><label data-i18n="lbl_team">Team</label><select id="adminTeamSel" style="flex:1"></select><button class="iconbtn del" id="adminDelTeam" data-i18n="team_delete">Delete</button></div>
+      <div class="setup-row"><label data-i18n="lbl_team">Team</label><select id="adminTeamSel" style="flex:1"></select><button class="iconbtn" id="adminRenameTeam" data-i18n="team_rename">Rename</button><button class="iconbtn del" id="adminDelTeam" data-i18n="team_delete">Delete</button></div>
       <div id="teamAccessList" style="margin-top:10px"></div>
     </section>
     <section class="card" id="accountCard" style="display:none">
@@ -897,7 +931,7 @@ const K_ROSTER="gp_roster_v2",K_MATCHES="gp_matches_v2",K_EVENTS="gp_events_v2",
 const I18N={
  en:{app_title:"Youth football analysis",mode:"EZ Analyze",newmatch:"+ Match",untitled:"(untitled match)",vs:"vs",
   newtraining:"+ Training",train_tag:"Training",sess_training:"Training session",
-  new_session:"+ New",new_team:"+ Team",new_team_prompt:"Name this team:",team_created:"Team created.",h_teams:"Teams & access (admin)",teams_note:"Pick a team, then grant or revoke each user\u2019s access. Users can also create their own teams from the top bar.",lbl_team:"Team",team_delete:"Delete",team_owner:"Owner",team_revoke:"Revoke",team_grant:"Grant",team_has:"has access",team_del_confirm:"Delete this team and ALL its players, matches and tags? This cannot be undone.",team_deleted:"Team deleted.",wiz_title:"New session",wiz_sub:"What do you want to record?",sess_match:"Match",sess_training_short:"Training",wiz_notes:"Notes / comments",wiz_notes_ph:"Anything to remember about this session…",wiz_create:"Create & start",cancel:"Cancel",back:"Back",lbl_match_notes:"Notes / comments",
+  new_session:"+ New",new_team:"+ Team",new_team_prompt:"Name this team:",team_created:"Team created.",h_teams:"Teams & access (admin)",teams_note:"Pick a team, then grant or revoke each user\u2019s access. Users can also create their own teams from the top bar.",lbl_team:"Team",team_delete:"Delete",team_owner:"Owner",team_revoke:"Revoke",team_grant:"Grant",team_has:"has access",team_del_confirm:"Delete this team and ALL its players, matches and tags? This cannot be undone.",team_deleted:"Team deleted.",team_rename:"Rename",team_rename_prompt:"New team name:",team_renamed:"Team renamed.",wiz_title:"New session",wiz_sub:"What do you want to record?",sess_match:"Match",sess_training_short:"Training",wiz_notes:"Notes / comments",wiz_notes_ph:"Anything to remember about this session…",wiz_create:"Create & start",cancel:"Cancel",back:"Back",lbl_match_notes:"Notes / comments",
   wiz_match_sub:"Quarters, opponent, score",wiz_train_sub:"Finishing & duels",lbl_quarters:"Quarters",lbl_video_opt:"Video link (optional)",
   lbl_datetime:"Date & time",lbl_minper:"Min / quarter",lbl_time:"Time",wiz_total:"Total play time: {n} min ({q}×{m})",lbl_format:"Format (e.g. 7v7)",
   field_mode:"Field mode (big buttons)",field_label:"Mobile mode",field_sub:"Big buttons for pitchside tagging",field_hint:"Tap a player, then tap an action.",
@@ -969,7 +1003,7 @@ const I18N={
   s_pass_complete:"Pass completed",s_pass_incomplete:"Pass incomplete",s_att_won:"Attacking duel won",s_att_lost:"Attacking duel lost",s_def_won:"Defensive duel won",s_def_lost:"Defensive duel lost",s_interception:"Interception",s_block:"Block",s_assist:"Assist",s_into_box:"Entry into the box",s_key_pass:"Key pass",s_shot:"Shot",s_score:"Goal",seek_hint:"Click to replay this moment",field_need_players:"Add players in the Team tab first, then open Mobile mode.",theme_auto:"Auto",reset_appearance:"Reset to default",reset_appearance_done:"Appearance reset.",confirm_remove_player:"Remove {name} from the team?",confirm_del_match:"Delete this match and all its tags? This cannot be undone.",er_title:"No players yet",er_sub:"Add players above, or start with a sample squad you can rename.",add_sample:"Add a sample squad",sample_added:"Sample players added — edit names above.",s_recovery:"Ball recovery",s_gk_save:"Save",s_gk_conceded:"Goal conceded"},
  th:{app_title:"วิเคราะห์ฟุตบอลเยาวชน",mode:"EZ Analyze",newmatch:"+ แมตช์",untitled:"(แมตช์ยังไม่ตั้งชื่อ)",vs:"พบ",
   newtraining:"+ เทรนนิ่ง",train_tag:"เทรนนิ่ง",sess_training:"เซสชันเทรนนิ่ง",
-  new_session:"+ ใหม่",new_team:"+ ทีม",new_team_prompt:"ตั้งชื่อทีม:",team_created:"สร้างทีมแล้ว",h_teams:"ทีม & สิทธิ์เข้าถึง (แอดมิน)",teams_note:"เลือกทีม แล้วให้/ยกเลิกสิทธิ์ผู้ใช้แต่ละคน ผู้ใช้สร้างทีมของตัวเองได้จากแถบบน",lbl_team:"ทีม",team_delete:"ลบ",team_owner:"เจ้าของ",team_revoke:"ยกเลิกสิทธิ์",team_grant:"ให้สิทธิ์",team_has:"เข้าถึงได้",team_del_confirm:"ลบทีมนี้พร้อมผู้เล่น/แมตช์/แท็กทั้งหมด? ย้อนกลับไม่ได้",team_deleted:"ลบทีมแล้ว",wiz_title:"สร้างเซสชันใหม่",wiz_sub:"อยากเก็บข้อมูลแบบไหน?",sess_match:"แมตช์",sess_training_short:"เทรนนิ่ง",wiz_notes:"โน้ต / คอมเมนต์",wiz_notes_ph:"สิ่งที่อยากจำเกี่ยวกับเซสชันนี้…",wiz_create:"สร้าง & เริ่ม",cancel:"ยกเลิก",back:"ย้อนกลับ",lbl_match_notes:"โน้ต / คอมเมนต์",
+  new_session:"+ ใหม่",new_team:"+ ทีม",new_team_prompt:"ตั้งชื่อทีม:",team_created:"สร้างทีมแล้ว",h_teams:"ทีม & สิทธิ์เข้าถึง (แอดมิน)",teams_note:"เลือกทีม แล้วให้/ยกเลิกสิทธิ์ผู้ใช้แต่ละคน ผู้ใช้สร้างทีมของตัวเองได้จากแถบบน",lbl_team:"ทีม",team_delete:"ลบ",team_owner:"เจ้าของ",team_revoke:"ยกเลิกสิทธิ์",team_grant:"ให้สิทธิ์",team_has:"เข้าถึงได้",team_del_confirm:"ลบทีมนี้พร้อมผู้เล่น/แมตช์/แท็กทั้งหมด? ย้อนกลับไม่ได้",team_deleted:"ลบทีมแล้ว",team_rename:"เปลี่ยนชื่อ",team_rename_prompt:"ชื่อทีมใหม่:",team_renamed:"เปลี่ยนชื่อแล้ว",wiz_title:"สร้างเซสชันใหม่",wiz_sub:"อยากเก็บข้อมูลแบบไหน?",sess_match:"แมตช์",sess_training_short:"เทรนนิ่ง",wiz_notes:"โน้ต / คอมเมนต์",wiz_notes_ph:"สิ่งที่อยากจำเกี่ยวกับเซสชันนี้…",wiz_create:"สร้าง & เริ่ม",cancel:"ยกเลิก",back:"ย้อนกลับ",lbl_match_notes:"โน้ต / คอมเมนต์",
   wiz_match_sub:"ควอเตอร์ คู่แข่ง สกอร์",wiz_train_sub:"จบสกอร์ & ดวล",lbl_quarters:"ควอเตอร์",lbl_video_opt:"ลิงก์วิดีโอ (ไม่บังคับ)",
   lbl_datetime:"วันที่ & เวลา",lbl_minper:"นาที / ควอเตอร์",lbl_time:"เวลา",wiz_total:"เวลารวมที่เล่น: {n} นาที ({q}×{m})",lbl_format:"รูปแบบ (เช่น 7v7)",
   field_mode:"โหมดข้างสนาม (ปุ่มใหญ่)",field_label:"โหมดมือถือ",field_sub:"ปุ่มใหญ่ แท็กข้างสนามสะดวก",field_hint:"แตะเลือกนักเตะ แล้วแตะการกระทำ",
@@ -1460,11 +1494,24 @@ async function cloudUseTeam(orgId,opts){
   return true;
 }
 function renderTeamSelector(){
-  const sel=$("teamsel"),btn=$("newTeam");if(!sel)return;
-  if(!cloud.active||!cloud.teams||!cloud.teams.length){sel.style.display="none";if(btn)btn.style.display="none";return;}
-  sel.style.display="";if(btn)btn.style.display="";
+  const sel=$("teamsel"),btn=$("newTeam"),ren=$("renameTeam");if(!sel)return;
+  const wrap=sel.closest(".csel")||sel;
+  const show=cloud.active&&cloud.teams&&cloud.teams.length;
+  if(!show){wrap.style.display="none";if(btn)btn.style.display="none";if(ren)ren.style.display="none";return;}
+  wrap.style.display="";if(btn)btn.style.display="";
   sel.innerHTML=cloud.teams.map(tm=>`<option value="${tm.id}" ${tm.id===cloud.orgId?"selected":""}>${tm.name}</option>`).join("");
+  refreshCsel(sel);
+  const cur=cloud.teams.find(x=>x.id===cloud.orgId);
+  const canRename=cloud.profile&&(cloud.profile.app_role==="admin"||(cur&&cur.role==="owner"));
+  if(ren)ren.style.display=canRename?"":"none";
 }
+$("renameTeam").onclick=async()=>{
+  const cur=cloud.teams.find(x=>x.id===cloud.orgId);
+  const name=prompt(t("team_rename_prompt"),cur?cur.name:"");if(name==null||!name.trim())return;
+  const r=await cloud.sb.rpc("rename_team",{p_org:cloud.orgId,p_name:name.trim()});
+  if(r.error){showToast(r.error.message);return;}
+  await cloudLoadTeams();renderTeamSelector();try{renderTeamsAdmin();}catch(e){}showToast(t("team_renamed"));
+};
 $("teamsel").onchange=async e=>{const id=e.target.value;await cloudUseTeam(id);};
 $("newTeam").onclick=async()=>{
   const name=prompt(t("new_team_prompt"));if(name==null)return;
@@ -1546,6 +1593,7 @@ async function renderTeamsAdmin(){
   const ts=$("adminTeamSel");
   if(!adminTeamSel||!list.some(o=>o.id===adminTeamSel))adminTeamSel=list[0]?list[0].id:null;
   ts.innerHTML=list.map(o=>`<option value="${o.id}" ${o.id===adminTeamSel?"selected":""}>${o.name}</option>`).join("");
+  refreshCsel(ts);
   await renderTeamAccess();
 }
 async function renderTeamAccess(){
@@ -1568,6 +1616,14 @@ async function renderTeamAccess(){
   box.querySelectorAll("[data-rev]").forEach(b=>b.onclick=async()=>{await cloud.sb.rpc("admin_revoke_team",{p_user:b.dataset.rev,p_org:adminTeamSel});renderTeamAccess();});
 }
 $("adminTeamSel").onchange=e=>{adminTeamSel=e.target.value;renderTeamAccess();};
+$("adminRenameTeam").onclick=async()=>{
+  if(!adminTeamSel)return;
+  const opt=$("adminTeamSel").options[$("adminTeamSel").selectedIndex];
+  const name=prompt(t("team_rename_prompt"),opt?opt.textContent:"");if(name==null||!name.trim())return;
+  const r=await cloud.sb.rpc("rename_team",{p_org:adminTeamSel,p_name:name.trim()});
+  if(r.error){showToast(r.error.message);return;}
+  await cloudLoadTeams();renderTeamSelector();renderTeamsAdmin();showToast(t("team_renamed"));
+};
 $("adminDelTeam").onclick=async()=>{
   if(!adminTeamSel)return;
   if(!confirm(t("team_del_confirm")))return;
@@ -1667,6 +1723,37 @@ function addEye(input){
 ["agUser","agPwd"].forEach(id=>{const el=$(id);if(el)el.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();$("agPrimary").click();}});});
 ["supaUser","supaPwd"].forEach(id=>{const el=$(id);if(el)el.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();$("supaLogin").click();}});});
 $("mePwd")&&$("mePwd").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();$("mePwdBtn").click();}});
+/* ---- prettier dropdowns: replace native popups with a styled list on every <select> ---- */
+const CSEL_CHEV='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>';
+function refreshCsel(sel){if(sel&&sel._cselRefresh)sel._cselRefresh();}
+function enhanceSelect(sel){
+  if(!sel||sel._csel||sel.multiple||sel.dataset.noCsel)return; sel._csel=true;
+  const wrap=document.createElement("span"); wrap.className="csel";
+  if(sel.style.display==="none"){wrap.style.display="none";sel.style.display="";}
+  sel.parentNode.insertBefore(wrap,sel); wrap.appendChild(sel);
+  const btn=document.createElement("button"); btn.type="button"; btn.className="csel-btn";
+  btn.innerHTML='<span class="lbl"></span><span class="chev">'+CSEL_CHEV+'</span>';
+  const pop=document.createElement("div"); pop.className="csel-pop";
+  wrap.appendChild(btn); wrap.appendChild(pop);
+  const lbl=btn.querySelector(".lbl");
+  function refresh(){const o=sel.options[sel.selectedIndex];lbl.textContent=o?o.textContent:"";}
+  function close(){wrap.classList.remove("open");document.removeEventListener("mousedown",outside,true);}
+  function outside(e){if(!wrap.contains(e.target))close();}
+  function open(){
+    pop.innerHTML="";
+    Array.from(sel.options).forEach((o,i)=>{const d=document.createElement("div");d.className="csel-opt"+(i===sel.selectedIndex?" sel":"");d.textContent=o.textContent;
+      d.onclick=()=>{sel.selectedIndex=i;refresh();close();sel.dispatchEvent(new Event("change",{bubbles:true}));};pop.appendChild(d);});
+    wrap.classList.add("open");document.addEventListener("mousedown",outside,true);
+    const s=pop.querySelector(".csel-opt.sel");if(s)s.scrollIntoView({block:"nearest"});
+  }
+  btn.onclick=()=>{wrap.classList.contains("open")?close():open();};
+  sel._cselRefresh=refresh;
+  try{new MutationObserver(refresh).observe(sel,{childList:true});}catch(e){}
+  refresh();
+}
+function enhanceAllSelects(root){(root||document).querySelectorAll("select:not([data-csel])").forEach(s=>{s.setAttribute("data-csel","1");enhanceSelect(s);});}
+enhanceAllSelects(document);
+try{new MutationObserver(muts=>{muts.forEach(m=>m.addedNodes&&m.addedNodes.forEach(n=>{if(n.nodeType!==1)return;if(n.tagName==="SELECT"){if(!n.hasAttribute("data-csel")){n.setAttribute("data-csel","1");enhanceSelect(n);}}else if(n.querySelectorAll)enhanceAllSelects(n);}));}).observe(document.body,{childList:true,subtree:true});}catch(e){}
 $("agPrimary").onclick=async()=>{
   const u=$("agUser").value.trim(),p=$("agPwd").value;
   if(!u){loginMsg(t("conn_need_user"),"err");return;}
