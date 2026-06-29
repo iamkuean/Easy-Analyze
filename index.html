@@ -950,7 +950,7 @@ const K_ROSTER="gp_roster_v2",K_MATCHES="gp_matches_v2",K_EVENTS="gp_events_v2",
 const I18N={
  en:{app_title:"Youth football analysis",mode:"EZ Analyze",newmatch:"+ Match",untitled:"(untitled match)",vs:"vs",
   newtraining:"+ Training",train_tag:"Training",sess_training:"Training session",
-  new_session:"+ New",new_team:"+ Team",new_team_prompt:"Name this team:",team_created:"Team created.",gloss_title:"What each tag means",h_teams:"Teams &amp; access (admin)",teams_note:"Pick a team, then grant or revoke each user\u2019s access. Users can also create their own teams from the top bar.",lbl_team:"Team",team_delete:"Delete",team_owner:"Owner",team_revoke:"Revoke",team_grant:"Grant",team_has:"has access",team_del_confirm:"Delete this team and ALL its players, matches and tags? This cannot be undone.",team_deleted:"Team deleted.",team_rename:"Rename",team_rename_prompt:"New team name:",team_renamed:"Team renamed.",wiz_title:"New session",wiz_sub:"What do you want to record?",sess_match:"Match",sess_training_short:"Training",wiz_notes:"Notes / comments",wiz_notes_ph:"Anything to remember about this session…",wiz_create:"Create & start",cancel:"Cancel",back:"Back",lbl_match_notes:"Notes / comments",
+  new_session:"+ New",new_team:"+ Team",new_team_prompt:"Name this team:",team_created:"Team created.",gloss_title:"What each tag means",h_teams:"Teams & access (admin)",teams_note:"Pick a team, then grant or revoke each user\u2019s access. Users can also create their own teams from the top bar.",lbl_team:"Team",team_delete:"Delete",team_owner:"Owner",team_revoke:"Revoke",team_grant:"Grant",team_has:"has access",team_del_confirm:"Delete this team and ALL its players, matches and tags? This cannot be undone.",team_deleted:"Team deleted.",team_rename:"Rename",team_rename_prompt:"New team name:",team_renamed:"Team renamed.",wiz_title:"New session",wiz_sub:"What do you want to record?",sess_match:"Match",sess_training_short:"Training",wiz_notes:"Notes / comments",wiz_notes_ph:"Anything to remember about this session…",wiz_create:"Create & start",cancel:"Cancel",back:"Back",lbl_match_notes:"Notes / comments",
   wiz_match_sub:"Quarters, opponent, score",wiz_train_sub:"Finishing & duels",lbl_quarters:"Quarters",lbl_video_opt:"Video link (optional)",
   lbl_datetime:"Date & time",lbl_minper:"Min / quarter",lbl_time:"Time",wiz_total:"Total play time: {n} min ({q}×{m})",lbl_format:"Format (e.g. 7v7)",
   field_mode:"Field mode (big buttons)",field_label:"Mobile mode",field_sub:"Big buttons for pitchside tagging",field_hint:"Tap a player, then tap an action.",
@@ -1141,7 +1141,6 @@ function openGlossary(){
   const close=()=>ov.remove();
   $("glossClose").onclick=close;ov.addEventListener("mousedown",e=>{if(e.target===ov)close();});
 }
-$("tagHelpBtn")&&($("tagHelpBtn").onclick=openGlossary);
 function applyStaticI18n(){
   document.body.classList.toggle("lang-th",settings.lang==="th");
   document.documentElement.lang=settings.lang;
@@ -1162,7 +1161,7 @@ let activeId=null,editingId=null,manualSec=0,running=false,ticker=null,fieldOpen
 
 const $=id=>document.getElementById(id);
 /* ===== build id + automatic update check (beats GitHub Pages / browser cache) ===== */
-const BUILD="06-29-c";
+const BUILD="06-29-e";
 (function(){const el=$("buildMarker");if(el)el.textContent="build "+BUILD;})();
 function showUpdateBanner(newBuild){
   if($("updbanner"))return;
@@ -1183,6 +1182,7 @@ async function checkForUpdate(){
 setTimeout(checkForUpdate,3000);
 setInterval(checkForUpdate,5*60*1000);
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)checkForUpdate();});
+(function(){const b=$("tagHelpBtn");if(b)b.onclick=openGlossary;})();
 const P=id=>roster.find(p=>p.id===id);
 const S=k=>ALLSTATS.find(s=>s.key===k)||ALLSTATS.find(s=>s.key===LEGACY[k])||{key:k,label:k,color:"#8DA597"};
 const fmt=s=>{s=Math.max(0,Math.floor(s));return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");};
