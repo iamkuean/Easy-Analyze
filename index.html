@@ -65,6 +65,8 @@
   .csel-opt:hover{background:var(--surface2)}
   .csel-opt.sel{background:color-mix(in srgb,var(--lime) 16%,transparent);font-weight:600}
   .csel-opt.sel::after{content:"✓";margin-left:auto;color:var(--lime);font-weight:700}
+  #updbanner{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:300;display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--lime);border-radius:12px;padding:10px 12px 10px 16px;box-shadow:0 12px 34px rgba(0,0,0,.45);font-size:14px;color:var(--chalk);max-width:92vw}
+  #updbanner button{background:var(--lime);color:#11200a;border:0;border-radius:8px;padding:8px 14px;font-weight:700;font-size:13px;cursor:pointer}
   .urlrow input{flex:1;min-width:0;background:var(--surface2);border:1px solid var(--line);color:var(--chalk);border-radius:9px;padding:10px 12px;font-size:14px}
   input::placeholder{color:var(--faint)}
   .btnlime{background:var(--lime);color:#11200a;border:0;border-radius:9px;padding:0 16px;font-weight:600;font-size:14px;cursor:pointer}
@@ -839,7 +841,7 @@
     <div class="agswitch"><span id="agSwitchTxt" data-i18n="ag_to_signup">New here?</span> <a id="agToggle" data-i18n="conn_signup">Create account</a></div>
     <div id="agMsg" class="agmsg"></div>
     <a id="agOffline" class="agoffline" data-i18n="ag_offline">Use offline (no sync)</a>
-    <div style="margin-top:14px;font-size:11px;color:var(--muted);opacity:.7">build 06-28-c</div>
+    <div id="buildMarker" style="margin-top:14px;font-size:11px;color:var(--muted);opacity:.7">build …</div>
   </div>
 </div>
 
@@ -1098,6 +1100,28 @@ const K_VEO="gp_veo_v1";const K_MINS="gp_mins_v1";
 let activeId=null,editingId=null,manualSec=0,running=false,ticker=null,fieldOpen=false;
 
 const $=id=>document.getElementById(id);
+/* ===== build id + automatic update check (beats GitHub Pages / browser cache) ===== */
+const BUILD="06-29-b";
+(function(){const el=$("buildMarker");if(el)el.textContent="build "+BUILD;})();
+function showUpdateBanner(newBuild){
+  if($("updbanner"))return;
+  const b=document.createElement("div");b.id="updbanner";
+  b.innerHTML=`<span>${({th:"มีเวอร์ชันใหม่พร้อมแล้ว",en:"A new version is ready"})[settings&&settings.lang==="en"?"en":"th"]}</span><button id="updnow">${({th:"โหลดเลย",en:"Update"})[settings&&settings.lang==="en"?"en":"th"]}</button>`;
+  document.body.appendChild(b);
+  $("updnow").onclick=()=>{location.href=location.pathname+"?v="+encodeURIComponent(newBuild);};
+}
+async function checkForUpdate(){
+  try{
+    const r=await fetch(location.pathname+"?_chk="+Date.now(),{cache:"no-store"});
+    if(!r.ok)return;
+    const html=await r.text();
+    const m=html.match(/const BUILD="([^"]+)"/);
+    if(m&&m[1]&&m[1]!==BUILD)showUpdateBanner(m[1]);
+  }catch(e){}
+}
+setTimeout(checkForUpdate,3000);
+setInterval(checkForUpdate,5*60*1000);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)checkForUpdate();});
 const P=id=>roster.find(p=>p.id===id);
 const S=k=>ALLSTATS.find(s=>s.key===k)||ALLSTATS.find(s=>s.key===LEGACY[k])||{key:k,label:k,color:"#8DA597"};
 const fmt=s=>{s=Math.max(0,Math.floor(s));return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");};
@@ -1812,7 +1836,7 @@ function renderLog(){
   $("log").innerHTML=[...a].sort((x,y)=>y.created-x.created).map(e=>{
     if(e.id===editingId)return editForm(e);
     const p=P(e.player_id),s=S(e.stat_key);
-    return `<div class="logrow" data-seek="${e.video_ts}" title="${t("seek_hint")}"><span class="rep">▶</span><button class="t" data-seek="${e.video_ts}">${fmt(e.video_ts)}</button><span class="pn" style="color:${s.color}">${p?p.no:"?"}</span><span class="nm">${p?p.name:"unknown"}</span><span class="badge" style="background:${s.color}22;color:${s.color}">${slabel(e.stat_key)}</span><button class="rowbtn" data-edit="${e.id}">✎</button><button class="rowbtn del" data-del="${e.id}">×</button></div>`;
+    return `<div class="logrow" data-seek="${e.video_ts}" title="${t("seek_hint")}"><span class="rep">▶</span><button class="t" data-seek="${e.video_ts}">${fmt(e.video_ts)}</button><span class="pn" style="color:${s.color}">${p?(p.no||"–"):"?"}</span><span class="nm">${p?p.name:"unknown"}</span><span class="badge" style="background:${s.color}22;color:${s.color}">${slabel(e.stat_key)}</span><button class="rowbtn" data-edit="${e.id}">✎</button><button class="rowbtn del" data-del="${e.id}">×</button></div>`;
   }).join("");
   $("log").querySelectorAll(".logrow").forEach(row=>{
     row.onclick=ev=>{ if(ev.target.closest("[data-edit],[data-del]"))return; const ts=+row.dataset.seek; if(!isNaN(ts))seekTo(Math.max(0,ts-3)); };
