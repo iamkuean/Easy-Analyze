@@ -5,11 +5,11 @@
 <link rel="preconnect" href="https://nuzaocpuykeojyttteod.supabase.co" crossorigin>
 <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
 <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm">
-<title>EZ Analyze — match tagging</title>
+<title>Analyz+ — football analysis</title>
 <meta name="theme-color" content="#0E1613">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="EZ Analyze">
+<meta name="apple-mobile-web-app-title" content="Analyz+">
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23C9F25E'/%3E%3Cg stroke='%2311200a' stroke-opacity='0.18' stroke-width='2'%3E%3Cline x1='22' y1='6' x2='22' y2='58'/%3E%3Cline x1='42' y1='6' x2='42' y2='58'/%3E%3Cline x1='6' y1='22' x2='58' y2='22'/%3E%3Cline x1='6' y1='42' x2='58' y2='42'/%3E%3C/g%3E%3Cpath d='M37 8 L20 36 L31 36 L27 56 L46 28 L34 28 L40 8 Z' fill='%2311200a'/%3E%3C/svg%3E">
 <link rel="apple-touch-icon" id="appleIcon">
@@ -29,6 +29,10 @@
   .wrap{max-width:min(1480px,96vw);margin:0 auto;padding:14px 14px 80px}
   .eyebrow{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--lime);font-weight:600;margin:0}
   .matchbar{display:flex;align-items:center;gap:8px;margin:6px 0 14px;flex-wrap:wrap}
+  .mbgroup{display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .mbgroup+.mbgroup{padding-left:12px;border-left:1px solid var(--line)}
+  .mblabel{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700;white-space:nowrap}
+  @media (max-width:640px){.mbgroup+.mbgroup{border-left:0;padding-left:0;width:100%}}
   .matchbar select{flex:1;min-width:160px;background-color:var(--surface2);border:1px solid var(--line);color:var(--chalk);border-radius:9px;padding:9px 11px;font-size:14px}
   .iconbtn{background:var(--surface2);border:1px solid var(--line);color:var(--chalk);border-radius:9px;padding:9px 12px;font-size:13px;cursor:pointer}
   .iconbtn:hover{border-color:var(--lime)}
@@ -65,8 +69,13 @@
   .csel-opt:hover{background:var(--surface2)}
   .csel-opt.sel{background:color-mix(in srgb,var(--lime) 16%,transparent);font-weight:600}
   .csel-opt.sel::after{content:"✓";margin-left:auto;color:var(--lime);font-weight:700}
-  #updbanner{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:300;display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--lime);border-radius:12px;padding:10px 12px 10px 16px;box-shadow:0 12px 34px rgba(0,0,0,.45);font-size:14px;color:var(--chalk);max-width:92vw}
-  #updbanner button{background:var(--lime);color:#11200a;border:0;border-radius:8px;padding:8px 14px;font-weight:700;font-size:13px;cursor:pointer}
+  #updbanner{position:fixed;left:50%;top:14px;transform:translateX(-50%);z-index:400;display:flex;align-items:center;gap:14px;background:var(--lime);color:#11200a;border-radius:14px;padding:12px 14px 12px 18px;box-shadow:0 16px 44px rgba(0,0,0,.5);font-size:15px;font-weight:700;max-width:94vw;animation:updpop .35s ease}
+  #updbanner .updico{font-size:18px;animation:updspin 1.6s linear infinite;display:inline-block}
+  #updbanner button{background:#11200a;color:var(--lime);border:0;border-radius:9px;padding:9px 16px;font-weight:800;font-size:14px;cursor:pointer;white-space:nowrap}
+  @keyframes updpop{from{transform:translate(-50%,-14px);opacity:0}to{transform:translate(-50%,0);opacity:1}}
+  @keyframes updspin{to{transform:rotate(360deg)}}
+  #verFoot{position:fixed;left:50%;bottom:6px;transform:translateX(-50%);z-index:50;font-size:10px;color:var(--muted);opacity:.5;pointer-events:none;letter-spacing:.06em;font-weight:600}
+  @media print{#verFoot{display:none}}
   .urlrow input{flex:1;min-width:0;background:var(--surface2);border:1px solid var(--line);color:var(--chalk);border-radius:9px;padding:10px 12px;font-size:14px}
   input::placeholder{color:var(--faint)}
   .btnlime{background:var(--lime);color:#11200a;border:0;border-radius:9px;padding:0 16px;font-weight:600;font-size:14px;cursor:pointer}
@@ -441,24 +450,37 @@
     /* composed checklist print */
     body.pdoc-print > *{display:none!important}
     body.pdoc-print #printArea{display:block!important}
-    #printArea{--bg:#fff;--surface:#fff;--surface2:#f3f5f1;--chalk:#141414;--muted:#4a4a4a;--faint:#777;--line:#cfcfcf;--lime:#2e7d12;--pos:#2e7d12;--neg:#c0392b;--accent-ink:#2e7d12;color:#141414}
-    #printArea, #printArea *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    #printArea{--bg:#fff;--surface:#fff;--surface2:#f3f5f1;--chalk:#141414;--muted:#4a4a4a;--faint:#777;--line:#d3d3d3;--lime:#2e7d12;--pos:#2e7d12;--neg:#c0392b;--accent-ink:#2e7d12;--accent-fg:#10240a;color:#141414;font-size:12px}
+    #printArea, #printArea *{-webkit-print-color-adjust:exact;print-color-adjust:exact;overflow:visible !important}
     @page{margin:13mm}
-    #printArea .psec{page-break-inside:auto;margin-bottom:16px}
+    #printArea .psec{margin:0 0 18px}
     #printArea .pagebreak{page-break-before:always}
-    #printArea .psec-title{font-size:14px;font-weight:800;color:#141414;border-bottom:2px solid #2e7d12;padding-bottom:4px;margin:0 0 10px}
-    #printArea table{width:100%;border-collapse:collapse;font-size:10px}
-    #printArea th,#printArea td{border:1px solid #d2d2d2;padding:3px 5px}
-    #printArea th{background:#eef3ea}
+    #printArea .psec-title{font-size:14px;font-weight:800;color:#141414;border-bottom:2px solid #2e7d12;padding-bottom:5px;margin:0 0 12px}
+    #printArea table{width:100%;border-collapse:collapse;font-size:10px;table-layout:auto}
+    #printArea th,#printArea td{border:1px solid #d6d6d6;padding:4px 6px;text-align:center}
+    #printArea th{background:#e9f1e2;color:#1f3d12;font-weight:700}
+    #printArea td.name,#printArea th.name,#printArea td:first-child,#printArea th:first-child{text-align:left}
+    #printArea tr:nth-child(even) td{background:#f6f8f3}
+    #printArea tr{page-break-inside:avoid}
+    #printArea .totalrow td{font-weight:800;background:#eef3ea !important;border-top:2px solid #2e7d12}
     #printArea .card{box-shadow:none;border:0;padding:0;background:none;margin:0}
-    #printArea .kpis{display:flex;flex-wrap:wrap;gap:8px}
-    #printArea .kpi{border:1px solid #d2d2d2;border-radius:8px;padding:6px 10px;min-width:90px}
-    #printArea .devcard{border:1px solid #d2d2d2;border-left:3px solid #c9971a;background:#faf7ef}
-    #printArea .devchip{border:1px solid #2e7d12}
-    #printArea .pcover{text-align:center;padding:48px 0 28px;border-bottom:3px solid #2e7d12;margin-bottom:22px}
-    #printArea .pcover h1{margin:10px 0 2px;font-size:24px;color:#141414}
+    #printArea .dashhead{margin:0 0 10px}
+    #printArea .dashhead h2{font-size:16px;color:#141414}
+    #printArea .kpis{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px}
+    #printArea .kpi{border:1px solid #d6d6d6;border-radius:10px;padding:7px 12px;min-width:84px;background:#fafcf8}
+    #printArea .kpi .v{font-size:17px;font-weight:800;color:#1f3d12}
+    #printArea .kpi .l{font-size:10px;color:#555}
+    #printArea .devsec{margin:10px 0}
+    #printArea .devhead{font-size:12px;font-weight:800;margin:0 0 6px}
+    #printArea .devcard{border:1px solid #e0ddcf;border-left:3px solid #c9971a;background:#faf7ef;border-radius:8px;padding:8px 10px;margin:0 0 8px;page-break-inside:avoid}
+    #printArea .devchip{display:inline-block;border:1px solid #2e7d12;color:#1f3d12;border-radius:999px;padding:3px 10px;margin:0 6px 6px 0;font-size:11px}
+    #printArea .trend{display:flex;align-items:flex-end;gap:3px;height:42px;margin:6px 0}
+    #printArea .trend .b{background:#2e7d12;width:10px;border-radius:2px 2px 0 0}
+    #printArea .note,#printArea .replabel,#printArea .muted{color:#555;font-size:11px}
+    #printArea .pcover{text-align:center;padding:54px 0 30px;margin-bottom:24px;border-bottom:3px solid #2e7d12}
+    #printArea .pcover h1{margin:14px 0 4px;font-size:26px;color:#141414;font-weight:800}
     #printArea .pc-sub{color:#555;font-size:13px}
-    #printArea .pc-logo{font-weight:900;font-size:30px;color:#2e7d12;letter-spacing:2px}
+    #printArea .pcover svg{width:118px;height:auto;margin:0 auto}
   }
   /* ===== Thai typography tuning (Thai runs longer than English) ===== */
   body.lang-th .grouplab,body.lang-th .replabel,body.lang-th .wizfield label,body.lang-th .wizkicker,body.lang-th .appbar .sub,body.lang-th .lbl{letter-spacing:normal;text-transform:none}
@@ -515,8 +537,8 @@
 
 <div class="wrap">
   <div class="appbar">
-    <div class="logo"><svg class="ezlogo" viewBox="0 0 72 44" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="EZ Analyze"><rect width="72" height="44" rx="11" fill="var(--lime)"/><g stroke="var(--accent-fg)" stroke-opacity=".15" stroke-width="1"><line x1="18" y1="3" x2="18" y2="41"/><line x1="36" y1="3" x2="36" y2="41"/><line x1="54" y1="3" x2="54" y2="41"/><line x1="4" y1="15" x2="68" y2="15"/><line x1="4" y1="29" x2="68" y2="29"/></g><text x="8" y="31" font-family="Arial,Helvetica,sans-serif" font-size="25" font-weight="800" fill="var(--accent-fg)">E</text><path d="M40 8 L29 25 L36 25 L32 37 L47 21 L39 21 L43 8 Z" fill="var(--accent-fg)"/><text x="49" y="31" font-family="Arial,Helvetica,sans-serif" font-size="25" font-weight="800" fill="var(--accent-fg)">A</text></svg></div>
-    <div><div class="ttl" data-i18n="mode">EZ Analyze</div></div>
+    <div class="logo"><svg class="ezlogo" viewBox="0 0 72 44" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Analyz+"><text x="4" y="35" font-family="Arial,Helvetica,sans-serif" font-size="32" font-weight="900" fill="var(--lime)">A</text><g stroke="var(--lime)" stroke-width="2.6" stroke-linecap="round"><line x1="31" y1="7" x2="31" y2="15"/><line x1="27" y1="11" x2="35" y2="11"/></g><polyline points="39,38 47,31 52,34 58,18" fill="none" stroke="var(--lime)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="47" cy="31" r="1.7" fill="var(--lime)"/><circle cx="52" cy="34" r="1.7" fill="var(--lime)"/><circle cx="58" cy="15" r="6.2" fill="var(--lime)"/><polygon points="58,11 61.8,13.76 60.35,18.24 55.65,18.24 54.2,13.76" fill="none" stroke="var(--accent-fg)" stroke-width="1.2" stroke-linejoin="round"/></svg></div>
+    <div><div class="ttl" data-i18n="mode">Analyz+</div></div>
     <div class="appbtns">
       <button class="gear" id="fieldTop" aria-label="Field mode"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2.5"/><line x1="10.5" y1="18.5" x2="13.5" y2="18.5"/></svg></button>
       <button class="gear" id="undoTop" aria-label="Undo"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-4"/></svg></button>
@@ -526,11 +548,17 @@
     </div>
   </div>
   <div class="matchbar">
-    <select id="teamsel" style="display:none" title="Team"></select>
-    <button class="iconbtn" id="renameTeam" style="display:none" title="Rename team">✎</button>
-    <button class="iconbtn" id="newTeam" style="display:none" data-i18n="new_team">+ Team</button>
-    <select id="matchsel"></select>
-    <button class="iconbtn" id="newSession" data-i18n="new_session">+ New</button>
+    <div class="mbgroup" id="teamGroup" style="display:none">
+      <span class="mblabel" data-i18n="lbl_team">Team</span>
+      <select id="teamsel" title="Team"></select>
+      <button class="iconbtn" id="renameTeam" style="display:none" title="Rename team">✎</button>
+      <button class="iconbtn" id="newTeam" data-i18n="new_team">+ Team</button>
+    </div>
+    <div class="mbgroup" id="matchGroup">
+      <span class="mblabel" data-i18n="lbl_match">Match</span>
+      <select id="matchsel"></select>
+      <button class="iconbtn" id="newSession" data-i18n="new_session">+ New</button>
+    </div>
   </div>
 
   <div class="tabs" role="tablist">
@@ -886,8 +914,8 @@
 <!-- LOGIN / REGISTER GATE -->
 <div id="authgate">
   <div class="agcard">
-    <div class="aglogo"><svg class="ezlogo" viewBox="0 0 72 44" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="EZ Analyze"><rect width="72" height="44" rx="11" fill="var(--lime)"/><g stroke="var(--accent-fg)" stroke-opacity=".15" stroke-width="1"><line x1="18" y1="3" x2="18" y2="41"/><line x1="36" y1="3" x2="36" y2="41"/><line x1="54" y1="3" x2="54" y2="41"/><line x1="4" y1="15" x2="68" y2="15"/><line x1="4" y1="29" x2="68" y2="29"/></g><text x="8" y="31" font-family="Arial,Helvetica,sans-serif" font-size="25" font-weight="800" fill="var(--accent-fg)">E</text><path d="M40 8 L29 25 L36 25 L32 37 L47 21 L39 21 L43 8 Z" fill="var(--accent-fg)"/><text x="49" y="31" font-family="Arial,Helvetica,sans-serif" font-size="25" font-weight="800" fill="var(--accent-fg)">A</text></svg></div>
-    <div class="agttl">EZ Analyze</div>
+    <div class="aglogo"><svg class="ezlogo" viewBox="0 0 72 44" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Analyz+"><text x="4" y="35" font-family="Arial,Helvetica,sans-serif" font-size="32" font-weight="900" fill="var(--lime)">A</text><g stroke="var(--lime)" stroke-width="2.6" stroke-linecap="round"><line x1="31" y1="7" x2="31" y2="15"/><line x1="27" y1="11" x2="35" y2="11"/></g><polyline points="39,38 47,31 52,34 58,18" fill="none" stroke="var(--lime)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="47" cy="31" r="1.7" fill="var(--lime)"/><circle cx="52" cy="34" r="1.7" fill="var(--lime)"/><circle cx="58" cy="15" r="6.2" fill="var(--lime)"/><polygon points="58,11 61.8,13.76 60.35,18.24 55.65,18.24 54.2,13.76" fill="none" stroke="var(--accent-fg)" stroke-width="1.2" stroke-linejoin="round"/></svg></div>
+    <div class="agttl">Analyz+</div>
     <div class="agsub" id="agSub" data-i18n="ag_sub_login">Sign in to continue</div>
     <input id="agUser" data-i18n-ph="conn_user_ph" placeholder="username" autocomplete="username">
     <input id="agPwd" type="password" data-i18n-ph="conn_pwd_ph" placeholder="password" autocomplete="current-password">
@@ -902,8 +930,8 @@
 <!-- OFFLINE PIN GATE -->
 <div id="pingate">
   <div class="agcard">
-    <div class="aglogo"><svg class="ezlogo" viewBox="0 0 72 44" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="EZ Analyze"><rect width="72" height="44" rx="11" fill="var(--lime)"/><g stroke="var(--accent-fg)" stroke-opacity=".15" stroke-width="1"><line x1="18" y1="3" x2="18" y2="41"/><line x1="36" y1="3" x2="36" y2="41"/><line x1="54" y1="3" x2="54" y2="41"/><line x1="4" y1="15" x2="68" y2="15"/><line x1="4" y1="29" x2="68" y2="29"/></g><text x="8" y="31" font-family="Arial,Helvetica,sans-serif" font-size="25" font-weight="800" fill="var(--accent-fg)">E</text><path d="M40 8 L29 25 L36 25 L32 37 L47 21 L39 21 L43 8 Z" fill="var(--accent-fg)"/><text x="49" y="31" font-family="Arial,Helvetica,sans-serif" font-size="25" font-weight="800" fill="var(--accent-fg)">A</text></svg></div>
-    <div class="agttl">EZ Analyze</div>
+    <div class="aglogo"><svg class="ezlogo" viewBox="0 0 72 44" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Analyz+"><text x="4" y="35" font-family="Arial,Helvetica,sans-serif" font-size="32" font-weight="900" fill="var(--lime)">A</text><g stroke="var(--lime)" stroke-width="2.6" stroke-linecap="round"><line x1="31" y1="7" x2="31" y2="15"/><line x1="27" y1="11" x2="35" y2="11"/></g><polyline points="39,38 47,31 52,34 58,18" fill="none" stroke="var(--lime)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="47" cy="31" r="1.7" fill="var(--lime)"/><circle cx="52" cy="34" r="1.7" fill="var(--lime)"/><circle cx="58" cy="15" r="6.2" fill="var(--lime)"/><polygon points="58,11 61.8,13.76 60.35,18.24 55.65,18.24 54.2,13.76" fill="none" stroke="var(--accent-fg)" stroke-width="1.2" stroke-linejoin="round"/></svg></div>
+    <div class="agttl">Analyz+</div>
     <div class="agsub" data-i18n="pin_sub">Enter the access PIN to use offline</div>
     <input id="pinInput" type="password" data-i18n-ph="pin_ph" placeholder="PIN" autocomplete="off" autocapitalize="off" spellcheck="false">
     <button class="btnlime agbtn" id="pinBtn" data-i18n="pin_enter">Enter</button>
@@ -914,6 +942,7 @@
 
 <div id="toast" class="toast"></div>
 
+<div id="verFoot"></div>
 <div id="printArea"></div>
 <script>
 /* app icons (EA logo) — favicon, home-screen icon, manifest */
@@ -923,7 +952,7 @@ const ICON512='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAAIACAYAAAD0eNT
 (function(){
   try{
     var ai=document.getElementById("appleIcon"); if(ai)ai.href=ICON180;
-    var mf={name:"EZ Analyze",short_name:"EZ Analyze",display:"standalone",orientation:"portrait",background_color:"#0E1613",theme_color:"#0E1613",icons:[{src:ICON192,sizes:"192x192",type:"image/png",purpose:"any"},{src:ICON512,sizes:"512x512",type:"image/png",purpose:"any maskable"}]};
+    var mf={name:"Analyz+",short_name:"Analyz+",display:"standalone",orientation:"portrait",background_color:"#0E1613",theme_color:"#0E1613",icons:[{src:ICON192,sizes:"192x192",type:"image/png",purpose:"any"},{src:ICON512,sizes:"512x512",type:"image/png",purpose:"any maskable"}]};
     var blob=new Blob([JSON.stringify(mf)],{type:"application/json"});
     var ml=document.getElementById("manifestLink"); if(ml)ml.href=URL.createObjectURL(blob);
   }catch(e){}
@@ -1005,7 +1034,7 @@ const K_ROSTER="gp_roster_v2",K_MATCHES="gp_matches_v2",K_EVENTS="gp_events_v2",
 
 /* ===== i18n ===== */
 const I18N={
- en:{app_title:"Youth football analysis",mode:"EZ Analyze",newmatch:"+ Match",untitled:"(untitled match)",vs:"vs",
+ en:{app_title:"Youth football analysis",mode:"Analyz+",newmatch:"+ Match",untitled:"(untitled match)",vs:"vs",
   newtraining:"+ Training",train_tag:"Training",sess_training:"Training session",
   new_session:"+ New",new_team:"+ Team",new_team_prompt:"Name this team:",team_created:"Team created.",gloss_title:"What each tag means",h_teams:"Teams & access (admin)",teams_note:"Pick a team, then grant or revoke each user\u2019s access. Users can also create their own teams from the top bar.",lbl_team:"Team",team_delete:"Delete",team_owner:"Owner",team_revoke:"Revoke",team_grant:"Grant",team_has:"has access",team_del_confirm:"Delete this team and ALL its players, matches and tags? This cannot be undone.",team_deleted:"Team deleted.",team_rename:"Rename",team_rename_prompt:"New team name:",team_renamed:"Team renamed.",wiz_title:"New session",wiz_sub:"What do you want to record?",sess_match:"Match",sess_training_short:"Training",wiz_notes:"Notes / comments",wiz_notes_ph:"Anything to remember about this session…",wiz_create:"Create & start",cancel:"Cancel",back:"Back",lbl_match_notes:"Notes / comments",
   wiz_match_sub:"Quarters, opponent, score",wiz_train_sub:"Finishing & duels",lbl_quarters:"Quarters",lbl_video_opt:"Video link (optional)",
@@ -1032,7 +1061,7 @@ const I18N={
   cmp_mode:"Compare",cmp_players:"Players",cmp_matches:"Matches",cmp_across:"One player, across matches",
   rep_pick_metrics:"Metrics (radar axes)",rep_pick_players:"Players",rep_pick_matches:"Matches",rep_team_avg:"Show team average",rep_scope:"Data",rep_scope_match:"This match",rep_scope_all:"All matches",
   rep_team_average:"Team average",rep_radar_note:"Each spoke is scaled to the highest value among those compared. Raw numbers are in the table.",rep_need2:"Pick at least two to compare.",rep_need3metrics:"Pick at least three metrics.",
-  met_pass_pct:"Pass %",met_att_pct:"Att duel %",met_def_pct:"Def duel %",met_conv_pct:"Conversion %",met_ontarget_pct:"On-target %",col_shot:"Shots",col_ontarget:"On target",lbl_foot:"Foot",foot_left:"Left",foot_right:"Right",foot_both:"Both",foot_unset:"Foot?",dash_strongfoot:"Strong foot",dash_weakfoot:"Weak foot",h_gk_tags:"Goalkeeper",gk_open_report:"For full goalkeeper detail and coaching tips, open the Goalkeepers report tab.",print_title:"Print / PDF — choose what to include",print_include:"Include",print_cover:"Cover page",print_stats:"Team stats table",print_players:"Players (for player & development reports)",print_all:"All",print_none:"None",print_go:"Print",print_report:"Report",met_goals:"Goals",met_shots:"Shots",met_into_box:"Into box",met_key_passes:"Key passes",met_recoveries:"Recoveries",met_passes:"Passes",met_involve:"Involvements",
+  met_pass_pct:"Pass %",met_att_pct:"Att duel %",met_def_pct:"Def duel %",met_conv_pct:"Conversion %",met_ontarget_pct:"On-target %",col_shot:"Shots",col_ontarget:"On target",lbl_foot:"Foot",lbl_match:"Match / session",foot_left:"Left",foot_right:"Right",foot_both:"Both",foot_unset:"Foot?",dash_strongfoot:"Strong foot",dash_weakfoot:"Weak foot",h_gk_tags:"Goalkeeper",gk_open_report:"For full goalkeeper detail and coaching tips, open the Goalkeepers report tab.",print_title:"Print / PDF — choose what to include",print_include:"Include",print_cover:"Cover page",print_stats:"Team stats table",print_players:"Players (for player & development reports)",print_all:"All",print_none:"None",print_go:"Print",print_report:"Report",met_goals:"Goals",met_shots:"Shots",met_into_box:"Into box",met_key_passes:"Key passes",met_recoveries:"Recoveries",met_passes:"Passes",met_involve:"Involvements",
   cmp_view:"View",view_radar:"Radar",view_bars:"Bars",view_board:"Leaderboard",board_metric:"Metric",board_note:"Ranks every player by one metric.",
   reselect:"Re-select your video file:",reselect_note:"(local files can't be reloaded automatically)",
   capture_for:"Capture time for the next tag",synced:"Synced to video",manual_clock:"Manual clock",start:"Start",pause:"Pause",reset:"Reset",
@@ -1077,7 +1106,7 @@ const I18N={
   conn_connecting:"Connecting…",conn_need_login:"Connected. Now sign in with your Supabase user.",conn_loading_lib:"Loading library…",conn_lib_fail:"Couldn't load the Supabase library here — this usually works only when the file is downloaded or hosted, not in the preview.",conn_bad:"Connection failed. Check the URL and key.",conn_login_fail:"Sign-in failed. Check your email and password.",conn_no_org:"Signed in, but no organisation/team is linked to this user yet.",conn_synced:"Synced · {n} players · {m} matches",conn_offline:"Offline mode (data stays on this device).",conn_live:"Live sync on",ag_sub_login:"Sign in to continue",ag_sub_signup:"Create your account",ag_to_signup:"New here?",ag_to_login:"Already have an account?",ag_offline:"Use offline (no sync)",h_offline:"Offline",offline_note:"You're using the app offline. Sign in to sync your data across devices.",offline_signin:"Sign in to sync",conn_slow:"Still connecting… your network looks slow, please wait a moment.",pin_sub:"Enter the access PIN to use offline",pin_ph:"PIN",pin_enter:"Enter",pin_wrong:"Wrong PIN. Try again.",pin_back:"Back to login",h_pin:"Offline access PIN",pin_note:"People must enter this PIN to use the app offline (without signing in). Change it to keep it private.",pin_label:"PIN",pin_saved:"PIN saved.",pin_min:"PIN must be at least 4 characters.",conn_timeout:"Connection timed out. Check your network, or the project key may be wrong. Tell your admin.",
   h_account:"My account",acc_photo:"Change photo",acc_username:"Username",acc_newpwd:"New password",acc_save:"Save",acc_change:"Change",acc_pwd_ok:"Password changed.",acc_user_ok:"Username (display name) updated.",acc_photo_ok:"Photo updated.",
   s_pass_complete:"Pass completed",s_pass_incomplete:"Pass incomplete",s_att_won:"Attacking duel won",s_att_lost:"Attacking duel lost",s_def_won:"Defensive duel won",s_def_lost:"Defensive duel lost",s_interception:"Interception",s_block:"Block",s_assist:"Assist",s_into_box:"Entry into the box",s_key_pass:"Key pass",s_shot:"Shot",s_shot_on:"Shot on target",s_score:"Goal",seek_hint:"Click to replay this moment",field_need_players:"Add players in the Team tab first, then open Mobile mode.",theme_auto:"Auto",reset_appearance:"Reset to default",reset_appearance_done:"Appearance reset.",confirm_remove_player:"Remove {name} from the team?",confirm_del_match:"Delete this match and all its tags? This cannot be undone.",er_title:"No players yet",er_sub:"Add players above, or start with a sample squad you can rename.",add_sample:"Add a sample squad",sample_added:"Sample players added — edit names above.",s_recovery:"Ball recovery",s_gk_save:"Save",s_gk_conceded:"Goal conceded",s_gk_1v1:"Save 1v1",s_gk_catch:"Catch",s_gk_punch:"Punch/parry",s_gk_claim:"Claim (cross)",s_gk_dist:"Distribution OK",s_gk_dist_no:"Distribution lost",s_gk_error:"GK error"},
- th:{app_title:"วิเคราะห์ฟุตบอลเยาวชน",mode:"EZ Analyze",newmatch:"+ แมตช์",untitled:"(แมตช์ยังไม่ตั้งชื่อ)",vs:"พบ",
+ th:{app_title:"วิเคราะห์ฟุตบอลเยาวชน",mode:"Analyz+",newmatch:"+ แมตช์",untitled:"(แมตช์ยังไม่ตั้งชื่อ)",vs:"พบ",
   newtraining:"+ เทรนนิ่ง",train_tag:"เทรนนิ่ง",sess_training:"เซสชันเทรนนิ่ง",
   new_session:"+ ใหม่",new_team:"+ ทีม",new_team_prompt:"ตั้งชื่อทีม:",team_created:"สร้างทีมแล้ว",gloss_title:"ความหมายของแต่ละแท็ก",h_teams:"ทีม & สิทธิ์เข้าถึง (แอดมิน)",teams_note:"เลือกทีม แล้วให้/ยกเลิกสิทธิ์ผู้ใช้แต่ละคน ผู้ใช้สร้างทีมของตัวเองได้จากแถบบน",lbl_team:"ทีม",team_delete:"ลบ",team_owner:"เจ้าของ",team_revoke:"ยกเลิกสิทธิ์",team_grant:"ให้สิทธิ์",team_has:"เข้าถึงได้",team_del_confirm:"ลบทีมนี้พร้อมผู้เล่น/แมตช์/แท็กทั้งหมด? ย้อนกลับไม่ได้",team_deleted:"ลบทีมแล้ว",team_rename:"เปลี่ยนชื่อ",team_rename_prompt:"ชื่อทีมใหม่:",team_renamed:"เปลี่ยนชื่อแล้ว",wiz_title:"สร้างเซสชันใหม่",wiz_sub:"อยากเก็บข้อมูลแบบไหน?",sess_match:"แมตช์",sess_training_short:"เทรนนิ่ง",wiz_notes:"โน้ต / คอมเมนต์",wiz_notes_ph:"สิ่งที่อยากจำเกี่ยวกับเซสชันนี้…",wiz_create:"สร้าง & เริ่ม",cancel:"ยกเลิก",back:"ย้อนกลับ",lbl_match_notes:"โน้ต / คอมเมนต์",
   wiz_match_sub:"ควอเตอร์ คู่แข่ง สกอร์",wiz_train_sub:"จบสกอร์ & ดวล",lbl_quarters:"ควอเตอร์",lbl_video_opt:"ลิงก์วิดีโอ (ไม่บังคับ)",
@@ -1104,7 +1133,7 @@ const I18N={
   cmp_mode:"เปรียบเทียบ",cmp_players:"ผู้เล่น",cmp_matches:"แมตช์",cmp_across:"คนเดียว ข้ามหลายแมตช์",
   rep_pick_metrics:"ตัวชี้วัด (แกนเรดาร์)",rep_pick_players:"ผู้เล่น",rep_pick_matches:"แมตช์",rep_team_avg:"แสดงค่าเฉลี่ยทีม",rep_scope:"ข้อมูล",rep_scope_match:"แมตช์นี้",rep_scope_all:"ทุกแมตช์",
   rep_team_average:"ค่าเฉลี่ยทีม",rep_radar_note:"แต่ละแกนปรับตามค่าสูงสุดในกลุ่มที่เทียบ · ตัวเลขจริงดูในตารางด้านล่าง",rep_need2:"เลือกอย่างน้อยสองรายการเพื่อเทียบ",rep_need3metrics:"เลือกตัวชี้วัดอย่างน้อยสามตัว",
-  met_pass_pct:"จ่าย %",met_att_pct:"เกมรุก %",met_def_pct:"เกมรับ %",met_conv_pct:"เป็นประตู %",met_ontarget_pct:"เข้ากรอบ %",col_shot:"ยิงรวม",col_ontarget:"เข้ากรอบ",lbl_foot:"เท้า",foot_left:"ซ้าย",foot_right:"ขวา",foot_both:"สองเท้า",foot_unset:"เท้า?",dash_strongfoot:"เท้าถนัด",dash_weakfoot:"เท้าไม่ถนัด",h_gk_tags:"ผู้รักษาประตู",gk_open_report:"ดูรายละเอียด GK และคำแนะนำเต็มๆ ได้ที่แท็บรายงานผู้รักษาประตู",print_title:"พิมพ์ / PDF — เลือกสิ่งที่จะใส่",print_include:"ใส่อะไรบ้าง",print_cover:"หน้าปก",print_stats:"ตารางสถิติทีม",print_players:"ผู้เล่น (ใช้กับรายงานรายคนและพัฒนาการ)",print_all:"ทั้งหมด",print_none:"ไม่เลือก",print_go:"พิมพ์",print_report:"รายงาน",met_goals:"ประตู",met_shots:"ยิง",met_into_box:"เข้ากรอบ",met_key_passes:"คีย์พาส",met_recoveries:"แย่งบอลคืน",met_passes:"จ่ายสำเร็จ",met_involve:"มีส่วนร่วม",
+  met_pass_pct:"จ่าย %",met_att_pct:"เกมรุก %",met_def_pct:"เกมรับ %",met_conv_pct:"เป็นประตู %",met_ontarget_pct:"เข้ากรอบ %",col_shot:"ยิงรวม",col_ontarget:"เข้ากรอบ",lbl_foot:"เท้า",lbl_match:"แมตช์ / ซ้อม",foot_left:"ซ้าย",foot_right:"ขวา",foot_both:"สองเท้า",foot_unset:"เท้า?",dash_strongfoot:"เท้าถนัด",dash_weakfoot:"เท้าไม่ถนัด",h_gk_tags:"ผู้รักษาประตู",gk_open_report:"ดูรายละเอียด GK และคำแนะนำเต็มๆ ได้ที่แท็บรายงานผู้รักษาประตู",print_title:"พิมพ์ / PDF — เลือกสิ่งที่จะใส่",print_include:"ใส่อะไรบ้าง",print_cover:"หน้าปก",print_stats:"ตารางสถิติทีม",print_players:"ผู้เล่น (ใช้กับรายงานรายคนและพัฒนาการ)",print_all:"ทั้งหมด",print_none:"ไม่เลือก",print_go:"พิมพ์",print_report:"รายงาน",met_goals:"ประตู",met_shots:"ยิง",met_into_box:"เข้ากรอบ",met_key_passes:"คีย์พาส",met_recoveries:"แย่งบอลคืน",met_passes:"จ่ายสำเร็จ",met_involve:"มีส่วนร่วม",
   cmp_view:"มุมมอง",view_radar:"เรดาร์",view_bars:"กราฟแท่ง",view_board:"จัดอันดับ",board_metric:"ตัวชี้วัด",board_note:"จัดอันดับผู้เล่นทุกคนตามตัวชี้วัดเดียว",
   reselect:"เลือกไฟล์วิดีโออีกครั้ง:",reselect_note:"(ไฟล์ในเครื่องโหลดเองอัตโนมัติไม่ได้)",
   capture_for:"เวลาที่จะบันทึกในแท็กถัดไป",synced:"ซิงค์กับวิดีโอ",manual_clock:"นาฬิกาจับเวลาเอง",start:"เริ่ม",pause:"หยุด",reset:"รีเซ็ต",
@@ -1237,12 +1266,12 @@ let activeId=null,editingId=null,manualSec=0,running=false,ticker=null,fieldOpen
 
 const $=id=>document.getElementById(id);
 /* ===== build id + automatic update check (beats GitHub Pages / browser cache) ===== */
-const BUILD="06-29-k";
-(function(){const el=$("buildMarker");if(el)el.textContent="build "+BUILD;})();
+const BUILD="06-29-r";
+(function(){const el=$("buildMarker");if(el)el.textContent="build "+BUILD;const vf=$("verFoot");if(vf)vf.textContent="Analyz+ · v"+BUILD;})();
 function showUpdateBanner(newBuild){
   if($("updbanner"))return;
   const b=document.createElement("div");b.id="updbanner";
-  b.innerHTML=`<span>${({th:"มีเวอร์ชันใหม่พร้อมแล้ว",en:"A new version is ready"})[settings&&settings.lang==="en"?"en":"th"]}</span><button id="updnow">${({th:"โหลดเลย",en:"Update"})[settings&&settings.lang==="en"?"en":"th"]}</button>`;
+  b.innerHTML=`<span class="updico">⟳</span><span>${({th:"มีเวอร์ชันใหม่พร้อมแล้ว",en:"A new version is ready"})[settings&&settings.lang==="en"?"en":"th"]}</span><button id="updnow">${({th:"อัปเดตเลย",en:"Update now"})[settings&&settings.lang==="en"?"en":"th"]}</button>`;
   document.body.appendChild(b);
   $("updnow").onclick=()=>{location.href=location.pathname+"?v="+encodeURIComponent(newBuild);};
 }
@@ -1675,11 +1704,10 @@ async function cloudUseTeam(orgId,opts){
   return true;
 }
 function renderTeamSelector(){
-  const sel=$("teamsel"),btn=$("newTeam"),ren=$("renameTeam");if(!sel)return;
-  const wrap=sel.closest(".csel")||sel;
+  const sel=$("teamsel"),ren=$("renameTeam"),grp=$("teamGroup");if(!sel)return;
   const show=cloud.active&&cloud.teams&&cloud.teams.length;
-  if(!show){wrap.style.display="none";if(btn)btn.style.display="none";if(ren)ren.style.display="none";return;}
-  wrap.style.display="";if(btn)btn.style.display="";
+  if(grp)grp.style.display=show?"":"none";
+  if(!show)return;
   sel.innerHTML=cloud.teams.map(tm=>`<option value="${tm.id}" ${tm.id===cloud.orgId?"selected":""}>${tm.name}</option>`).join("");
   refreshCsel(sel);
   const cur=cloud.teams.find(x=>x.id===cloud.orgId);
@@ -2603,14 +2631,14 @@ function captureRep(){const tmp=document.createElement("div");tmp.innerHTML=$("r
 function psec(title,html,brk){return `<section class="psec${brk?" pagebreak":""}"><div class="psec-title">${title}</div>${html}</section>`;}
 function buildPrintDoc(opts){
   const saveType=repState.type,savePlayer=repState.player;let out="";
-  if(opts.cover){const team=(cloud.teams.find(x=>x.id===cloud.orgId)||{}).name||"EZ Analyze";const m=curMatch();const sub=m?(m.kind==="training"?t("train_tag"):((m.opponent||"")+(m.date?" · "+m.date:""))):new Date().toLocaleDateString();out+=`<div class="pcover"><div class="pc-logo">EZ ANALYZE</div><h1>${team}</h1><div class="pc-sub">${t("print_report")} · ${sub}</div></div>`;}
+  if(opts.cover){const team=(cloud.teams.find(x=>x.id===cloud.orgId)||{}).name||"Analyz+";const m=curMatch();const sub=m?(m.kind==="training"?t("train_tag"):((m.opponent||"")+(m.date?" · "+m.date:""))):new Date().toLocaleDateString();const lg=document.querySelector(".ezlogo");out+=`<div class="pcover">${lg?lg.outerHTML:""}<h1>${team}</h1><div class="pc-sub">${t("print_report")} · ${sub}</div></div>`;}
   if(opts.match){renderMatchReport();out+=psec(t("rep_match"),captureRep(),!!out);}
   if(opts.stats){renderStatsTable();const tbl=$("statstable")?$("statstable").outerHTML:"";out+=psec(t("print_stats"),`<div style="overflow:auto">${tbl}</div>`,true);}
   if(opts.players)opts.playerIds.forEach(pid=>{repState.player=pid;renderPlayerReport();out+=psec(t("rep_player")+" — "+(P(pid)?P(pid).name:""),captureRep(),true);});
   if(opts.develop)opts.playerIds.forEach(pid=>{repState.player=pid;renderDevelopReport();out+=psec(t("rep_develop")+" — "+(P(pid)?P(pid).name:""),captureRep(),true);});
   if(opts.gk)ordered().filter(isGK).forEach(g=>{repState.player=g.id;renderGKReport();out+=psec(t("rep_gk")+" — "+g.name,captureRep(),true);});
   repState.type=saveType;repState.player=savePlayer;renderReports();
-  return out||`<div class="pcover"><div class="pc-logo">EZ ANALYZE</div></div>`;
+  return out||`<div class="pcover"><h1>Analyz+</h1></div>`;
 }
 function doChecklistPrint(opts){
   $("printArea").innerHTML=buildPrintDoc(opts);
