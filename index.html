@@ -93,6 +93,12 @@
   .jersey img{width:100%;height:100%;object-fit:cover}
   .avatar{width:22px;height:22px;border-radius:50%;object-fit:cover;flex:0 0 auto}
   .avatar-lg{width:34px;height:34px;border-radius:8px;object-fit:cover;flex:0 0 auto}
+  .avatar-edit{position:relative;flex:0 0 auto;cursor:pointer;line-height:0}
+  .avatar-ph{width:34px;height:34px;border-radius:8px;background:var(--surface2);border:1px dashed var(--line);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:var(--muted)}
+  .avatar-cam{position:absolute;right:-3px;bottom:-3px;width:15px;height:15px;border-radius:50%;background:var(--lime);border:2px solid var(--surface);display:flex;align-items:center;justify-content:center}
+  .avatar-cam i{display:block;width:7px;height:6px;border:1.4px solid var(--accent-fg);border-radius:2px;position:relative}
+  .avatar-cam i::after{content:"";position:absolute;top:-2.4px;left:1.4px;width:2.4px;height:1.6px;background:var(--accent-fg);border-radius:1px}
+  .avatar-edit:hover .avatar-cam{transform:scale(1.12)}
   .gktag{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.04em;color:#11200a;background:var(--lime);border-radius:5px;padding:1px 5px}
   .chip.gk{border-color:#3a4a2a}
   .chip.gk[aria-pressed="true"]{border-color:var(--lime)}
@@ -462,37 +468,39 @@
     /* composed checklist print */
     body.pdoc-print > *{display:none!important}
     body.pdoc-print #printArea{display:block!important}
-    #printArea{--bg:#fff;--surface:#fff;--surface2:#f3f5f1;--chalk:#141414;--muted:#4a4a4a;--faint:#777;--line:#d3d3d3;--lime:#2e7d12;--pos:#2e7d12;--neg:#c0392b;--accent-ink:#2e7d12;--accent-fg:#10240a;color:#141414;font-size:12px}
+    #printArea{--bg:#fff;--surface:#fff;--surface2:#f3f5f1;--chalk:#141414;--muted:#3f3f3f;--faint:#666;--line:#cfcfcf;--lime:#2e7d12;--pos:#2e7d12;--neg:#c0392b;--accent-ink:#2e7d12;--accent-fg:#10240a;color:#141414;font-size:13px;line-height:1.55}
     #printArea, #printArea *{-webkit-print-color-adjust:exact;print-color-adjust:exact;overflow:visible !important}
     @page{margin:13mm}
     #printArea .psec{margin:0 0 18px}
     #printArea .pagebreak{page-break-before:always}
-    #printArea .psec-title{font-size:14px;font-weight:800;color:#141414;border-bottom:2px solid #2e7d12;padding-bottom:5px;margin:0 0 12px}
-    #printArea table{width:100%;border-collapse:collapse;font-size:10px;table-layout:auto}
-    #printArea th,#printArea td{border:1px solid #d6d6d6;padding:4px 6px;text-align:center}
-    #printArea th{background:#e9f1e2;color:#1f3d12;font-weight:700}
+    #printArea .psec-title{font-size:16px;font-weight:800;color:#141414;border-bottom:2px solid #2e7d12;padding-bottom:6px;margin:0 0 12px}
+    #printArea table{width:100%;border-collapse:collapse;font-size:12px;table-layout:auto;line-height:1.35}
+    #printArea th,#printArea td{border:1px solid #cccccc;padding:6px 8px;text-align:center}
+    #printArea th{background:#e9f1e2;color:#1f3d12;font-weight:700;font-size:11.5px}
     #printArea td.name,#printArea th.name,#printArea td:first-child,#printArea th:first-child{text-align:left}
-    #printArea tr:nth-child(even) td{background:#f6f8f3}
+    #printArea td.num,#printArea .num{font-variant-numeric:tabular-nums;font-weight:600}
+    #printArea tr:nth-child(even) td{background:#f5f8f1}
     #printArea tr{page-break-inside:avoid}
-    #printArea .totalrow td{font-weight:800;background:#eef3ea !important;border-top:2px solid #2e7d12}
+    #printArea .totalrow td{font-weight:800;background:#eaf2e4 !important;border-top:2px solid #2e7d12}
     #printArea .card{box-shadow:none;border:0;padding:0;background:none;margin:0}
-    #printArea .dashhead{margin:0 0 10px}
-    #printArea .dashhead h2{font-size:16px;color:#141414}
-    #printArea .kpis{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px}
-    #printArea .kpi{border:1px solid #d6d6d6;border-radius:10px;padding:7px 12px;min-width:84px;background:#fafcf8}
-    #printArea .kpi .v{font-size:17px;font-weight:800;color:#1f3d12}
-    #printArea .kpi .l{font-size:10px;color:#555}
-    #printArea .devsec{margin:10px 0}
-    #printArea .devhead{font-size:12px;font-weight:800;margin:0 0 6px}
-    #printArea .devcard{border:1px solid #e0ddcf;border-left:3px solid #c9971a;background:#faf7ef;border-radius:8px;padding:8px 10px;margin:0 0 8px;page-break-inside:avoid}
-    #printArea .devchip{display:inline-block;border:1px solid #2e7d12;color:#1f3d12;border-radius:999px;padding:3px 10px;margin:0 6px 6px 0;font-size:11px}
-    #printArea .trend{display:flex;align-items:flex-end;gap:3px;height:42px;margin:6px 0}
-    #printArea .trend .b{background:#2e7d12;width:10px;border-radius:2px 2px 0 0}
-    #printArea .note,#printArea .replabel,#printArea .muted{color:#555;font-size:11px}
+    #printArea .dashhead{margin:0 0 12px}
+    #printArea .dashhead h2{font-size:18px;color:#141414}
+    #printArea .dashscore,#printArea .replabel{font-size:12px}
+    #printArea .kpis{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 14px}
+    #printArea .kpi{border:1px solid #cfcfcf;border-radius:10px;padding:8px 14px;min-width:92px;background:#fafcf8}
+    #printArea .kpi .v{font-size:20px;font-weight:800;color:#1f3d12;font-variant-numeric:tabular-nums}
+    #printArea .kpi .l{font-size:11.5px;color:#444}
+    #printArea .devsec{margin:12px 0}
+    #printArea .devhead{font-size:13px;font-weight:800;margin:0 0 8px}
+    #printArea .devcard{border:1px solid #e0ddcf;border-left:3px solid #c9971a;background:#faf7ef;border-radius:8px;padding:9px 12px;margin:0 0 9px;page-break-inside:avoid;font-size:12.5px}
+    #printArea .devchip{display:inline-block;border:1px solid #2e7d12;color:#1f3d12;border-radius:999px;padding:4px 12px;margin:0 6px 6px 0;font-size:12px}
+    #printArea .trend{display:flex;align-items:flex-end;gap:3px;height:46px;margin:8px 0}
+    #printArea .trend .b{background:#2e7d12;width:11px;border-radius:2px 2px 0 0}
+    #printArea .note,#printArea .muted{color:#555;font-size:11.5px}
     #printArea .pcover{text-align:center;padding:54px 0 30px;margin-bottom:24px;border-bottom:3px solid #2e7d12}
-    #printArea .pcover h1{margin:14px 0 4px;font-size:26px;color:#141414;font-weight:800}
-    #printArea .pc-sub{color:#555;font-size:13px}
-    #printArea .pcover svg{width:118px;height:auto;margin:0 auto}
+    #printArea .pcover h1{margin:14px 0 4px;font-size:27px;color:#141414;font-weight:800}
+    #printArea .pc-sub{color:#444;font-size:14px}
+    #printArea .pcover svg{width:120px;height:auto;margin:0 auto}
   }
   /* ===== Thai typography tuning (Thai runs longer than English) ===== */
   body.lang-th .grouplab,body.lang-th .replabel,body.lang-th .wizfield label,body.lang-th .wizkicker,body.lang-th .appbar .sub,body.lang-th .lbl{letter-spacing:normal;text-transform:none}
@@ -1070,7 +1078,7 @@ const I18N={
   s_fin_on:"On target",s_fin_off:"Off target",s_pass_ok:"Pass completed",s_pass_no:"Pass lost",s_foul:"Foul",s_ssg_press:"Press attempt",s_ssg_win:"Ball won",s_ssg_cpress:"Counter-press win",s_ssg_winbox:"Win in final third",s_ssg_pass:"Pass completed",s_ssg_dribble:"Dribble past",s_ssg_turnover:"Turnover (lost ball)",s_ssg_lossbox:"Lost ball near own goal",s_d1_att:"1v1 attack won",s_d1_def:"1v1 defence won",s_d2_att:"2v1 attack won",s_d2_def:"2v1 defence won",
   s_d1_att_l:"1v1 attack lost",s_d1_def_l:"1v1 defence lost",s_d2_att_l:"2v1 attack lost",s_d2_def_l:"2v1 defence lost",
   h_train_summary:"Training summary",col_on:"On",col_off:"Off",col_acc:"Acc %",col_d1a:"1v1 atk",col_d1d:"1v1 def",col_d2a:"2v1 atk",col_d2d:"2v1 def",
-  tab_tag:"Tag",tab_stats:"Stats",tab_checks:"Checks",tab_team:"Team",tab_match:"Match",lbl_level:"Type",lvl_comp:"Competitive",lvl_friendly:"Friendly",h_lineup:"Lineup & minutes",in_squad:"Played this match",tab_settings:"Settings",
+  tab_tag:"Tag",tab_stats:"Stats",tab_checks:"Checks",tab_team:"Team",tab_match:"Match",lbl_level:"Type",lvl_comp:"Competitive",lvl_friendly:"Friendly",h_lineup:"Lineup & minutes",in_squad:"Played this match",change_photo:"Change photo",photo_updated:"Photo updated",photo_fail:"Could not read that image",tab_settings:"Settings",
   h_video:"Match video",load:"Load",open:"Open ↗",upload:"Upload video file",url_ph:"Paste a video link (YouTube, Facebook, Veo…)",
   upload_hint:"or use a local file — best playback & full sync",
   empty_video:"Paste a video link or upload a video file.<br>You can still tag using the clock below.",
@@ -1142,7 +1150,7 @@ const I18N={
   s_fin_on:"ยิงเข้ากรอบ",s_fin_off:"ยิงไม่เข้ากรอบ",s_pass_ok:"ส่งสำเร็จ",s_pass_no:"ส่งไม่สำเร็จ",s_foul:"ฟาวล์",s_ssg_press:"พยายามแย่งบอล",s_ssg_win:"แย่งบอลสำเร็จ",s_ssg_cpress:"แย่งบอลคืนทันที",s_ssg_winbox:"แย่งบอลหน้าประตู",s_ssg_pass:"ส่งบอลสำเร็จ",s_ssg_dribble:"เลี้ยงผ่าน",s_ssg_turnover:"ทำเสียบอล",s_ssg_lossbox:"เสียบอลหน้าประตูตัวเอง",s_d1_att:"1v1 ชนะเกมรุก",s_d1_def:"1v1 ชนะเกมรับ",s_d2_att:"2v1 ชนะเกมรุก",s_d2_def:"2v1 ชนะเกมรับ",
   s_d1_att_l:"1v1 แพ้เกมรุก",s_d1_def_l:"1v1 แพ้เกมรับ",s_d2_att_l:"2v1 แพ้เกมรุก",s_d2_def_l:"2v1 แพ้เกมรับ",
   h_train_summary:"สรุปเทรนนิ่ง",col_on:"เข้า",col_off:"ไม่เข้า",col_acc:"แม่น %",col_d1a:"1v1 รุก",col_d1d:"1v1 รับ",col_d2a:"2v1 รุก",col_d2d:"2v1 รับ",
-  tab_tag:"ติดแท็ก",tab_stats:"สถิติ",tab_checks:"ตรวจสอบ",tab_team:"ทีม",tab_match:"แมตช์",lbl_level:"ประเภท",lvl_comp:"แข่งขัน",lvl_friendly:"อุ่นเครื่อง",h_lineup:"ตัวผู้เล่น & เวลาลงเล่น",in_squad:"ลงเล่นแมตช์นี้",tab_settings:"ตั้งค่า",
+  tab_tag:"ติดแท็ก",tab_stats:"สถิติ",tab_checks:"ตรวจสอบ",tab_team:"ทีม",tab_match:"แมตช์",lbl_level:"ประเภท",lvl_comp:"แข่งขัน",lvl_friendly:"อุ่นเครื่อง",h_lineup:"ตัวผู้เล่น & เวลาลงเล่น",in_squad:"ลงเล่นแมตช์นี้",change_photo:"เปลี่ยนรูป",photo_updated:"อัปเดตรูปแล้ว",photo_fail:"อ่านไฟล์รูปไม่สำเร็จ",tab_settings:"ตั้งค่า",
   h_video:"วิดีโอแมตช์",load:"โหลด",open:"เปิด ↗",upload:"อัปโหลดไฟล์วิดีโอ",url_ph:"วางลิงก์วิดีโอ (YouTube, Facebook, Veo…)",
   upload_hint:"หรือใช้ไฟล์ในเครื่อง — เล่นชัวร์ที่สุดและซิงค์เต็มรูปแบบ",
   empty_video:"วางลิงก์วิดีโอ หรืออัปโหลดไฟล์วิดีโอ<br>ระหว่างนี้ติดแท็กด้วยนาฬิกาด้านล่างได้",
@@ -1291,7 +1299,7 @@ let activeId=null,editingId=null,manualSec=0,running=false,ticker=null,fieldOpen
 
 const $=id=>document.getElementById(id);
 /* ===== build id + automatic update check (beats GitHub Pages / browser cache) ===== */
-const BUILD="06-29-v";
+const BUILD="06-29-x";
 (function(){const el=$("buildMarker");if(el)el.textContent="build "+BUILD;const vf=$("verFoot");if(vf)vf.textContent="Analyz+ · v"+BUILD;})();
 function showUpdateBanner(newBuild){
   if($("updbanner"))return;
@@ -2610,14 +2618,14 @@ function gkInsights(c,faced,clean,apps){
   const pct=(a,b)=>b?Math.round(a/b*100):0;
   const strengths=[],develop=[];
   if(faced>=4){const sv=pct(c.gk_save,faced);
-    if(sv<55)develop.push({title:L("การเซฟ","Shot-stopping"),tag:sv+"%",why:L("เปอร์เซ็นต์เซฟยังต่ำ อาจมาจากตำแหน่งยืน การอ่านจังหวะยิง หรือฟุตเวิร์ก","Low save % — could be positioning, reading the shot, or footwork."),work:L("ฝึกตำแหน่งยืนตามมุมยิง, รีแอคชัน, การทรงตัวก่อนเซฟ (set position)","Angle/positioning work, reaction saves, set position before the shot.")});
+    if(sv<55)develop.push({title:L("การเซฟ","Shot-stopping"),tag:sv+"%",why:L("เซฟได้น้อยเมื่อเทียบกับลูกที่เจอ อาจมาจากการยืนตำแหน่ง การอ่านจังหวะยิง หรือการขยับเท้า","Low save % — could be positioning, reading the shot, or footwork."),work:L("ฝึกยืนปิดมุมยิง ฝึกการตอบสนองต่อลูกยิง และตั้งท่าให้นิ่งก่อนบอลถูกยิง","Angle/positioning work, reaction saves, set position before the shot.")});
     else if(sv>=70)strengths.push(L("มือเซฟดี ("+sv+"%)","Reliable shot-stopper ("+sv+"%)"));}
   const dist=c.gk_dist+c.gk_dist_no;
   if(dist>=5){const dp=pct(c.gk_dist,dist);
-    if(dp<60)develop.push({title:L("การแจกบอล","Distribution"),tag:dp+"%",why:L("จ่ายออกจากประตูเสียบ่อย อาจเป็นการตัดสินใจ น้ำหนักบอล หรือความนิ่งเมื่อโดนกดดัน","Gives the ball away often — decision-making, weight of pass, or composure under pressure."),work:L("ฝึกแจกบอลใต้แรงกดดัน, เลือกจังหวะเล่นสั้น/ยาว, มองก่อนรับ","Distribution under pressure, short vs long decisions, scan before receiving.")});
+    if(dp<60)develop.push({title:L("การแจกบอล","Distribution"),tag:dp+"%",why:L("จ่ายบอลออกจากประตูแล้วเสียการครองบ่อย อาจเป็นการตัดสินใจ น้ำหนักบอล หรือความนิ่งเมื่อโดนกดดัน","Gives the ball away often — decision-making, weight of pass, or composure under pressure."),work:L("ฝึกจ่ายบอลขณะถูกกดดัน เลือกจังหวะเล่นสั้น/ยาว และมองเกมก่อนรับบอล","Distribution under pressure, short vs long decisions, scan before receiving.")});
     else if(dp>=80)strengths.push(L("แจกบอลแม่นยำ ("+dp+"%)","Composed distribution ("+dp+"%)"));}
-  if(c.gk_error>=2)develop.push({title:L("ลดความผิดพลาด","Cut out errors"),tag:String(c.gk_error),why:L("จับวืด/ผิดพลาดหลายครั้ง มักมาจากสมาธิ การจับบอล หรือการตัดสินใจออกบอล","Several handling errors — usually concentration, catching technique, or decisions to come out."),work:L("ฝึกจับบอลให้กระชับ, สื่อสารกับแนวรับ, ตัดสินใจออก/อยู่เส้นให้ชัด","Clean catching drills, talk to defenders, clearer come-out vs stay decisions.")});
-  if(c.gk_claim>=3)strengths.push(L("ออกมาเก็บบอล/คุมกรอบเขตโทษดี","Commands the box well (claims crosses)"));
+  if(c.gk_error>=2)develop.push({title:L("ลดความผิดพลาด","Cut out errors"),tag:String(c.gk_error),why:L("จับพลาดหลายครั้ง มักมาจากสมาธิ เทคนิคการจับบอล หรือการตัดสินใจออกมาเล่น","Several handling errors — usually concentration, catching technique, or decisions to come out."),work:L("ฝึกจับบอลให้กระชับ สื่อสารกับแนวรับ และตัดสินใจให้ชัดว่าจะออกมาเล่นหรือยืนเฝ้าเส้น","Clean catching drills, talk to defenders, clearer come-out vs stay decisions.")});
+  if(c.gk_claim>=3)strengths.push(L("ออกมาเก็บบอลและคุมกรอบเขตโทษได้ดี","Commands the box well (claims crosses)"));
   if(c.gk_1v1>=2)strengths.push(L("เซฟตัวต่อตัว (1v1) ได้ดี","Strong in 1v1 situations"));
   if(apps>=3&&clean>=Math.ceil(apps/2))strengths.push(L("คลีนชีตสม่ำเสมอ ("+clean+"/"+apps+")","Consistent clean sheets ("+clean+"/"+apps+")"));
   return {strengths,develop};
@@ -2784,7 +2792,7 @@ const repAIbtn=$("repAI");if(repAIbtn){repAIbtn.disabled=false;repAIbtn.onclick=
 /* team tab */
 function renderTeam(){
   $("rostercount").textContent=roster.length;
-  $("rosteredit").innerHTML=roster.length?ordered().map(p=>`<div class="playeredit" data-id="${p.id}">${hasPhoto(p)?`<img class="avatar-lg" src="${p.photo}" alt="">`:""}<input class="pno" value="${p.no||""}" placeholder="No"><input class="pname" value="${p.name}"><input class="ppos" value="${p.position||""}" placeholder="Position"><select class="pfoot" data-foot="${p.id}"><option value="" ${!footByPlayer[p.id]?"selected":""}>${t("foot_unset")}</option><option value="R" ${footByPlayer[p.id]==="R"?"selected":""}>${t("foot_right")}</option><option value="L" ${footByPlayer[p.id]==="L"?"selected":""}>${t("foot_left")}</option><option value="B" ${footByPlayer[p.id]==="B"?"selected":""}>${t("foot_both")}</option></select>${isGK(p)?'<span class="gktag">GK</span>':""}<button class="rowbtn del" data-rm="${p.id}" title="Remove">×</button></div>`).join(""):`<div class="emptyroster"><div class="er-ttl">${t("er_title")}</div><div class="er-sub">${t("er_sub")}</div><button class="btnlime" id="addSample">${t("add_sample")}</button></div>`;
+  $("rosteredit").innerHTML=roster.length?ordered().map(p=>`<div class="playeredit" data-id="${p.id}"><label class="avatar-edit" title="${t("change_photo")}">${hasPhoto(p)?`<img class="avatar-lg" src="${p.photo}" alt="">`:`<span class="avatar-ph">${(p.name||"?").trim().slice(0,1).toUpperCase()}</span>`}<span class="avatar-cam"><i></i></span><input type="file" accept="image/*" hidden data-setphoto="${p.id}"></label><input class="pno" value="${p.no||""}" placeholder="No"><input class="pname" value="${p.name}"><input class="ppos" value="${p.position||""}" placeholder="Position"><select class="pfoot" data-foot="${p.id}"><option value="" ${!footByPlayer[p.id]?"selected":""}>${t("foot_unset")}</option><option value="R" ${footByPlayer[p.id]==="R"?"selected":""}>${t("foot_right")}</option><option value="L" ${footByPlayer[p.id]==="L"?"selected":""}>${t("foot_left")}</option><option value="B" ${footByPlayer[p.id]==="B"?"selected":""}>${t("foot_both")}</option></select>${isGK(p)?'<span class="gktag">GK</span>':""}<button class="rowbtn del" data-rm="${p.id}" title="Remove">×</button></div>`).join(""):`<div class="emptyroster"><div class="er-ttl">${t("er_title")}</div><div class="er-sub">${t("er_sub")}</div><button class="btnlime" id="addSample">${t("add_sample")}</button></div>`;
   if(!roster.length){const sb=$("addSample");if(sb)sb.onclick=()=>{["GK|1|Goalkeeper","Beam|4|Defender","Win|5|Defender","Tem|6|Midfielder","Anan|8|Midfielder","Sky|10|Forward","Som|9|Forward"].forEach(s=>{const[n,no,pos]=s.split("|");roster.push({id:uid("p"),no:parseInt(no,10),name:n,position:pos});});saveAll();renderTeam();renderRoster();showToast(t("sample_added"));};}
   $("rosteredit").querySelectorAll(".playeredit").forEach(row=>{
     const id=row.dataset.id;
@@ -2792,6 +2800,7 @@ function renderTeam(){
     row.querySelector(".pname").onchange=e=>{P(id).name=e.target.value;saveAll();renderRoster();};
     row.querySelector(".ppos").onchange=e=>{P(id).position=e.target.value;saveAll();};
     const fsel=row.querySelector("[data-foot]");if(fsel)fsel.onchange=e=>{const v=e.target.value;if(v)footByPlayer[id]=v;else delete footByPlayer[id];store.set(K_FOOT,footByPlayer);};
+    const psel=row.querySelector("[data-setphoto]");if(psel)psel.onchange=ev=>{const f=ev.target.files[0];if(!f)return;downscale(f,data=>{if(!data){showToast(t("photo_fail"));return;}P(id).photo=data;saveAll();cw.photo(id,data);renderTeam();renderRoster();showToast(t("photo_updated"));});};
     row.querySelector("[data-rm]").onclick=()=>{if(!confirm(tf("confirm_remove_player",{name:P(id)?P(id).name:""})))return;roster=roster.filter(p=>p.id!==id);saveAll();renderTeam();renderRoster();renderSubs();};
   });
 }
