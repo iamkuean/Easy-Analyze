@@ -666,14 +666,20 @@
   <!-- REPORTS -->
   <div class="view" id="v-reports">
     <section class="card noprint">
+      <div class="setrow" style="margin-bottom:10px">
+        <div class="seg" id="repMode">
+          <button data-mode="match" data-i18n="repmode_match">Matches</button>
+          <button data-mode="training" data-i18n="repmode_train">Training</button>
+        </div>
+      </div>
       <div class="setrow" style="margin-bottom:0">
         <div class="seg" id="repType">
-          <button data-rep="match" data-i18n="rep_match">Match report</button>
-          <button data-rep="player" data-i18n="rep_player">Player report</button>
-          <button data-rep="develop" data-i18n="rep_develop">Development</button>
-          <button data-rep="train" data-i18n="rep_train">Training</button>
-          <button data-rep="gk" data-i18n="rep_gk">Goalkeepers</button>
-          <button data-rep="compare" data-i18n="rep_compare">Compare</button>
+          <button data-rep="match" data-modes="match" data-i18n="rep_match">Match report</button>
+          <button data-rep="player" data-modes="match" data-i18n="rep_player">Player report</button>
+          <button data-rep="gk" data-modes="match" data-i18n="rep_gk">Goalkeepers</button>
+          <button data-rep="compare" data-modes="match" data-i18n="rep_compare">Compare</button>
+          <button data-rep="train" data-modes="training" data-i18n="rep_train">Training</button>
+          <button data-rep="develop" data-modes="training" data-i18n="rep_develop">Development</button>
         </div>
         <div style="margin-left:auto;display:flex;gap:8px"><button class="runbtn" id="repExport" data-i18n="exp_session">Match/Training file</button><button class="runbtn" id="repPrint" data-i18n="exp_print">Print / PDF</button></div>
       </div>
@@ -1106,7 +1112,7 @@ const I18N={
   h_summary:"Match summary",dash_goals:"Goals",dash_shots:"Shots",dash_passpct:"Pass accuracy",dash_intobox:"Into the box",dash_attduel:"Attacking duels",dash_defduel:"Defensive duels",dash_recoveries:"Recoveries",dash_savepct:"Save rate",
   dash_all:"All",lbl_period:"Period",lbl_periods:"Periods (e.g. 4 quarters)",
   h_top:"Top performers",top_scorer:"Top scorer",top_involved:"Most involved",top_passer:"Best passer",top_duels:"Most duels won",exp_summary:"Summary CSV",exp_print:"Print / PDF",none_yet:"—",
-  tab_reports:"Reports",rep_match:"Match report",rep_player:"Player report",rep_compare:"Compare",rep_develop:"Development",rep_gk:"Goalkeepers",col_played:"Apps",col_clean:"Clean",col_distpct:"Dist %",gk_none:"No goalkeepers yet. Mark a player as a goalkeeper in the Team tab (position \"Goalkeeper\" or GK).",gk_note:"Saves, clean sheets and distribution come from your tagged actions across matches.",dev_strengths:"Strengths",dev_develop:"Focus areas to develop",dev_why:"Possible cause",dev_work:"How to improve",dev_tags:"tags",dev_lowdata:"Not enough tags yet for this player. Tag a few more actions and the suggestions will get sharper.",dev_allround:"Well-rounded so far — keep tagging to surface specific areas.",dev_scope_note:"Suggestions are generated from this player\u2019s tagged actions across all matches. They\u2019re a starting point for the coach, not a verdict.",dev_train_tags:"training tags",dev_train_link:"Training \u2194 match link",dev_lowmatch:"Not enough match tags yet — the training link below still works once you tag some sessions.",dev_train_hint:"Tip: tag training sessions (SSG, finishing, passing, 1v1) to see why match performance turns out the way it does.",dev_train_none:"",
+  tab_reports:"Reports",rep_match:"Match report",rep_player:"Player report",rep_compare:"Compare",repmode_match:"Matches",repmode_train:"Training",rep_develop:"Development",rep_gk:"Goalkeepers",col_played:"Apps",col_clean:"Clean",col_distpct:"Dist %",gk_none:"No goalkeepers yet. Mark a player as a goalkeeper in the Team tab (position \"Goalkeeper\" or GK).",gk_note:"Saves, clean sheets and distribution come from your tagged actions across matches.",dev_strengths:"Strengths",dev_develop:"Focus areas to develop",dev_why:"Possible cause",dev_work:"How to improve",dev_tags:"tags",dev_lowdata:"Not enough tags yet for this player. Tag a few more actions and the suggestions will get sharper.",dev_allround:"Well-rounded so far — keep tagging to surface specific areas.",dev_scope_note:"Suggestions are generated from this player\u2019s tagged actions across all matches. They\u2019re a starting point for the coach, not a verdict.",dev_train_tags:"training tags",dev_train_link:"Training \u2194 match link",dev_lowmatch:"Not enough match tags yet — the training link below still works once you tag some sessions.",dev_train_hint:"Tip: tag training sessions (SSG, finishing, passing, 1v1) to see why match performance turns out the way it does.",dev_train_none:"",
   rep_ai_title:"AI summary",rep_ai_note:"Coming next: turn the numbers on this page into a short write-up for coaches and parents. The figures above are computed on-device; AI only phrases them.",rep_ai_btn:"Write summary (soon)",
   rep_areas:"Areas to work on",rep_per_match:"Per match",rep_totals:"Totals",rep_choose_player:"Choose a player",rep_no_data:"No tagged data yet.",rep_played:"matches",
   cmp_mode:"Compare",cmp_players:"Players",cmp_matches:"Matches",cmp_across:"One player, across matches",
@@ -1178,7 +1184,7 @@ const I18N={
   h_summary:"สรุปแมตช์",dash_goals:"ประตู",dash_shots:"การยิง",dash_passpct:"ความแม่นการจ่าย",dash_intobox:"เข้าเขตโทษ",dash_attduel:"ดวลเกมรุก",dash_defduel:"ดวลเกมรับ",dash_recoveries:"แย่งบอลคืน",dash_savepct:"อัตราการเซฟ",
   dash_all:"ทั้งหมด",lbl_period:"ช่วง",lbl_periods:"จำนวนช่วง (เช่น 4 ควอเตอร์)",
   h_top:"ผู้เล่นเด่น",top_scorer:"ดาวซัลโว",top_involved:"มีส่วนร่วมมากสุด",top_passer:"จ่ายแม่นสุด",top_duels:"ชนะดวลมากสุด",exp_summary:"สรุป CSV",exp_print:"พิมพ์ / PDF",none_yet:"—",
-  tab_reports:"รายงาน",rep_match:"รายงานแมตช์",rep_player:"รายงานผู้เล่น",rep_compare:"เปรียบเทียบ",rep_develop:"พัฒนาการ",rep_gk:"ผู้รักษาประตู",col_played:"ลงเล่น",col_clean:"คลีนชีต",col_distpct:"แจก %",gk_none:"ยังไม่มีผู้รักษาประตู — ตั้งตำแหน่งผู้เล่นเป็น \"Goalkeeper\" หรือ GK ในแท็บทีม",gk_note:"ค่าเซฟ คลีนชีต และการแจกบอล มาจากแท็กที่บันทึกไว้รวมทุกแมตช์",dev_strengths:"จุดแข็ง",dev_develop:"จุดที่ควรโฟกัสพัฒนา",dev_why:"สาเหตุที่เป็นไปได้",dev_work:"แนวทางพัฒนา",dev_tags:"แท็ก",dev_lowdata:"ข้อมูลของผู้เล่นคนนี้ยังน้อย แท็กเพิ่มอีกหน่อยแล้วคำแนะนำจะแม่นขึ้น",dev_allround:"ทำได้ดีรอบด้าน เก็บข้อมูลเพิ่มเพื่อเจาะลึกแต่ละด้าน",dev_scope_note:"คำแนะนำสร้างจากแท็กของผู้เล่นคนนี้รวมทุกแมตช์ ใช้เป็นจุดเริ่มต้นให้โค้ช ไม่ใช่คำตัดสิน",dev_train_tags:"แท็กซ้อม",dev_train_link:"เชื่อมโยงซ้อม \u2194 เกมจริง",dev_lowmatch:"ข้อมูลแมตช์ยังน้อย — แต่ส่วนเชื่อมโยงซ้อมด้านล่างยังใช้ได้เมื่อมีการแท็กซ้อม",dev_train_hint:"เคล็ดลับ: แท็กการซ้อม (SSG, จบสกอร์, ส่งบอล, 1v1) เพื่อดูว่าทำไมผลในแมตช์ถึงออกมาแบบนั้น",dev_train_none:"",
+  tab_reports:"รายงาน",rep_match:"รายงานแมตช์",rep_player:"รายงานผู้เล่น",rep_compare:"เปรียบเทียบ",repmode_match:"แมตช์",repmode_train:"ฝึกซ้อม",rep_develop:"พัฒนาการ",rep_gk:"ผู้รักษาประตู",col_played:"ลงเล่น",col_clean:"คลีนชีต",col_distpct:"แจก %",gk_none:"ยังไม่มีผู้รักษาประตู — ตั้งตำแหน่งผู้เล่นเป็น \"Goalkeeper\" หรือ GK ในแท็บทีม",gk_note:"ค่าเซฟ คลีนชีต และการแจกบอล มาจากแท็กที่บันทึกไว้รวมทุกแมตช์",dev_strengths:"จุดแข็ง",dev_develop:"จุดที่ควรโฟกัสพัฒนา",dev_why:"สาเหตุที่เป็นไปได้",dev_work:"แนวทางพัฒนา",dev_tags:"แท็ก",dev_lowdata:"ข้อมูลของผู้เล่นคนนี้ยังน้อย แท็กเพิ่มอีกหน่อยแล้วคำแนะนำจะแม่นขึ้น",dev_allround:"ทำได้ดีรอบด้าน เก็บข้อมูลเพิ่มเพื่อเจาะลึกแต่ละด้าน",dev_scope_note:"คำแนะนำสร้างจากแท็กของผู้เล่นคนนี้รวมทุกแมตช์ ใช้เป็นจุดเริ่มต้นให้โค้ช ไม่ใช่คำตัดสิน",dev_train_tags:"แท็กซ้อม",dev_train_link:"เชื่อมโยงซ้อม \u2194 เกมจริง",dev_lowmatch:"ข้อมูลแมตช์ยังน้อย — แต่ส่วนเชื่อมโยงซ้อมด้านล่างยังใช้ได้เมื่อมีการแท็กซ้อม",dev_train_hint:"เคล็ดลับ: แท็กการซ้อม (SSG, จบสกอร์, ส่งบอล, 1v1) เพื่อดูว่าทำไมผลในแมตช์ถึงออกมาแบบนั้น",dev_train_none:"",
   rep_ai_title:"สรุปด้วย AI",rep_ai_note:"จะเพิ่มขั้นถัดไป: ให้ AI เรียบเรียงตัวเลขในหน้านี้เป็นข้อความสั้นๆ ส่งโค้ช/ผู้ปกครอง · ตัวเลขด้านบนคำนวณในเครื่อง AI แค่เรียบเรียง",rep_ai_btn:"เขียนสรุป (เร็วๆ นี้)",
   rep_areas:"จุดที่ควรพัฒนา",rep_per_match:"รายแมตช์",rep_totals:"รวม",rep_choose_player:"เลือกผู้เล่น",rep_no_data:"ยังไม่มีข้อมูลที่ติดแท็ก",rep_played:"แมตช์",
   cmp_mode:"เปรียบเทียบ",cmp_players:"ผู้เล่น",cmp_matches:"แมตช์",cmp_across:"คนเดียว ข้ามหลายแมตช์",
@@ -1319,7 +1325,7 @@ let activeId=null,editingId=null,manualSec=0,running=false,ticker=null,fieldOpen
 
 const $=id=>document.getElementById(id);
 /* ===== build id + automatic update check (beats GitHub Pages / browser cache) ===== */
-const BUILD="06-29-ag";
+const BUILD="06-29-ah";
 (function(){const el=$("buildMarker");if(el)el.textContent="build "+BUILD;const vf=$("verFoot");if(vf)vf.textContent="Analyz+ · v"+BUILD;})();
 function showUpdateBanner(newBuild){
   if($("updbanner"))return;
@@ -1391,7 +1397,7 @@ document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{
   document.querySelectorAll(".view").forEach(v=>v.classList.remove("on"));
   $("v-"+t.dataset.v).classList.add("on");
   if(t.dataset.v==="stats"){renderDashboard();renderStatsTable();}
-  if(t.dataset.v==="reports")renderReports();
+  if(t.dataset.v==="reports")openReports();
   if(t.dataset.v==="match")renderMatch();
   if(t.dataset.v==="team")renderTeam();
 });
@@ -2442,7 +2448,7 @@ const MET=k=>METRICS.find(m=>m.key===k);
 const metLabel=k=>t("met_"+k);
 const RADAR_COLORS=["#5BB4E8","#FF9A52","#E58CF0","#34D399","#F87171","#9BA8FF","#C9F25E"];
 
-const repState={type:"compare",cmp:"players",scope:"match",metrics:["pass_pct","att_pct","def_pct","recoveries","involve"],players:[],matchesSel:[],across:null,player:null,teamAvg:true,chart:"radar",boardMetric:"goals"};
+const repState={type:"compare",mode:"match",cmp:"players",scope:"match",metrics:["pass_pct","att_pct","def_pct","recoveries","involve"],players:[],matchesSel:[],across:null,player:null,teamAvg:true,chart:"radar",boardMetric:"goals"};
 
 function radarSVG(entities,mkeys){
   const W=440,H=360,cx=W/2,cy=H/2+4,R=118,n=mkeys.length;
@@ -2648,8 +2654,8 @@ function renderPlayerReport(){
   const pid=repState.player;const p=P(pid);
   let body=`<div class="muted">${t("rep_no_data")}</div>`;
   if(p){
-    const played=matchesPlayedBy(pid);
-    const tot=playerCountsAll(pid);
+    const played=matchesPlayedBy(pid).filter(m=>m.kind!=="training");
+    const tot=matchCountsAll(pid);
     if(isGK(p)){
       const mp=played.filter(m=>m.kind!=="training");
       let rows=mp.map(m=>{const c=playerCountsInMatch(m.id,pid);const mn=minutesPlayed(pid,m);const faced=c.gk_save+c.gk_conceded;return `<tr><td class="name">${matchName(m)}</td><td class="num">${mn}</td><td class="num">${c.gk_save}</td><td class="num">${c.gk_conceded}</td><td class="num">${rt(c.gk_save,faced)}</td><td class="num">${c.gk_conceded===0?"✓":""}</td><td class="num">${rt(c.gk_dist,c.gk_dist+c.gk_dist_no)}</td></tr>`;}).join("");
@@ -2799,8 +2805,19 @@ function renderDevelopReport(){
   $("rep-body").innerHTML=`<section class="card noprint"><div class="replabel">${t("rep_choose_player")}</div>${sel}</section><section class="card">${body}</section>`;
   const ps=$("repPlayer");if(ps)ps.onchange=()=>{repState.player=ps.value;renderDevelopReport();};
 }
+const REP_MODE_DEFAULT={match:"match",training:"train"};
+function openReports(){const m=curMatch();repState.mode=(m&&m.kind==="training")?"training":"match";repState.type=REP_MODE_DEFAULT[repState.mode];renderReports();}
 function renderReports(){
-  $("repType").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.rep===repState.type));
+  const mode=repState.mode==="training"?"training":"match";
+  // mode toggle (Matches / Training)
+  const mb=$("repMode");if(mb)mb.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.mode===mode));
+  // show only the report types that belong to this mode
+  const typeBtns=$("repType").querySelectorAll("button");
+  let visible=[];
+  typeBtns.forEach(b=>{const ok=(b.dataset.modes||"").split(" ").includes(mode);b.style.display=ok?"":"none";if(ok)visible.push(b.dataset.rep);});
+  // if the current type isn't valid for this mode, fall back to the mode's default (or first visible)
+  if(!visible.includes(repState.type))repState.type=visible.includes(REP_MODE_DEFAULT[mode])?REP_MODE_DEFAULT[mode]:(visible[0]||"compare");
+  typeBtns.forEach(b=>b.setAttribute("aria-pressed",b.dataset.rep===repState.type));
   if(repState.type==="match")renderMatchReport();
   else if(repState.type==="player")renderPlayerReport();
   else if(repState.type==="develop")renderDevelopReport();
@@ -2834,7 +2851,7 @@ function renderGKReport(){
   }
   if(!repState.player||!gks.some(g=>g.id===repState.player))repState.player=gks[0].id;
   const sel=`<select id="repPlayer">`+gks.map(g=>`<option value="${g.id}" ${g.id===repState.player?"selected":""}>#${g.no||"–"} ${g.name}</option>`).join("")+`</select>`;
-  const g=P(repState.player),c=playerCountsAll(repState.player);
+  const g=P(repState.player),c=matchCountsAll(repState.player);
   const rt2=(a,b)=>b?Math.round(a/b*100)+"%":"—";
   const mp=matchesPlayedBy(repState.player).filter(m=>m.kind!=="training");
   const clean=mp.filter(m=>playerCountsInMatch(m.id,repState.player).gk_conceded===0).length;
@@ -2857,6 +2874,7 @@ function renderGKReport(){
   const ps=$("repPlayer");if(ps)ps.onchange=()=>{repState.player=ps.value;renderGKReport();};
 }
 $("repType").querySelectorAll("button").forEach(b=>b.onclick=()=>{repState.type=b.dataset.rep;renderReports();});
+(function(){const mb=$("repMode");if(mb)mb.querySelectorAll("button").forEach(b=>b.onclick=()=>{repState.mode=b.dataset.mode;repState.type=REP_MODE_DEFAULT[repState.mode];renderReports();});})();
 function captureRep(){const tmp=document.createElement("div");tmp.innerHTML=$("rep-body").innerHTML;tmp.querySelectorAll(".noprint,select,button,.csel").forEach(n=>n.remove());return tmp.innerHTML;}
 function psec(title,html,brk){return `<section class="psec${brk?" pagebreak":""}"><div class="psec-title">${title}</div>${html}</section>`;}
 function buildPrintDoc(opts){
