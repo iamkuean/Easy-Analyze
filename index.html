@@ -1024,9 +1024,11 @@ const STATS=[
   {key:"shot_on",        color:POS,kb:"O",pol:"pos"},
   {key:"score",          color:POS,kb:"G",pol:"pos"},
   {key:"recovery",       color:POS,kb:"R",pol:"pos"},
+  {key:"win_high",       color:POS,kb:"H",pol:"pos"},
+  {key:"loss_box",       color:NEG,kb:"J",pol:"neg"},
   {key:"foul",           color:NEG,kb:"F",pol:"neg"},
 ];
-const KB_STAT={c:"pass_complete",i:"pass_incomplete",a:"att_won",q:"att_lost",d:"def_won",e:"def_lost",t:"interception",l:"block",b:"into_box",k:"key_pass",p:"assist",s:"shot",o:"shot_on",g:"score",r:"recovery",f:"foul"};
+const KB_STAT={c:"pass_complete",i:"pass_incomplete",a:"att_won",q:"att_lost",d:"def_won",e:"def_lost",t:"interception",l:"block",b:"into_box",k:"key_pass",p:"assist",s:"shot",o:"shot_on",g:"score",r:"recovery",h:"win_high",j:"loss_box",f:"foul"};
 // goalkeeper-only actions, shown when a GK is the active player
 const GK_STATS=[
   {key:"gk_save",    color:POS,kb:"V",pol:"pos"},
@@ -1074,7 +1076,7 @@ function trainButtons(ex,isGk){
   if(ex==="passing")return [SDEF("pass_ok"),SDEF("pass_no")];
   if(ex==="d1")return [SDEF("d1_att"),SDEF("d1_att_l"),SDEF("d1_def"),SDEF("d1_def_l"),SDEF("foul")];
   if(ex==="d2")return [SDEF("d2_att"),SDEF("d2_att_l"),SDEF("d2_def"),SDEF("d2_def_l"),SDEF("foul")];
-  if(ex==="ssg"){const ssg=[SDEF("ssg_win"),SDEF("ssg_cpress"),SDEF("ssg_winbox"),SDEF("ssg_pass"),SDEF("ssg_dribble"),SDEF("ssg_press"),SDEF("ssg_turnover"),SDEF("ssg_lossbox")];return isGk?ssg.concat(GK_STATS):ssg.concat(STATS);}
+  if(ex==="ssg"){const ssg=[SDEF("ssg_win"),SDEF("ssg_cpress"),SDEF("ssg_winbox"),SDEF("ssg_pass"),SDEF("ssg_dribble"),SDEF("ssg_press"),SDEF("ssg_turnover"),SDEF("ssg_lossbox")];return isGk?ssg.concat(GK_STATS):ssg.concat(STATS.filter(x=>x.key!=="win_high"&&x.key!=="loss_box"));}
   return [SDEF("d2_att"),SDEF("d2_att_l"),SDEF("d2_def"),SDEF("d2_def_l")];
 }
 // legacy keys from the earlier prototype, so old tags still render
@@ -1094,7 +1096,7 @@ const I18N={
   s_fin_on:"On target",s_fin_off:"Off target",s_pass_ok:"Pass completed",s_pass_no:"Pass lost",s_foul:"Foul",s_ssg_press:"Press attempt",s_ssg_win:"Ball won",s_ssg_cpress:"Counter-press win",s_ssg_winbox:"Win in final third",s_ssg_pass:"Pass completed",s_ssg_dribble:"Dribble past",s_ssg_turnover:"Turnover (lost ball)",s_ssg_lossbox:"Lost ball near own goal",s_d1_att:"1v1 attack won",s_d1_def:"1v1 defence won",s_d2_att:"2v1 attack won",s_d2_def:"2v1 defence won",
   s_d1_att_l:"1v1 attack lost",s_d1_def_l:"1v1 defence lost",s_d2_att_l:"2v1 attack lost",s_d2_def_l:"2v1 defence lost",
   h_train_summary:"Training summary",col_on:"On",col_off:"Off",col_acc:"Acc %",col_d1a:"1v1 atk",col_d1d:"1v1 def",col_d2a:"2v1 atk",col_d2d:"2v1 def",
-  tab_tag:"Tag",tab_stats:"Stats",tab_checks:"Checks",tab_team:"Team",tab_match:"Match",tab_training:"Training",lbl_level:"Type",lvl_comp:"Competitive",lvl_friendly:"Friendly",h_lineup:"Lineup & minutes",h_training_setup:"Training settings",h_attendance:"Who trained this session",in_training:"Trained this session",attend_note:"Tick the players who took part in this training session.",rep_train:"Training",train_rep_empty:"No training sessions yet. Create a training session and tag a few actions.",train_rep_sessions:"{n} session(s)",rename_match_title:"Edit match name / opponent",h_export:"Export for Develop+",exp_json:"Export data (JSON)",exp_csv:"Export summary (CSV)",exp_note:"A standardized export of players, sessions, events, and per-player aggregates — for backup and for the upcoming Develop+ app. Uses Supabase player IDs so athletes line up across apps.",exp_done:"Exported.",rename_train_title:"Edit training topic",rename_ph_topic:"e.g. Finishing in the box, Wing attacks",rename_ph_opp:"Opponent name",topic_recent:"Recent topics",btn_save:"Save",btn_cancel:"Cancel",in_squad:"Played this match",change_photo:"Change photo",photo_updated:"Photo updated",photo_fail:"Could not read that image",train_rep_hint:"Compare training vs match per player in Reports → Development → pick a player.",sync_fail_warn:"⚠️ Some tags/edits did not save to the cloud — re-run supabase_fix_events.sql",tab_settings:"Settings",
+  tab_tag:"Tag",tab_stats:"Stats",tab_checks:"Checks",tab_team:"Team",tab_match:"Match",tab_training:"Training",lbl_level:"Type",lvl_comp:"Competitive",lvl_friendly:"Friendly",h_lineup:"Lineup & minutes",h_training_setup:"Training settings",h_attendance:"Who trained this session",in_training:"Trained this session",attend_note:"Tick the players who took part in this training session.",no_attendees:"No players selected for this session yet — pick them in the Training tab (Who trained this session).",rep_train:"Training",train_rep_empty:"No training sessions yet. Create a training session and tag a few actions.",train_rep_sessions:"{n} session(s)",rename_match_title:"Edit match name / opponent",h_export:"Export for Develop+",exp_json:"Export data (JSON)",exp_csv:"Export summary (CSV)",exp_note:"A standardized export of players, sessions, events, and per-player aggregates — for backup and for the upcoming Develop+ app. Uses Supabase player IDs so athletes line up across apps.",exp_done:"Exported.",rename_train_title:"Edit training topic",rename_ph_topic:"e.g. Finishing in the box, Wing attacks",rename_ph_opp:"Opponent name",topic_recent:"Recent topics",btn_save:"Save",btn_cancel:"Cancel",in_squad:"Played this match",change_photo:"Change photo",photo_updated:"Photo updated",photo_fail:"Could not read that image",train_rep_hint:"Compare training vs match per player in Reports → Development → pick a player.",sync_fail_warn:"⚠️ Some tags/edits did not save to the cloud — re-run supabase_fix_events.sql",tab_settings:"Settings",
   h_video:"Match video",load:"Load",open:"Open ↗",upload:"Upload video file",url_ph:"Paste a video link (YouTube, Facebook, Veo…)",
   upload_hint:"or use a local file — best playback & full sync",
   empty_video:"Paste a video link or upload a video file.<br>You can still tag using the clock below.",
@@ -1154,7 +1156,7 @@ const I18N={
   h_members:"Members (admin)",members_note:"Approve new sign-ups and manage roles. Each member only sees their own teams, matches and sessions.",mem_none:"No members yet.",mem_approve:"Approve",mem_reject:"Reject",mem_promote:"Make admin",mem_demote:"Remove admin",mem_admin:"admin",mem_you:"you",st_pending:"pending",st_approved:"approved",st_rejected:"rejected",
   conn_connecting:"Connecting…",conn_need_login:"Connected. Now sign in with your Supabase user.",conn_loading_lib:"Loading library…",conn_lib_fail:"Couldn't load the Supabase library here — this usually works only when the file is downloaded or hosted, not in the preview.",conn_bad:"Connection failed. Check the URL and key.",conn_login_fail:"Sign-in failed. Check your email and password.",conn_no_org:"Signed in, but no organisation/team is linked to this user yet.",conn_synced:"Synced · {n} players · {m} matches",conn_offline:"Offline mode (data stays on this device).",conn_live:"Live sync on",ag_sub_login:"Sign in to continue",ag_sub_signup:"Create your account",ag_to_signup:"New here?",ag_to_login:"Already have an account?",ag_offline:"Use offline (no sync)",h_offline:"Offline",offline_note:"You're using the app offline. Sign in to sync your data across devices.",offline_signin:"Sign in to sync",conn_slow:"Still connecting… your network looks slow, please wait a moment.",pin_sub:"Enter the access PIN to use offline",pin_ph:"PIN",pin_enter:"Enter",pin_wrong:"Wrong PIN. Try again.",pin_back:"Back to login",h_pin:"Offline access PIN",pin_note:"People must enter this PIN to use the app offline (without signing in). Change it to keep it private.",pin_label:"PIN",pin_saved:"PIN saved.",pin_min:"PIN must be at least 4 characters.",conn_timeout:"Connection timed out. Check your network, or the project key may be wrong. Tell your admin.",
   h_account:"My account",acc_photo:"Change photo",acc_username:"Username",acc_newpwd:"New password",acc_save:"Save",acc_change:"Change",acc_pwd_ok:"Password changed.",acc_user_ok:"Username (display name) updated.",acc_photo_ok:"Photo updated.",
-  s_pass_complete:"Pass completed",s_pass_incomplete:"Pass incomplete",s_att_won:"Attacking duel won",s_att_lost:"Attacking duel lost",s_def_won:"Defensive duel won",s_def_lost:"Defensive duel lost",s_interception:"Interception",s_block:"Block",s_assist:"Assist",s_into_box:"Entry into the box",s_key_pass:"Key pass",s_shot:"Shot",s_shot_on:"Shot on target",s_score:"Goal",seek_hint:"Click to replay this moment",field_need_players:"Add players in the Team tab first, then open Mobile mode.",theme_auto:"Auto",reset_appearance:"Reset to default",reset_appearance_done:"Appearance reset.",confirm_remove_player:"Remove {name} from the team?",confirm_del_match:"Delete this match and all its tags? This cannot be undone.",er_title:"No players yet",er_sub:"Add players above, or start with a sample squad you can rename.",add_sample:"Add a sample squad",sample_added:"Sample players added — edit names above.",s_recovery:"Ball recovery",s_gk_save:"Save",s_gk_conceded:"Goal conceded",s_gk_1v1:"Save 1v1",s_gk_catch:"Catch",s_gk_punch:"Punch/parry",s_gk_claim:"Claim (cross)",s_gk_dist:"Distribution OK",s_gk_dist_no:"Distribution lost",s_gk_error:"GK error"},
+  s_pass_complete:"Pass completed",s_pass_incomplete:"Pass incomplete",s_att_won:"Attacking duel won",s_att_lost:"Attacking duel lost",s_def_won:"Defensive duel won",s_def_lost:"Defensive duel lost",s_interception:"Interception",s_block:"Block",s_assist:"Assist",s_into_box:"Entry into the box",s_key_pass:"Key pass",s_shot:"Shot",s_shot_on:"Shot on target",s_score:"Goal",seek_hint:"Click to replay this moment",field_need_players:"Add players in the Team tab first, then open Mobile mode.",theme_auto:"Auto",reset_appearance:"Reset to default",reset_appearance_done:"Appearance reset.",confirm_remove_player:"Remove {name} from the team?",confirm_del_match:"Delete this match and all its tags? This cannot be undone.",er_title:"No players yet",er_sub:"Add players above, or start with a sample squad you can rename.",add_sample:"Add a sample squad",sample_added:"Sample players added — edit names above.",s_recovery:"Ball recovery",s_win_high:"Win high",s_loss_box:"Loss in box",s_gk_save:"Save",s_gk_conceded:"Goal conceded",s_gk_1v1:"Save 1v1",s_gk_catch:"Catch",s_gk_punch:"Punch/parry",s_gk_claim:"Claim (cross)",s_gk_dist:"Distribution OK",s_gk_dist_no:"Distribution lost",s_gk_error:"GK error"},
  th:{app_title:"วิเคราะห์ฟุตบอลเยาวชน",mode:"Analyz+",newmatch:"+ แมตช์",untitled:"(แมตช์ยังไม่ตั้งชื่อ)",vs:"พบ",
   newtraining:"+ เทรนนิ่ง",train_tag:"เทรนนิ่ง",sess_training:"เซสชันเทรนนิ่ง",
   new_session:"+ ใหม่",new_team:"+ ทีม",new_team_prompt:"ตั้งชื่อทีม:",team_created:"สร้างทีมแล้ว",gloss_title:"ความหมายของแต่ละแท็ก",h_teams:"ทีม & สิทธิ์เข้าถึง (แอดมิน)",teams_note:"เลือกทีม แล้วให้/ยกเลิกสิทธิ์ผู้ใช้แต่ละคน ผู้ใช้สร้างทีมของตัวเองได้จากแถบบน",lbl_team:"ทีม",team_delete:"ลบ",team_owner:"เจ้าของ",team_revoke:"ยกเลิกสิทธิ์",team_grant:"ให้สิทธิ์",team_has:"เข้าถึงได้",team_del_confirm:"ลบทีมนี้พร้อมผู้เล่น/แมตช์/แท็กทั้งหมด? ย้อนกลับไม่ได้",team_deleted:"ลบทีมแล้ว",team_rename:"เปลี่ยนชื่อ",team_rename_prompt:"ชื่อทีมใหม่:",team_renamed:"เปลี่ยนชื่อแล้ว",wiz_title:"สร้างเซสชันใหม่",wiz_sub:"อยากเก็บข้อมูลแบบไหน?",sess_match:"แมตช์",sess_training_short:"เทรนนิ่ง",wiz_notes:"โน้ต / คอมเมนต์",wiz_notes_ph:"สิ่งที่อยากจำเกี่ยวกับเซสชันนี้…",wiz_create:"สร้าง & เริ่ม",cancel:"ยกเลิก",back:"ย้อนกลับ",lbl_match_notes:"โน้ต / คอมเมนต์",
@@ -1166,7 +1168,7 @@ const I18N={
   s_fin_on:"ยิงเข้ากรอบ",s_fin_off:"ยิงไม่เข้ากรอบ",s_pass_ok:"ส่งสำเร็จ",s_pass_no:"ส่งไม่สำเร็จ",s_foul:"ฟาวล์",s_ssg_press:"พยายามแย่งบอล",s_ssg_win:"แย่งบอลสำเร็จ",s_ssg_cpress:"แย่งบอลคืนทันที",s_ssg_winbox:"แย่งบอลหน้าประตู",s_ssg_pass:"ส่งบอลสำเร็จ",s_ssg_dribble:"เลี้ยงผ่าน",s_ssg_turnover:"ทำเสียบอล",s_ssg_lossbox:"เสียบอลหน้าประตูตัวเอง",s_d1_att:"1v1 ชนะเกมรุก",s_d1_def:"1v1 ชนะเกมรับ",s_d2_att:"2v1 ชนะเกมรุก",s_d2_def:"2v1 ชนะเกมรับ",
   s_d1_att_l:"1v1 แพ้เกมรุก",s_d1_def_l:"1v1 แพ้เกมรับ",s_d2_att_l:"2v1 แพ้เกมรุก",s_d2_def_l:"2v1 แพ้เกมรับ",
   h_train_summary:"สรุปเทรนนิ่ง",col_on:"เข้า",col_off:"ไม่เข้า",col_acc:"แม่น %",col_d1a:"1v1 รุก",col_d1d:"1v1 รับ",col_d2a:"2v1 รุก",col_d2d:"2v1 รับ",
-  tab_tag:"ติดแท็ก",tab_stats:"สถิติ",tab_checks:"ตรวจสอบ",tab_team:"ทีม",tab_match:"แมตช์",tab_training:"ฝึกซ้อม",lbl_level:"ประเภท",lvl_comp:"แข่งขัน",lvl_friendly:"อุ่นเครื่อง",h_lineup:"ตัวผู้เล่น & เวลาลงเล่น",h_training_setup:"ตั้งค่าการฝึกซ้อม",h_attendance:"ผู้เล่นที่เข้าซ้อม session นี้",in_training:"เข้าซ้อม session นี้",attend_note:"เลือกผู้เล่นที่เข้าร่วมการฝึกซ้อมครั้งนี้",rep_train:"ฝึกซ้อม",train_rep_empty:"ยังไม่มีเซสชันฝึกซ้อม — สร้างเซสชันซ้อมแล้วแท็กสักหน่อย",train_rep_sessions:"{n} เซสชัน",rename_match_title:"แก้ชื่อแมตช์ / คู่แข่ง",h_export:"Export สำหรับ Develop+",exp_json:"ส่งออกข้อมูล (JSON)",exp_csv:"ส่งออกสรุป (CSV)",exp_note:"ไฟล์มาตรฐานรวมผู้เล่น เซสชัน อีเวนต์ และสรุปรายคน — ใช้สำรองข้อมูล และเตรียมส่งให้แอป Develop+ ในอนาคต ใช้รหัสผู้เล่นจาก Supabase เพื่อให้ข้อมูลนักกีฬาตรงกันข้ามแอป",exp_done:"ส่งออกแล้ว",rename_train_title:"แก้หัวข้อการฝึกซ้อม",rename_ph_topic:"เช่น จบสกอร์ในกรอบ, เกมรุกริมเส้น",rename_ph_opp:"ชื่อคู่แข่ง",topic_recent:"หัวข้อที่ใช้ล่าสุด",btn_save:"บันทึก",btn_cancel:"ยกเลิก",in_squad:"ลงเล่นแมตช์นี้",change_photo:"เปลี่ยนรูป",photo_updated:"อัปเดตรูปแล้ว",photo_fail:"อ่านไฟล์รูปไม่สำเร็จ",train_rep_hint:"ดูเปรียบเทียบ ซ้อม ↔ เกมจริง รายคน ได้ที่ รายงาน → พัฒนาการ → เลือกผู้เล่น",sync_fail_warn:"⚠️ บางแท็ก/การแก้ไข ยังไม่ถูกบันทึกขึ้นคลาวด์ — กรุณารัน supabase_fix_events.sql อีกครั้ง",tab_settings:"ตั้งค่า",
+  tab_tag:"ติดแท็ก",tab_stats:"สถิติ",tab_checks:"ตรวจสอบ",tab_team:"ทีม",tab_match:"แมตช์",tab_training:"ฝึกซ้อม",lbl_level:"ประเภท",lvl_comp:"แข่งขัน",lvl_friendly:"อุ่นเครื่อง",h_lineup:"ตัวผู้เล่น & เวลาลงเล่น",h_training_setup:"ตั้งค่าการฝึกซ้อม",h_attendance:"ผู้เล่นที่เข้าซ้อม session นี้",in_training:"เข้าซ้อม session นี้",attend_note:"เลือกผู้เล่นที่เข้าร่วมการฝึกซ้อมครั้งนี้",no_attendees:"ยังไม่ได้เลือกผู้เล่นที่เข้าซ้อม — ไปเลือกที่แท็บฝึกซ้อม (ผู้เล่นที่เข้าซ้อม session นี้)",rep_train:"ฝึกซ้อม",train_rep_empty:"ยังไม่มีเซสชันฝึกซ้อม — สร้างเซสชันซ้อมแล้วแท็กสักหน่อย",train_rep_sessions:"{n} เซสชัน",rename_match_title:"แก้ชื่อแมตช์ / คู่แข่ง",h_export:"Export สำหรับ Develop+",exp_json:"ส่งออกข้อมูล (JSON)",exp_csv:"ส่งออกสรุป (CSV)",exp_note:"ไฟล์มาตรฐานรวมผู้เล่น เซสชัน อีเวนต์ และสรุปรายคน — ใช้สำรองข้อมูล และเตรียมส่งให้แอป Develop+ ในอนาคต ใช้รหัสผู้เล่นจาก Supabase เพื่อให้ข้อมูลนักกีฬาตรงกันข้ามแอป",exp_done:"ส่งออกแล้ว",rename_train_title:"แก้หัวข้อการฝึกซ้อม",rename_ph_topic:"เช่น จบสกอร์ในกรอบ, เกมรุกริมเส้น",rename_ph_opp:"ชื่อคู่แข่ง",topic_recent:"หัวข้อที่ใช้ล่าสุด",btn_save:"บันทึก",btn_cancel:"ยกเลิก",in_squad:"ลงเล่นแมตช์นี้",change_photo:"เปลี่ยนรูป",photo_updated:"อัปเดตรูปแล้ว",photo_fail:"อ่านไฟล์รูปไม่สำเร็จ",train_rep_hint:"ดูเปรียบเทียบ ซ้อม ↔ เกมจริง รายคน ได้ที่ รายงาน → พัฒนาการ → เลือกผู้เล่น",sync_fail_warn:"⚠️ บางแท็ก/การแก้ไข ยังไม่ถูกบันทึกขึ้นคลาวด์ — กรุณารัน supabase_fix_events.sql อีกครั้ง",tab_settings:"ตั้งค่า",
   h_video:"วิดีโอแมตช์",load:"โหลด",open:"เปิด ↗",upload:"อัปโหลดไฟล์วิดีโอ",url_ph:"วางลิงก์วิดีโอ (YouTube, Facebook, Veo…)",
   upload_hint:"หรือใช้ไฟล์ในเครื่อง — เล่นชัวร์ที่สุดและซิงค์เต็มรูปแบบ",
   empty_video:"วางลิงก์วิดีโอ หรืออัปโหลดไฟล์วิดีโอ<br>ระหว่างนี้ติดแท็กด้วยนาฬิกาด้านล่างได้",
@@ -1226,7 +1228,7 @@ const I18N={
   h_members:"สมาชิก (แอดมิน)",members_note:"อนุมัติผู้สมัครใหม่และจัดการสิทธิ์ · สมาชิกแต่ละคนเห็นเฉพาะทีม แมตช์ และการซ้อมของตัวเอง",mem_none:"ยังไม่มีสมาชิก",mem_approve:"อนุมัติ",mem_reject:"ปฏิเสธ",mem_promote:"ตั้งเป็นแอดมิน",mem_demote:"ถอนแอดมิน",mem_admin:"แอดมิน",mem_you:"คุณ",st_pending:"รออนุมัติ",st_approved:"อนุมัติแล้ว",st_rejected:"ถูกปฏิเสธ",
   conn_connecting:"กำลังเชื่อมต่อ…",conn_need_login:"เชื่อมต่อแล้ว เข้าสู่ระบบด้วยผู้ใช้ Supabase ของคุณ",conn_loading_lib:"กำลังโหลดไลบรารี…",conn_lib_fail:"โหลดไลบรารี Supabase ตรงนี้ไม่ได้ — มักใช้ได้เฉพาะตอนดาวน์โหลดไฟล์ไปเปิดหรือ host เอง ไม่ใช่ในพรีวิว",conn_bad:"เชื่อมต่อไม่สำเร็จ ตรวจ URL และ key",conn_login_fail:"เข้าสู่ระบบไม่สำเร็จ ตรวจอีเมลและรหัสผ่าน",conn_no_org:"เข้าสู่ระบบแล้ว แต่ผู้ใช้นี้ยังไม่ได้ผูกกับองค์กร/ทีม",conn_synced:"ซิงค์แล้ว · {n} นักเตะ · {m} แมตช์",conn_offline:"โหมดออฟไลน์ (ข้อมูลอยู่ในเครื่องนี้)",conn_live:"ซิงค์สดเปิดอยู่",ag_sub_login:"เข้าสู่ระบบเพื่อใช้งาน",ag_sub_signup:"สร้างบัญชีของคุณ",ag_to_signup:"ยังไม่มีบัญชี?",ag_to_login:"มีบัญชีอยู่แล้ว?",ag_offline:"ใช้งานแบบออฟไลน์ (ไม่ซิงค์)",h_offline:"ออฟไลน์",offline_note:"กำลังใช้งานแบบออฟไลน์ เข้าสู่ระบบเพื่อซิงค์ข้อมูลข้ามอุปกรณ์",offline_signin:"เข้าสู่ระบบเพื่อซิงค์",conn_slow:"กำลังเชื่อมต่อ… เครือข่ายอาจช้า รอสักครู่นะครับ",pin_sub:"ใส่รหัส PIN เพื่อใช้งานแบบออฟไลน์",pin_ph:"PIN",pin_enter:"เข้าใช้งาน",pin_wrong:"PIN ไม่ถูกต้อง ลองใหม่",pin_back:"กลับไปหน้าล็อกอิน",h_pin:"PIN สำหรับใช้งานออฟไลน์",pin_note:"ผู้ใช้ต้องใส่ PIN นี้เพื่อใช้งานแบบออฟไลน์ (ไม่ล็อกอิน) เปลี่ยนเพื่อความเป็นส่วนตัว",pin_label:"PIN",pin_saved:"บันทึก PIN แล้ว",pin_min:"PIN ต้องยาวอย่างน้อย 4 ตัว",conn_timeout:"เชื่อมต่อหมดเวลา ลองเช็กเน็ต หรือคีย์โปรเจกต์อาจไม่ถูก แจ้งแอดมิน",
   h_account:"บัญชีของฉัน",acc_photo:"เปลี่ยนรูป",acc_username:"ชื่อผู้ใช้",acc_newpwd:"รหัสผ่านใหม่",acc_save:"บันทึก",acc_change:"เปลี่ยน",acc_pwd_ok:"เปลี่ยนรหัสผ่านแล้ว",acc_user_ok:"อัปเดตชื่อผู้ใช้แล้ว",acc_photo_ok:"อัปเดตรูปแล้ว",
-  s_pass_complete:"จ่ายบอลสำเร็จ",s_pass_incomplete:"จ่ายบอลพลาด",s_att_won:"เกมรุกชนะ",s_att_lost:"เกมรุกแพ้",s_def_won:"เกมรับชนะ",s_def_lost:"เกมรับแพ้",s_interception:"สกัดบอล",s_block:"บล็อก",s_assist:"แอสซิสต์",s_into_box:"เข้าเขตโทษ",s_key_pass:"คีย์พาส",s_shot:"ยิงไม่เข้ากรอบ",s_shot_on:"ยิงเข้ากรอบ",s_score:"ทำประตู",seek_hint:"คลิกเพื่อย้อนดูจังหวะนี้",field_need_players:"เพิ่มผู้เล่นในแท็บทีมก่อน แล้วค่อยเปิดโหมดมือถือ",theme_auto:"อัตโนมัติ",reset_appearance:"คืนค่าเริ่มต้น",reset_appearance_done:"คืนค่าหน้าตาแล้ว",confirm_remove_player:"ลบ {name} ออกจากทีม?",confirm_del_match:"ลบแมตช์นี้พร้อมแท็กทั้งหมด? ย้อนกลับไม่ได้",er_title:"ยังไม่มีผู้เล่น",er_sub:"เพิ่มผู้เล่นด้านบน หรือเริ่มจากชุดตัวอย่างแล้วแก้ชื่อทีหลังก็ได้",add_sample:"เพิ่มผู้เล่นตัวอย่าง",sample_added:"เพิ่มผู้เล่นตัวอย่างแล้ว — แก้ชื่อด้านบนได้",s_recovery:"แย่งบอลคืน",s_gk_save:"เซฟประตู",s_gk_conceded:"เสียประตู",s_gk_1v1:"เซฟ 1v1",s_gk_catch:"จับบอล",s_gk_punch:"ปัด/ต่อยบอล",s_gk_claim:"ออกมาเก็บ/ตัดบอลโยน",s_gk_dist:"แจกบอลสำเร็จ",s_gk_dist_no:"แจกบอลพลาด",s_gk_error:"จับวืด/ผิดพลาด"}
+  s_pass_complete:"จ่ายบอลสำเร็จ",s_pass_incomplete:"จ่ายบอลพลาด",s_att_won:"เกมรุกชนะ",s_att_lost:"เกมรุกแพ้",s_def_won:"เกมรับชนะ",s_def_lost:"เกมรับแพ้",s_interception:"สกัดบอล",s_block:"บล็อก",s_assist:"แอสซิสต์",s_into_box:"เข้าเขตโทษ",s_key_pass:"คีย์พาส",s_shot:"ยิงไม่เข้ากรอบ",s_shot_on:"ยิงเข้ากรอบ",s_score:"ทำประตู",seek_hint:"คลิกเพื่อย้อนดูจังหวะนี้",field_need_players:"เพิ่มผู้เล่นในแท็บทีมก่อน แล้วค่อยเปิดโหมดมือถือ",theme_auto:"อัตโนมัติ",reset_appearance:"คืนค่าเริ่มต้น",reset_appearance_done:"คืนค่าหน้าตาแล้ว",confirm_remove_player:"ลบ {name} ออกจากทีม?",confirm_del_match:"ลบแมตช์นี้พร้อมแท็กทั้งหมด? ย้อนกลับไม่ได้",er_title:"ยังไม่มีผู้เล่น",er_sub:"เพิ่มผู้เล่นด้านบน หรือเริ่มจากชุดตัวอย่างแล้วแก้ชื่อทีหลังก็ได้",add_sample:"เพิ่มผู้เล่นตัวอย่าง",sample_added:"เพิ่มผู้เล่นตัวอย่างแล้ว — แก้ชื่อด้านบนได้",s_recovery:"แย่งบอลคืน",s_win_high:"แย่งบอลแดนบน",s_loss_box:"เสียบอลหน้าประตู",s_gk_save:"เซฟประตู",s_gk_conceded:"เสียประตู",s_gk_1v1:"เซฟ 1v1",s_gk_catch:"จับบอล",s_gk_punch:"ปัด/ต่อยบอล",s_gk_claim:"ออกมาเก็บ/ตัดบอลโยน",s_gk_dist:"แจกบอลสำเร็จ",s_gk_dist_no:"แจกบอลพลาด",s_gk_error:"จับวืด/ผิดพลาด"}
 };
 let settings={theme:"dark",accent:"#C9F25E",lang:"th",kbhints:true,supaUrl:"",supaKey:""};
 const t=k=>(I18N[settings.lang]&&I18N[settings.lang][k])||I18N.en[k]||k;
@@ -1241,6 +1243,8 @@ const STAT_DESC={
   def_lost:{th:"แพ้ดวลรับ — โดนเลี้ยงผ่าน",en:"Lost a defensive duel (beaten)"},
   interception:{th:"ตัดบอลจังหวะที่คู่แข่งจ่ายผ่าน",en:"Cut out an opponent's pass"},
   block:{th:"บล็อกการยิงหรือการจ่าย",en:"Blocked a shot or pass"},
+  win_high:{th:"แย่งบอลคืนได้ในแดนคู่แข่ง (เพรสสูงสำเร็จ) — คนละอย่างกับชนะดวลรุก",en:"Won the ball back in the opponent half (successful high press)"},
+  loss_box:{th:"เสียการครองบอลในโซนอันตรายหน้าประตูตัวเอง — ความเสี่ยงเชิงตำแหน่ง",en:"Lost possession in the danger zone near your own goal"},
   into_box:{th:"พา/ส่งบอลเข้าเขตโทษ",en:"Got the ball into the box"},
   key_pass:{th:"จ่ายให้เพื่อนได้ยิงทันที",en:"Pass that set up a shot"},
   assist:{th:"จ่ายให้เพื่อนทำประตู",en:"Pass that led to a goal"},
@@ -1315,7 +1319,7 @@ let activeId=null,editingId=null,manualSec=0,running=false,ticker=null,fieldOpen
 
 const $=id=>document.getElementById(id);
 /* ===== build id + automatic update check (beats GitHub Pages / browser cache) ===== */
-const BUILD="06-29-ae";
+const BUILD="06-29-ag";
 (function(){const el=$("buildMarker");if(el)el.textContent="build "+BUILD;const vf=$("verFoot");if(vf)vf.textContent="Analyz+ · v"+BUILD;})();
 function showUpdateBanner(newBuild){
   if($("updbanner"))return;
@@ -1348,6 +1352,8 @@ const uid=p=>p+Date.now()+Math.random().toString(36).slice(2,5);
 const isGK=p=>/gk|goal/i.test(p&&p.position||"");
 // goalkeepers grouped first, field players after; stable within each group
 const ordered=()=>roster.map((p,i)=>[p,i]).sort((a,b)=>(isGK(b[0])-isGK(a[0]))||(a[1]-b[1])).map(x=>x[0]);
+// players to show on the tagging page: in training, only those marked as attending this session
+function attendees(){const m=curMatch();const sq=m&&squadByMatch[m.id];if(m&&m.kind==="training"&&sq!==undefined)return ordered().filter(p=>sq.includes(p.id));return ordered();}
 
 let undoStack=[],dirty=false,lastSaved=null;
 
@@ -1610,8 +1616,9 @@ function seekTo(sec){
 const hasPhoto=p=>p&&p.photo&&String(p.photo).startsWith("data:");
 function renderRoster(){
   if(!roster.length){$("roster").innerHTML='<div class="muted">No players yet — add them in the Team tab.</div>';return;}
-  const ord=ordered();
-  if(!activeId||!P(activeId))activeId=ord[0].id;
+  const ord=attendees();
+  if(!ord.length){$("roster").innerHTML=`<div class="muted">${t("no_attendees")}</div>`;$("actJersey").innerHTML="–";$("actName").textContent="—";return;}
+  if(!activeId||!P(activeId)||!ord.some(p=>p.id===activeId))activeId=ord[0].id;
   const a=P(activeId);
   $("actJersey").innerHTML=hasPhoto(a)?`<img src="${a.photo}" alt="">`:(a.no||"–");
   $("actName").textContent=a.name+(isGK(a)?" · GK":"");
@@ -2142,7 +2149,7 @@ document.addEventListener("keydown",ev=>{
   if(!$("v-tag").classList.contains("on"))return;
   if(/input|select|textarea/i.test(document.activeElement.tagName))return;
   const k=ev.key.toLowerCase();
-  if(k>="1"&&k<="9"){const o=ordered(),i=+k-1;if(o[i]){setActive(o[i].id);ev.preventDefault();}}
+  if(k>="1"&&k<="9"){const o=attendees(),i=+k-1;if(o[i]){setActive(o[i].id);ev.preventDefault();}}
   else if(curMatch()&&curMatch().kind==="training"){
     const hit=trainButtons(curMatch().exercise||"finishing",isGK(P(activeId))).find(s=>s.kb.toLowerCase()===k);
     if(hit){addEvent(hit.key);ev.preventDefault();}
@@ -2161,12 +2168,12 @@ function fieldExit(){fieldOpen=false;$("fieldmode").classList.remove("on");rende
 function renderField(flashKey){
   const m=curMatch();if(!m)return;
   $("fTitle").textContent=(m.kind==="training"?t("train_tag"):(m.opponent?(t("vs")+" "+m.opponent):t("untitled")))+(m.format?" · "+m.format:"")+(m.date?" · "+m.date:"");
-  if(!activeId||!P(activeId)){const o=ordered();if(o[0])activeId=o[0].id;}
+  if(!activeId||!P(activeId)){const o=attendees();if(o[0])activeId=o[0].id;}
   const a=P(activeId);
   $("fAv").innerHTML=a?(hasPhoto(a)?`<img src="${a.photo}" style="width:100%;height:100%;border-radius:50%;object-fit:cover">`:(a.no||"–")):"–";
   $("fName").textContent=a?(a.name+(isGK(a)?" · GK":"")):"—";
   $("fCount").textContent=evs().length;
-  $("fPlayers").innerHTML=ordered().map(p=>`<button class="ftile${isGK(p)?" gk":""}" data-id="${p.id}" aria-pressed="${p.id===activeId}">${hasPhoto(p)?`<img class="av" src="${p.photo}">`:`<span class="no">${p.no||"–"}</span>`}<span class="pn">${p.name}</span></button>`).join("");
+  $("fPlayers").innerHTML=attendees().map(p=>`<button class="ftile${isGK(p)?" gk":""}" data-id="${p.id}" aria-pressed="${p.id===activeId}">${hasPhoto(p)?`<img class="av" src="${p.photo}">`:`<span class="no">${p.no||"–"}</span>`}<span class="pn">${p.name}</span></button>`).join("");
   $("fPlayers").querySelectorAll(".ftile").forEach(b=>b.onclick=()=>setActive(b.dataset.id));
   const isTrain=m.kind==="training";
   // period selector (match only, >1 period)
@@ -2309,7 +2316,7 @@ function buildDevelopExport(){
       att_pct:pctv(N(mc.att_won),N(mc.att_won)+N(mc.att_lost)),
       def_pct:pctv(N(mc.def_won),N(mc.def_won)+N(mc.def_lost)),
       recoveries:N(mc.recovery),interceptions:N(mc.interception),blocks:N(mc.block),
-      key_passes:N(mc.key_pass),into_box:N(mc.into_box),fouls:N(mc.foul),minutes:minutesPlayedAll(p.id)};
+      key_passes:N(mc.key_pass),into_box:N(mc.into_box),fouls:N(mc.foul),win_high:N(mc.win_high),loss_box:N(mc.loss_box),minutes:minutesPlayedAll(p.id)};
     const gk=isGK(p)?{saves:N(mc.gk_save),conceded:N(mc.gk_conceded),save_pct:pctv(N(mc.gk_save),N(mc.gk_save)+N(mc.gk_conceded)),
       catches:N(mc.gk_catch),claims:N(mc.gk_claim),distribution_pct:pctv(N(mc.gk_dist),N(mc.gk_dist)+N(mc.gk_dist_no)),errors:N(mc.gk_error)}:null;
     const training={};
@@ -2325,10 +2332,10 @@ function buildDevelopExport(){
 function exportDevelopJSON(){download("analyz_export_"+_ymd()+".json",JSON.stringify(buildDevelopExport(),null,2),"application/json");const e=$("expMsg");if(e){e.textContent=t("exp_done");e.style.color="var(--pos)";}}
 function exportDevelopCSV(){
   const d=buildDevelopExport();
-  const cols=["player_id","name","position","foot","minutes","match_shots","match_on_target","match_goals","match_assists","match_pass_pct","match_att_pct","match_def_pct","match_recoveries","match_interceptions","match_blocks","match_key_passes","match_into_box","match_fouls","gk_saves","gk_conceded","gk_save_pct","train_pass_acc_pct","train_fin_shots","train_fin_goals","train_fin_conv_pct","train_ssg_win"];
+  const cols=["player_id","name","position","foot","minutes","match_shots","match_on_target","match_goals","match_assists","match_pass_pct","match_att_pct","match_def_pct","match_recoveries","match_win_high","match_loss_box","match_interceptions","match_blocks","match_key_passes","match_into_box","match_fouls","gk_saves","gk_conceded","gk_save_pct","train_pass_acc_pct","train_fin_shots","train_fin_goals","train_fin_conv_pct","train_ssg_win"];
   const blank=v=>v==null?"":v;
   const rows=d.players.map(p=>{const a=d.aggregates.by_player[p.id]||{};const m=a.match||{};const g=a.gk||{};const tr=a.training||{};const ps=tr.passing||{};const fn=tr.fd||tr.finishing||{};const sg=tr.ssg||{};
-    return [p.id,p.name,p.position,p.foot||"",blank(m.minutes),m.shots,m.on_target,m.goals,m.assists,m.pass_pct,m.att_pct,m.def_pct,m.recoveries,m.interceptions,m.blocks,m.key_passes,m.into_box,m.fouls,
+    return [p.id,p.name,p.position,p.foot||"",blank(m.minutes),m.shots,m.on_target,m.goals,m.assists,m.pass_pct,m.att_pct,m.def_pct,m.recoveries,m.win_high,m.loss_box,m.interceptions,m.blocks,m.key_passes,m.into_box,m.fouls,
       blank(g.saves),blank(g.conceded),blank(g.save_pct),blank(ps.acc_pct),blank(fn.shots),blank(fn.goals),blank(fn.conv_pct),blank(sg.win)].map(_csv).join(",");});
   download("analyz_summary_"+_ymd()+".csv","\ufeff"+cols.join(",")+"\n"+rows.join("\n"),"text/csv");
   const e=$("expMsg");if(e){e.textContent=t("exp_done");e.style.color="var(--pos)";}
@@ -2404,7 +2411,7 @@ $("expSummary").onclick=()=>{
 $("expPrint").onclick=()=>{try{window.print();}catch(e){}};
 
 /* ===== reports & comparison ===== */
-const EV_KEYS=["pass_complete","pass_incomplete","att_won","att_lost","def_won","def_lost","interception","block","into_box","key_pass","assist","shot","shot_on","score","recovery","foul","gk_save","gk_conceded","gk_1v1","gk_catch","gk_punch","gk_claim","gk_dist","gk_dist_no","gk_error","ssg_press","ssg_win","ssg_cpress","ssg_winbox","ssg_pass","ssg_dribble","ssg_turnover","ssg_lossbox"];
+const EV_KEYS=["pass_complete","pass_incomplete","att_won","att_lost","def_won","def_lost","interception","block","into_box","key_pass","assist","shot","shot_on","score","recovery","win_high","loss_box","foul","gk_save","gk_conceded","gk_1v1","gk_catch","gk_punch","gk_claim","gk_dist","gk_dist_no","gk_error","ssg_press","ssg_win","ssg_cpress","ssg_winbox","ssg_pass","ssg_dribble","ssg_turnover","ssg_lossbox"];
 function countsFromEvents(list){const c={};EV_KEYS.forEach(k=>c[k]=0);(list||[]).forEach(e=>{if(c[e.stat_key]!=null)c[e.stat_key]++;});return c;}
 const evsOfMatch=mid=>eventsByMatch[mid]||[];
 const playerCountsInMatch=(mid,pid)=>countsFromEvents(evsOfMatch(mid).filter(e=>e.player_id===pid));
@@ -2580,7 +2587,7 @@ function renderMatchReport(){
   const c=teamCountsInMatch(currentMatchId);
   const score=`${c.score}–${c.gk_conceded}`;
   const kpi=(v,l)=>`<div class="kpi"><div class="v">${v}</div><div class="l">${l}</div></div>`;
-  const kpis=kpi(c.score,t("dash_goals"))+kpi(sTot(c),t("dash_shots"))+kpi(rt(sOn(c),sTot(c)),t("met_ontarget_pct"))+kpi(rt(c.pass_complete,c.pass_complete+c.pass_incomplete),t("met_pass_pct"))+kpi(c.into_box,t("dash_intobox"))+kpi(rt(c.att_won,c.att_won+c.att_lost),t("met_att_pct"))+kpi(rt(c.def_won,c.def_won+c.def_lost),t("met_def_pct"))+kpi(c.recovery,t("dash_recoveries"))+kpi(rt(c.gk_save,c.gk_save+c.gk_conceded),t("dash_savepct"));
+  const kpis=kpi(c.score,t("dash_goals"))+kpi(sTot(c),t("dash_shots"))+kpi(rt(sOn(c),sTot(c)),t("met_ontarget_pct"))+kpi(rt(c.pass_complete,c.pass_complete+c.pass_incomplete),t("met_pass_pct"))+kpi(c.into_box,t("dash_intobox"))+kpi(rt(c.att_won,c.att_won+c.att_lost),t("met_att_pct"))+kpi(rt(c.def_won,c.def_won+c.def_lost),t("met_def_pct"))+kpi(c.recovery,t("dash_recoveries"))+kpi(c.win_high,t("s_win_high"))+kpi(c.loss_box,t("s_loss_box"))+kpi(rt(c.gk_save,c.gk_save+c.gk_conceded),t("dash_savepct"));
   // per-player table
   let rows=ordered().map(p=>{const pc=playerCountsInMatch(currentMatchId,p.id);return `<tr><td class="no">${p.no||"–"}</td><td class="name">${p.name}${isGK(p)?' <span class="gktag">GK</span>':""}</td><td class="num">${pc.score}</td><td class="num">${sTot(pc)}</td><td class="num">${rt(pc.pass_complete,pc.pass_complete+pc.pass_incomplete)}</td><td class="num">${rt(pc.att_won,pc.att_won+pc.att_lost)}</td><td class="num">${rt(pc.def_won,pc.def_won+pc.def_lost)}</td><td class="num">${pc.recovery}</td></tr>`;}).join("");
   const tbl=`<table><tr><th>#</th><th style="text-align:left">${t("col_player")}</th><th>${t("met_goals")}</th><th>${t("met_shots")}</th><th>${t("met_pass_pct")}</th><th>${t("met_att_pct")}</th><th>${t("met_def_pct")}</th><th>${t("met_recoveries")}</th></tr>${rows}</table>`;
@@ -3024,7 +3031,7 @@ function renderSubs(){
     const mins=isTrain?"":`<input type="number" min="0" max="${full}" data-min="${p.id}" value="${mm[p.id]??""}" placeholder="${full}" ${on?"":"disabled"}> ${t("min")}`;
     return `<div class="subline${on?"":" off"}">${head}${mins}</div>`;}).join("");
   $("subs").querySelectorAll("[data-min]").forEach(i=>i.onchange=()=>{const v=i.value.trim();minsByMatch[m.id]=minsByMatch[m.id]||{};if(v===""||+v>=full)delete minsByMatch[m.id][i.dataset.min];else minsByMatch[m.id][i.dataset.min]=Math.max(0,parseInt(v,10));store.set(K_MINS,minsByMatch);});
-  $("subs").querySelectorAll("[data-sq]").forEach(c=>c.onchange=()=>{const pid=c.dataset.sq;let cur=squadByMatch[m.id];if(cur===undefined)cur=ordered().map(p=>p.id);cur=cur.slice();if(c.checked){if(!cur.includes(pid))cur.push(pid);}else{cur=cur.filter(x=>x!==pid);}squadByMatch[m.id]=cur;store.set(K_SQUAD,squadByMatch);renderSubs();});
+  $("subs").querySelectorAll("[data-sq]").forEach(c=>c.onchange=()=>{const pid=c.dataset.sq;let cur=squadByMatch[m.id];if(cur===undefined)cur=ordered().map(p=>p.id);cur=cur.slice();if(c.checked){if(!cur.includes(pid))cur.push(pid);}else{cur=cur.filter(x=>x!==pid);}squadByMatch[m.id]=cur;store.set(K_SQUAD,squadByMatch);renderSubs();renderRoster();renderStatBtns();});
   renderVeoCompare();
 }
 function matchMinutes(m){m=m||curMatch();if(!m)return 0;return Math.max(1,(m.periods||4)*(m.minPer||10));}
