@@ -1074,7 +1074,7 @@ function trainButtons(ex,isGk){
   if(ex==="passing")return [SDEF("pass_ok"),SDEF("pass_no")];
   if(ex==="d1")return [SDEF("d1_att"),SDEF("d1_att_l"),SDEF("d1_def"),SDEF("d1_def_l"),SDEF("foul")];
   if(ex==="d2")return [SDEF("d2_att"),SDEF("d2_att_l"),SDEF("d2_def"),SDEF("d2_def_l"),SDEF("foul")];
-  if(ex==="ssg")return [SDEF("ssg_win"),SDEF("ssg_cpress"),SDEF("ssg_winbox"),SDEF("ssg_pass"),SDEF("ssg_dribble"),SDEF("ssg_press"),SDEF("ssg_turnover"),SDEF("ssg_lossbox"),SDEF("foul")];
+  if(ex==="ssg"){const ssg=[SDEF("ssg_win"),SDEF("ssg_cpress"),SDEF("ssg_winbox"),SDEF("ssg_pass"),SDEF("ssg_dribble"),SDEF("ssg_press"),SDEF("ssg_turnover"),SDEF("ssg_lossbox")];return isGk?ssg.concat(GK_STATS):ssg.concat(STATS);}
   return [SDEF("d2_att"),SDEF("d2_att_l"),SDEF("d2_def"),SDEF("d2_def_l")];
 }
 // legacy keys from the earlier prototype, so old tags still render
@@ -1315,7 +1315,7 @@ let activeId=null,editingId=null,manualSec=0,running=false,ticker=null,fieldOpen
 
 const $=id=>document.getElementById(id);
 /* ===== build id + automatic update check (beats GitHub Pages / browser cache) ===== */
-const BUILD="06-29-ad";
+const BUILD="06-29-ae";
 (function(){const el=$("buildMarker");if(el)el.textContent="build "+BUILD;const vf=$("verFoot");if(vf)vf.textContent="Analyz+ · v"+BUILD;})();
 function showUpdateBanner(newBuild){
   if($("updbanner"))return;
@@ -2201,13 +2201,16 @@ function renderTrainDash(m){
   const d1w=C("d1_att")+C("d1_def"),d1t=d1w+C("d1_att_l")+C("d1_def_l");
   const d2w=C("d2_att")+C("d2_def"),d2t=d2w+C("d2_att_l")+C("d2_def_l");
   if(m.exercise==="ssg"){
-    const won=C("ssg_win")+C("ssg_cpress")+C("ssg_winbox"),lost=C("ssg_turnover")+C("ssg_lossbox");
-    $("kpis").innerHTML=kpi(C("ssg_win"),t("s_ssg_win"))+kpi(C("ssg_cpress"),t("s_ssg_cpress"))+kpi(C("ssg_winbox"),t("s_ssg_winbox"))+kpi(C("ssg_pass"),t("s_ssg_pass"))+kpi(C("ssg_dribble"),t("s_ssg_dribble"))+kpi(C("ssg_turnover")+C("ssg_lossbox"),t("s_ssg_turnover"))+kpi(C("ssg_lossbox"),t("s_ssg_lossbox"))+kpi(C("foul"),t("s_foul"));
+    const wl=(w,l)=>`${w}-${l}`;
+    const sT=C("shot")+C("shot_on")+C("score");
+    $("kpis").innerHTML=kpi(C("ssg_win"),t("s_ssg_win"))+kpi(C("ssg_cpress"),t("s_ssg_cpress"))+kpi(C("ssg_winbox"),t("s_ssg_winbox"))+kpi(C("ssg_turnover")+C("ssg_lossbox"),t("s_ssg_turnover"))+kpi(C("score"),t("met_goals"))+kpi(sT,t("met_shots"))+kpi(ratio(C("pass_complete"),C("pass_complete")+C("pass_incomplete")),t("met_pass_pct"))+kpi(C("foul"),t("s_foul"));
     $("tops").innerHTML="";
-    const keys=["ssg_win","ssg_cpress","ssg_winbox","ssg_pass","ssg_dribble","ssg_press","ssg_turnover","ssg_lossbox","foul"];
-    const head=`<tr><th>#</th><th class='name' style='text-align:left'>${t("col_player")}</th>`+keys.map(k=>`<th>${slabel(k)}</th>`).join("")+`</tr>`;
-    let rows=ordered().map(p=>`<tr><td class="no">${p.no||"–"}</td><td class="name">${p.name}${isGK(p)?' <span class="gktag">GK</span>':""}</td>`+keys.map(k=>`<td class="num">${countFor(p.id,k)}</td>`).join("")+`</tr>`).join("");
-    rows+=`<tr class="totalrow"><td></td><td class="name">${t("team_total")}</td>`+keys.map(k=>`<td class="num">${C(k)}</td>`).join("")+`</tr>`;
+    const ssgK=["ssg_win","ssg_cpress","ssg_winbox","ssg_pass","ssg_dribble","ssg_turnover","ssg_lossbox"];
+    const genH=`<th>${t("met_goals")}</th><th>${t("col_shot")}</th><th>${t("met_pass_pct")}</th><th>${t("met_att_pct")}</th><th>${t("met_def_pct")}</th><th>${t("met_recoveries")}</th>`;
+    const genR=cc=>{const c=k=>cc(k);const psT=c("shot")+c("shot_on")+c("score");return `<td class="num">${c("score")}</td><td class="num">${psT}</td><td class="num">${ratio(c("pass_complete"),c("pass_complete")+c("pass_incomplete"))}</td><td class="num">${wl(c("att_won"),c("att_lost"))}</td><td class="num">${wl(c("def_won"),c("def_lost"))}</td><td class="num">${c("recovery")}</td>`;};
+    const head=`<tr><th>#</th><th class='name' style='text-align:left'>${t("col_player")}</th>`+ssgK.map(k=>`<th>${slabel(k)}</th>`).join("")+genH+`</tr>`;
+    let rows=ordered().map(p=>`<tr><td class="no">${p.no||"–"}</td><td class="name">${p.name}${isGK(p)?' <span class="gktag">GK</span>':""}</td>`+ssgK.map(k=>`<td class="num">${countFor(p.id,k)}</td>`).join("")+genR(k=>countFor(p.id,k))+`</tr>`).join("");
+    rows+=`<tr class="totalrow"><td></td><td class="name">${t("team_total")}</td>`+ssgK.map(k=>`<td class="num">${C(k)}</td>`).join("")+genR(k=>C(k))+`</tr>`;
     $("statstable").innerHTML=head+rows;
     return;
   }
@@ -2553,7 +2556,7 @@ function renderMatchReport(){
     let kpis="",head="",rows="";
     if(m.exercise==="ssg"){
       const keys=["ssg_win","ssg_cpress","ssg_winbox","ssg_pass","ssg_dribble","ssg_turnover","ssg_lossbox","foul"];
-      kpis=kpi(C("ssg_win"),slabel("ssg_win"))+kpi(C("ssg_cpress"),slabel("ssg_cpress"))+kpi(C("ssg_winbox"),slabel("ssg_winbox"))+kpi(C("ssg_turnover")+C("ssg_lossbox"),slabel("ssg_turnover"));
+      kpis=kpi(C("ssg_win"),slabel("ssg_win"))+kpi(C("ssg_cpress"),slabel("ssg_cpress"))+kpi(C("ssg_winbox"),slabel("ssg_winbox"))+kpi(C("ssg_turnover")+C("ssg_lossbox"),slabel("ssg_turnover"))+kpi(C("score"),t("met_goals"))+kpi(C("shot")+C("shot_on")+C("score"),t("met_shots"))+kpi(ratio(C("pass_complete"),C("pass_complete")+C("pass_incomplete")),t("met_pass_pct"));
       head=`<tr><th>#</th><th style="text-align:left">${t("col_player")}</th>`+keys.map(k=>`<th>${slabel(k)}</th>`).join("")+`</tr>`;
       rows=ordered().map(p=>`<tr><td class="num">${p.no||"–"}</td><td class="name">${p.name}</td>`+keys.map(k=>`<td class="num">${cf(p.id,k)}</td>`).join("")+`</tr>`).join("");
       rows+=`<tr class="totalrow"><td></td><td class="name">${t("team_total")}</td>`+keys.map(k=>`<td class="num">${C(k)}</td>`).join("")+`</tr>`;
@@ -2614,7 +2617,7 @@ function renderTrainingReport(){
       rows+=`<tr class="totalrow"><td></td><td class="name">${t("team_total")}</td><td class="num">${C("pass_ok")}</td><td class="num">${C("pass_no")}</td><td class="num">${ratio(C("pass_ok"),C("pass_ok")+C("pass_no"))}</td></tr>`;
     }else if(ex==="ssg"){
       const ks=["ssg_win","ssg_cpress","ssg_winbox","ssg_pass","ssg_dribble","ssg_turnover","ssg_lossbox","foul"];
-      kpis=kpi(C("ssg_win"),slabel("ssg_win"))+kpi(C("ssg_cpress"),slabel("ssg_cpress"))+kpi(C("ssg_winbox"),slabel("ssg_winbox"))+kpi(C("ssg_turnover")+C("ssg_lossbox"),slabel("ssg_turnover"));
+      kpis=kpi(C("ssg_win"),slabel("ssg_win"))+kpi(C("ssg_cpress"),slabel("ssg_cpress"))+kpi(C("ssg_winbox"),slabel("ssg_winbox"))+kpi(C("ssg_turnover")+C("ssg_lossbox"),slabel("ssg_turnover"))+kpi(C("score"),t("met_goals"))+kpi(C("shot")+C("shot_on")+C("score"),t("met_shots"))+kpi(ratio(C("pass_complete"),C("pass_complete")+C("pass_incomplete")),t("met_pass_pct"));
       head=`<tr><th>#</th><th style="text-align:left">${t("col_player")}</th>`+ks.map(k=>`<th>${slabel(k)}</th>`).join("")+`</tr>`;
       rows=ordered().map(p=>ks.every(k=>cf(p.id,k)===0)?"":`<tr><td class="num">${p.no||"–"}</td><td class="name">${p.name}</td>`+ks.map(k=>`<td class="num">${cf(p.id,k)}</td>`).join("")+`</tr>`).join("");
       rows+=`<tr class="totalrow"><td></td><td class="name">${t("team_total")}</td>`+ks.map(k=>`<td class="num">${C(k)}</td>`).join("")+`</tr>`;
