@@ -1124,7 +1124,7 @@ const I18N={
   capture_for:"Capture time for the next tag",synced:"Synced to video",manual_clock:"Manual clock",start:"Start",pause:"Pause",reset:"Reset",
   h_tag:"Tag an action",active_player:"Active player",
   kb_hint:"Keyboard: number = player · letter on each button = action · <b>Z</b> = undo last",
-  event_log:"Event log",autosave_idle:"Auto-saves every 15s",unsaved:"Unsaved changes · auto-saves within 15s",saved:"Saved",undo:"Undo last",no_tags:"No tags yet.",
+  event_log:"Event log",autosave_idle:"Auto-saves every 15s",unsaved:"Unsaved changes · auto-saves within 15s",save_broken:"\u26a0\ufe0f Not saved on this device — use Save to file or sign in",save_fail:"\u26a0\ufe0f Could not save on this device (storage full or blocked). Use \u201cSave to file\u201d or sign in to sync.",save_degraded:"Saved, but photos couldn\u2019t be stored on this device (storage full). Sign in to keep photos in the cloud.",save_unavailable:"\u26a0\ufe0f This browser is blocking local saving (private mode / storage off). Sign in to sync, or save to a file.",saved:"Saved",undo:"Undo last",no_tags:"No tags yet.",
   h_perplayer:"Per-player totals",col_player:"Player",col_pass:"Pass %",col_conv:"Conv %",col_box:"Box eff",col_att:"Att duel %",col_def:"Def duel %",col_save:"Save",col_conc:"Conc",col_savepct:"Save %",team_total:"Team total",pos_label:"Positive",neg_label:"Negative",
   perplayer_note:"Computed live from tagged events — nothing is stored as a total.",
   h_export:"Export this match",dl_csv:"Download CSV",dl_json:"Download JSON",export_ph:"Exported data also appears here to copy manually.",
@@ -1196,7 +1196,7 @@ const I18N={
   capture_for:"เวลาที่จะบันทึกในแท็กถัดไป",synced:"ซิงค์กับวิดีโอ",manual_clock:"นาฬิกาจับเวลาเอง",start:"เริ่ม",pause:"หยุด",reset:"รีเซ็ต",
   h_tag:"ติดแท็กการเล่น",active_player:"ผู้เล่นที่เลือก",
   kb_hint:"คีย์บอร์ด: ตัวเลข = ผู้เล่น · ตัวอักษรบนปุ่ม = การเล่น · <b>Z</b> = ย้อนกลับ",
-  event_log:"บันทึกเหตุการณ์",autosave_idle:"บันทึกอัตโนมัติทุก 15 วิ",unsaved:"มีการเปลี่ยนแปลง · จะบันทึกใน 15 วิ",saved:"บันทึกแล้ว",undo:"ย้อนกลับ",no_tags:"ยังไม่มีแท็ก",
+  event_log:"บันทึกเหตุการณ์",autosave_idle:"บันทึกอัตโนมัติทุก 15 วิ",unsaved:"มีการเปลี่ยนแปลง · จะบันทึกใน 15 วิ",save_broken:"\u26a0\ufe0f ยังไม่ได้บันทึกลงเครื่อง — กด 'เซฟลงไฟล์' หรือเข้าสู่ระบบ",save_fail:"\u26a0\ufe0f บันทึกลงเครื่องไม่สำเร็จ (พื้นที่เต็มหรือเบราว์เซอร์บล็อก) — กรุณา 'เซฟลงไฟล์' หรือเข้าสู่ระบบเพื่อซิงค์",save_degraded:"บันทึกแล้ว แต่เก็บรูปลงเครื่องไม่ได้ (พื้นที่เต็ม) — เข้าสู่ระบบเพื่อเก็บรูปบนคลาวด์",save_unavailable:"\u26a0\ufe0f เบราว์เซอร์นี้บล็อกการบันทึกลงเครื่อง (โหมดส่วนตัว/ปิด storage) — เข้าสู่ระบบเพื่อซิงค์ หรือเซฟลงไฟล์",saved:"บันทึกแล้ว",undo:"ย้อนกลับ",no_tags:"ยังไม่มีแท็ก",
   h_perplayer:"สถิติรายคน",col_player:"ผู้เล่น",col_pass:"จ่าย %",col_conv:"ยิงเข้า %",col_box:"คมในกรอบ",col_att:"เกมรุก %",col_def:"เกมรับ %",col_save:"เซฟ",col_conc:"เสีย",col_savepct:"เซฟ %",team_total:"รวมทั้งทีม",pos_label:"เชิงบวก",neg_label:"เชิงลบ",
   perplayer_note:"คำนวณสดจากแท็ก — ไม่ได้เก็บเป็นยอดตายตัว",
   h_export:"ส่งออกแมตช์นี้",dl_csv:"ดาวน์โหลด CSV",dl_json:"ดาวน์โหลด JSON",export_ph:"ข้อมูลที่ส่งออกจะแสดงตรงนี้ให้คัดลอกเองได้",
@@ -1325,7 +1325,7 @@ let activeId=null,editingId=null,manualSec=0,running=false,ticker=null,fieldOpen
 
 const $=id=>document.getElementById(id);
 /* ===== build id + automatic update check (beats GitHub Pages / browser cache) ===== */
-const BUILD="06-29-ah";
+const BUILD="06-29-aj";
 (function(){const el=$("buildMarker");if(el)el.textContent="build "+BUILD;const vf=$("verFoot");if(vf)vf.textContent="Analyz+ · v"+BUILD;})();
 function showUpdateBanner(newBuild){
   if($("updbanner"))return;
@@ -1378,11 +1378,33 @@ const store={
     try{localStorage.removeItem(k);}catch(e){}
   },
 };
-function saveAll(){store.set(K_ROSTER,roster);store.set(K_MATCHES,matches);store.set(K_EVENTS,eventsByMatch);store.set(K_CUR,currentMatchId);lastSaved=new Date();dirty=false;paintSaveStatus();}
+let saveBroken=false,_saveWarnAt=0;
+function warnSave(msg){const n=Date.now();if(n-_saveWarnAt<8000)return;_saveWarnAt=n;showToast(msg);}
+// write to durable storage; returns true if SOMETHING accepted it. window.storage (Claude) is best-effort/async;
+// localStorage (hosted sites) is synchronous so we can actually detect quota/blocked/private-mode failures here.
+function persist(k,v){
+  let s;try{s=JSON.stringify(v);}catch(e){return false;}
+  let viaCloud=false;
+  if(window.storage){try{window.storage.set(k,s);viaCloud=true;}catch(e){}}
+  try{localStorage.setItem(k,s);return true;}catch(e){return viaCloud;}
+}
+// for the small local-only maps: persist and surface any failure
+function persistMap(k,v){if(!persist(k,v)){saveBroken=true;warnSave(t("save_fail"));paintSaveStatus();}}
+function saveCore(useLite){
+  const r=useLite?roster.map(p=>{const q=Object.assign({},p);if(hasPhoto(p))q.photo="";return q;}):roster;
+  return persist(K_ROSTER,r)&&persist(K_MATCHES,matches)&&persist(K_EVENTS,eventsByMatch)&&persist(K_CUR,currentMatchId);
+}
+function saveAll(){
+  if(saveCore(false)){saveBroken=false;lastSaved=new Date();dirty=false;paintSaveStatus();return;}
+  // failed (most likely the photos pushed localStorage over quota) → keep the important data by
+  // dropping locally-stored photos and trying again. Photos still live in the cloud when signed in.
+  if(saveCore(true)){saveBroken=false;lastSaved=new Date();dirty=false;warnSave(t("save_degraded"));paintSaveStatus();return;}
+  saveBroken=true;warnSave(t("save_fail"));paintSaveStatus();
+}
 // tagging mutations mark dirty; a 15s timer flushes to storage (avoids hammering storage on every tap)
 function markDirty(){dirty=true;paintSaveStatus();}
-function flush(){if(dirty)saveAll();}
-function paintSaveStatus(){const el=$("savestatus");if(!el)return;el.textContent=dirty?t("unsaved"):(lastSaved?(t("saved")+" "+fmt2(lastSaved)):t("autosave_idle"));el.style.color=dirty?"var(--warn)":"var(--faint)";}
+function flush(){if(dirty||saveBroken)saveAll();}
+function paintSaveStatus(){const el=$("savestatus");if(!el)return;if(saveBroken){el.textContent=t("save_broken");el.style.color="var(--neg)";return;}el.textContent=dirty?t("unsaved"):(lastSaved?(t("saved")+" "+fmt2(lastSaved)):t("autosave_idle"));el.style.color=dirty?"var(--warn)":"var(--faint)";}
 const fmt2=d=>[d.getHours(),d.getMinutes(),d.getSeconds()].map(n=>String(n).padStart(2,"0")).join(":");
 // multi-step undo for the current match (covers add / delete / edit)
 function pushUndo(){undoStack.push(JSON.stringify(evs()));if(undoStack.length>50)undoStack.shift();}
@@ -1438,7 +1460,7 @@ function renderMatchBar(){
 }
 function updateMatchTabLabel(){const b=document.querySelector('.tab[data-v="match"]');if(!b)return;const m=curMatch();b.textContent=t(m&&m.kind==="training"?"tab_training":"tab_match");}
 const escA=s=>String(s==null?"":s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-function rememberTopic(s){s=(s||"").trim();if(!s)return;trainTopics=[s].concat(trainTopics.filter(x=>x!==s)).slice(0,40);store.set(K_TOPICS,trainTopics);}
+function rememberTopic(s){s=(s||"").trim();if(!s)return;trainTopics=[s].concat(trainTopics.filter(x=>x!==s)).slice(0,40);persistMap(K_TOPICS,trainTopics);}
 function openRenameModal(){
   const m=curMatch();if(!m){showToast(t("untitled"));return;}
   const isTrain=m.kind==="training";
@@ -1944,6 +1966,8 @@ async function cloudPull(){
   const {data:tp}=await cloud.sb.from("team_players")
     .select("jersey_no,players:player_id(id,full_name,position,photo_url)").eq("team_id",cloud.teamId).eq("active",true);
   roster=(tp||[]).map(r=>{const old=prevR.find(x=>x.id===r.players.id)||{};return {id:r.players.id,no:r.jersey_no??old.no,name:r.players.full_name||old.name||"",position:(r.players.position&&r.players.position!=="field_player"&&r.players.position!=="goalkeeper")?r.players.position:(old.position||(r.players.position==="goalkeeper"?"Goalkeeper":"Field player")),photo:r.players.photo_url||old.photo||""};});
+  // keep any local-only players the cloud didn't return (e.g. added via + Add before they synced) so a pull can't drop them
+  prevR.forEach(op=>{if(!roster.some(x=>x.id===op.id))roster.push(op);});
   const {data:ms}=await cloud.sb.from("matches").select("*").eq("team_id",cloud.teamId).order("match_date",{ascending:false});
   matches=(ms||[]).map(m=>{const old=prevM.find(x=>x.id===m.id)||{};return {id:m.id,date:m.match_date||old.date||"",opponent:m.opponent_name||old.opponent||"",video_url:m.video_url||old.video_url||"",our_goals:m.goals_for||old.our_goals||0,subs:old.subs||{},kind:old.kind,exercise:old.exercise,details:old.details,format:old.format,periods:old.periods,minPer:old.minPer};});
   // keep any local-only matches (e.g. training sessions not yet pushed) that the cloud didn't return
@@ -1987,6 +2011,14 @@ const cw={
   delMatch(id){if(!cloud.active)return;cloud.sb.from("matches").delete().eq("id",id).then(()=>{},()=>{});},
   photo(playerId,dataUrl){if(!cloud.active)return;cloud.sb.from("players").update({photo_url:dataUrl}).eq("id",playerId).then(()=>{},()=>{});},
   player(playerId,fields){if(!cloud.active||!playerId||!fields)return;cloud.sb.from("players").update(fields).eq("id",playerId).then(()=>{},()=>{});},
+  async addPlayer(p){
+    if(!cloud.active||!cloud.teamId)return null;
+    const ins=await cloud.sb.from("players").insert({org_id:cloud.orgId,full_name:p.name,position:/gk|goal/i.test(p.position||"")?"goalkeeper":"field"}).select("id").single();
+    if(ins.error||!ins.data)return null;
+    const link=await cloud.sb.from("team_players").insert({org_id:cloud.orgId,team_id:cloud.teamId,season_id:cloud.seasonId,player_id:ins.data.id,jersey_no:p.no??null});
+    if(link.error)return null;
+    return ins.data.id;
+  },
   async importSquad(rows){
     if(!cloud.active)return false;
     if(!cloud.teamId){cstat(t("conn_no_org"),"err");return false;}
@@ -3012,7 +3044,7 @@ function renderTeam(){
     row.querySelector(".pno").onchange=e=>{P(id).no=e.target.value.trim()?parseInt(e.target.value,10):null;saveAll();renderRoster();};
     row.querySelector(".pname").onchange=e=>{const v=e.target.value;P(id).name=v;saveAll();cw.player(id,{full_name:v});renderRoster();};
     row.querySelector(".ppos").onchange=e=>{const v=e.target.value;P(id).position=v;saveAll();cw.player(id,{position:/gk|goal|รักษา/i.test(v)?"goalkeeper":v});};
-    const fsel=row.querySelector("[data-foot]");if(fsel)fsel.onchange=e=>{const v=e.target.value;if(v)footByPlayer[id]=v;else delete footByPlayer[id];store.set(K_FOOT,footByPlayer);};
+    const fsel=row.querySelector("[data-foot]");if(fsel)fsel.onchange=e=>{const v=e.target.value;if(v)footByPlayer[id]=v;else delete footByPlayer[id];persistMap(K_FOOT,footByPlayer);};
     const psel=row.querySelector("[data-setphoto]");if(psel)psel.onchange=ev=>{const f=ev.target.files[0];if(!f)return;downscale(f,data=>{if(!data){showToast(t("photo_fail"));return;}P(id).photo=data;saveAll();cw.photo(id,data);renderTeam();renderRoster();showToast(t("photo_updated"));});};
     row.querySelector("[data-rm]").onclick=()=>{if(!confirm(tf("confirm_remove_player",{name:P(id)?P(id).name:""})))return;roster=roster.filter(p=>p.id!==id);saveAll();renderTeam();renderRoster();renderSubs();};
   });
@@ -3041,32 +3073,35 @@ function renderSubs(){
   const hd=sc&&sc.querySelector("summary h2");if(hd)hd.textContent=t(isTrain?"h_attendance":"h_lineup");
   const nt=sc&&sc.querySelector(".note");if(nt)nt.textContent=t(isTrain?"attend_note":"subs_note");
   // one-time migration: old "off at" minute ≈ minutes played
-  if(m.subs&&Object.keys(m.subs).length){minsByMatch[m.id]=minsByMatch[m.id]||{};Object.keys(m.subs).forEach(pid=>{if(minsByMatch[m.id][pid]==null&&m.subs[pid]!=null)minsByMatch[m.id][pid]=m.subs[pid];});store.set(K_MINS,minsByMatch);delete m.subs;saveAll();}
+  if(m.subs&&Object.keys(m.subs).length){minsByMatch[m.id]=minsByMatch[m.id]||{};Object.keys(m.subs).forEach(pid=>{if(minsByMatch[m.id][pid]==null&&m.subs[pid]!=null)minsByMatch[m.id][pid]=m.subs[pid];});persistMap(K_MINS,minsByMatch);delete m.subs;saveAll();}
   const mm=minsByMatch[m.id]||{};const full=matchMinutes(m);
   const sq=squadByMatch[m.id];const inSq=pid=>sq===undefined?true:sq.includes(pid);
   $("subs").innerHTML=ordered().map(p=>{const on=inSq(p.id);
     const head=`<input type="checkbox" class="sqchk" data-sq="${p.id}" ${on?"checked":""} title="${t(isTrain?"in_training":"in_squad")}"><span class="n">${p.no||"–"}</span><span class="nm2">${p.name}${isGK(p)?" · GK":""}</span>`;
     const mins=isTrain?"":`<input type="number" min="0" max="${full}" data-min="${p.id}" value="${mm[p.id]??""}" placeholder="${full}" ${on?"":"disabled"}> ${t("min")}`;
     return `<div class="subline${on?"":" off"}">${head}${mins}</div>`;}).join("");
-  $("subs").querySelectorAll("[data-min]").forEach(i=>i.onchange=()=>{const v=i.value.trim();minsByMatch[m.id]=minsByMatch[m.id]||{};if(v===""||+v>=full)delete minsByMatch[m.id][i.dataset.min];else minsByMatch[m.id][i.dataset.min]=Math.max(0,parseInt(v,10));store.set(K_MINS,minsByMatch);});
-  $("subs").querySelectorAll("[data-sq]").forEach(c=>c.onchange=()=>{const pid=c.dataset.sq;let cur=squadByMatch[m.id];if(cur===undefined)cur=ordered().map(p=>p.id);cur=cur.slice();if(c.checked){if(!cur.includes(pid))cur.push(pid);}else{cur=cur.filter(x=>x!==pid);}squadByMatch[m.id]=cur;store.set(K_SQUAD,squadByMatch);renderSubs();renderRoster();renderStatBtns();});
+  $("subs").querySelectorAll("[data-min]").forEach(i=>i.onchange=()=>{const v=i.value.trim();minsByMatch[m.id]=minsByMatch[m.id]||{};if(v===""||+v>=full)delete minsByMatch[m.id][i.dataset.min];else minsByMatch[m.id][i.dataset.min]=Math.max(0,parseInt(v,10));persistMap(K_MINS,minsByMatch);});
+  $("subs").querySelectorAll("[data-sq]").forEach(c=>c.onchange=()=>{const pid=c.dataset.sq;let cur=squadByMatch[m.id];if(cur===undefined)cur=ordered().map(p=>p.id);cur=cur.slice();if(c.checked){if(!cur.includes(pid))cur.push(pid);}else{cur=cur.filter(x=>x!==pid);}squadByMatch[m.id]=cur;persistMap(K_SQUAD,squadByMatch);renderSubs();renderRoster();renderStatBtns();});
   renderVeoCompare();
 }
 function matchMinutes(m){m=m||curMatch();if(!m)return 0;return Math.max(1,(m.periods||4)*(m.minPer||10));}
 function minutesPlayed(pid,m){m=m||curMatch();if(!m)return 0;const full=matchMinutes(m);const sq=squadByMatch[m.id];if(sq!==undefined&&!sq.includes(pid))return 0;const mm=minsByMatch[m.id];const v=mm?mm[pid]:null;return (v==null||v==="")?full:Math.max(0,Math.min(full,v));}
 function minutesPlayedAll(pid){let tot=0;matches.forEach(m=>{if(m.kind==="training")return;if(evsOfMatch(m.id).some(e=>e.player_id===pid))tot+=minutesPlayed(pid,m);});return tot;}
-$("addplayer").onclick=()=>{
+$("addplayer").onclick=async()=>{
   const noRaw=$("np_no").value.trim(),name=$("np_name").value.trim();
-  if(!name)return;roster.push({id:uid("p"),no:noRaw?parseInt(noRaw,10):null,name,position:$("np_pos").value.trim()});
+  if(!name)return;
+  const p={id:uid("p"),no:noRaw?parseInt(noRaw,10):null,name,position:$("np_pos").value.trim()};
+  roster.push(p);
   $("np_no").value="";$("np_name").value="";$("np_pos").value="";
   saveAll();renderTeam();renderRoster();
+  if(cloud.active){const cid=await cw.addPlayer(p);if(cid){p.id=cid;saveAll();renderTeam();renderRoster();}else warnSync();}
 };
 $("m_date").onchange=e=>{curMatch().date=e.target.value;cw.match(curMatch());saveAll();renderMatchBar();};
 $("m_time").onchange=e=>{curMatch().time=e.target.value;saveAll();renderMatchBar();};
 (function(){const box=$("mFmt");if(box)box.querySelectorAll("button").forEach(b=>b.onclick=()=>{const m=curMatch();if(!m)return;m.format=b.dataset.v;segPick(box,b.dataset.v);saveAll();renderMatchBar();if(typeof fieldOpen!=="undefined"&&fieldOpen)renderField();});})();
-(function(){const box=$("mLevel");if(box)box.querySelectorAll("button").forEach(b=>b.onclick=()=>{const m=curMatch();if(!m)return;levelByMatch[m.id]=b.dataset.v;store.set(K_LEVEL,levelByMatch);segPick(box,b.dataset.v);});})();
-$("squadAll")&&($("squadAll").onclick=()=>{const m=curMatch();if(!m)return;delete squadByMatch[m.id];store.set(K_SQUAD,squadByMatch);renderSubs();});
-$("squadNone")&&($("squadNone").onclick=()=>{const m=curMatch();if(!m)return;squadByMatch[m.id]=[];store.set(K_SQUAD,squadByMatch);renderSubs();});
+(function(){const box=$("mLevel");if(box)box.querySelectorAll("button").forEach(b=>b.onclick=()=>{const m=curMatch();if(!m)return;levelByMatch[m.id]=b.dataset.v;persistMap(K_LEVEL,levelByMatch);segPick(box,b.dataset.v);});})();
+$("squadAll")&&($("squadAll").onclick=()=>{const m=curMatch();if(!m)return;delete squadByMatch[m.id];persistMap(K_SQUAD,squadByMatch);renderSubs();});
+$("squadNone")&&($("squadNone").onclick=()=>{const m=curMatch();if(!m)return;squadByMatch[m.id]=[];persistMap(K_SQUAD,squadByMatch);renderSubs();});
 $("mDetails")&&($("mDetails").onchange=()=>{const m=curMatch();if(m){m.details=$("mDetails").value;saveAll();renderMatchBar();}});
 $("m_opp").onchange=e=>{curMatch().opponent=e.target.value;cw.match(curMatch());saveAll();renderMatchBar();};
 $("m_url").onchange=e=>{curMatch().video_url=e.target.value;saveAll();};
@@ -3369,6 +3404,8 @@ const _repE=$("repExport");if(_repE)_repE.onclick=exportSession;
     if(!offlineUnlocked())showPin();
     else if(!settings.onboarded)openWizard();
   }
+  try{if(!persist("ea_probe",1)){saveBroken=true;}else{try{localStorage.removeItem("ea_probe");}catch(e){}}}catch(e){saveBroken=true;}
+  if(saveBroken){warnSave(t("save_unavailable"));paintSaveStatus();}
   setInterval(flush,15000);                                   // auto-save every 15s (only when dirty)
   window.addEventListener("beforeunload",flush);              // flush on exit
   document.addEventListener("visibilitychange",()=>{if(document.hidden)flush();});
