@@ -144,6 +144,9 @@
   .prlab{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;display:flex;align-items:center;gap:8px}
   .prchk{display:flex;align-items:center;gap:10px;padding:7px 6px;border-radius:9px;cursor:pointer;font-size:14px}
   .prchk:hover{background:var(--surface2)}
+  .rnchips{display:flex;flex-wrap:wrap;gap:7px}
+  .rnchip{border:1px solid var(--line);background:var(--surface2);color:var(--chalk);border-radius:999px;padding:6px 12px;font-size:13px;cursor:pointer}
+  .rnchip:hover{border-color:var(--lime);color:var(--lime)}
   .prchk input{width:17px;height:17px;accent-color:var(--lime);cursor:pointer}
   .prplayers{max-height:190px;overflow:auto;border:1px solid var(--line);border-radius:10px;padding:4px 6px}
   .prmini{font-size:11px;border:1px solid var(--line);background:var(--surface2);color:var(--muted);border-radius:999px;padding:2px 10px;cursor:pointer}
@@ -577,6 +580,7 @@
     <div class="mbgroup" id="matchGroup">
       <span class="mblabel" data-i18n="lbl_match">Match</span>
       <select id="matchsel"></select>
+      <button class="iconbtn" id="renameMatch" title="Edit name">✎</button>
       <button class="iconbtn" id="newSession" data-i18n="new_session">+ New</button>
     </div>
   </div>
@@ -731,13 +735,15 @@
       <div class="foldbody">
       <div class="setup-row"><label data-i18n="lbl_date">Date</label><input id="m_date" type="date" style="width:auto"></div>
       <div class="setup-row"><label data-i18n="lbl_time">Time</label><input id="m_time" type="time" style="width:auto"></div>
-      <div class="setup-row"><label data-i18n="lbl_opp">Opponent</label><input id="m_opp" style="width:auto;flex:1" data-i18n-ph="opp_ph" placeholder="Opponent name"></div>
-      <div class="setup-row" id="levelRow" style="align-items:flex-start"><label data-i18n="lbl_level">Type</label><div class="fmtseg" id="mLevel"><button type="button" data-v="competitive" data-i18n="lvl_comp">Competitive</button><button type="button" data-v="friendly" data-i18n="lvl_friendly">Friendly</button></div></div>
-      <div class="setup-row" style="align-items:flex-start"><label data-i18n="lbl_format">Format</label><div class="fmtseg" id="mFmt"><button type="button" data-v="">—</button><button type="button" data-v="4v4">4v4</button><button type="button" data-v="5v5">5v5</button><button type="button" data-v="7v7">7v7</button><button type="button" data-v="8v8">8v8</button><button type="button" data-v="9v9">9v9</button><button type="button" data-v="11v11">11v11</button></div></div>
+      <div class="setup-row trainonly" style="align-items:flex-start"><label data-i18n="lbl_exercise">Exercise</label><div class="fmtseg" id="mExercise"></div></div>
+      <div class="setup-row trainonly" style="align-items:flex-start"><label data-i18n="lbl_train_details">Training details</label><textarea id="mDetails" data-i18n-ph="train_details_ph" style="min-height:54px"></textarea></div>
+      <div class="setup-row matchonly"><label data-i18n="lbl_opp">Opponent</label><input id="m_opp" style="width:auto;flex:1" data-i18n-ph="opp_ph" placeholder="Opponent name"></div>
+      <div class="setup-row matchonly" id="levelRow" style="align-items:flex-start"><label data-i18n="lbl_level">Type</label><div class="fmtseg" id="mLevel"><button type="button" data-v="competitive" data-i18n="lvl_comp">Competitive</button><button type="button" data-v="friendly" data-i18n="lvl_friendly">Friendly</button></div></div>
+      <div class="setup-row matchonly" style="align-items:flex-start"><label data-i18n="lbl_format">Format</label><div class="fmtseg" id="mFmt"><button type="button" data-v="">—</button><button type="button" data-v="4v4">4v4</button><button type="button" data-v="5v5">5v5</button><button type="button" data-v="7v7">7v7</button><button type="button" data-v="8v8">8v8</button><button type="button" data-v="9v9">9v9</button><button type="button" data-v="11v11">11v11</button></div></div>
       <div class="setup-row"><label data-i18n="lbl_video">Video link</label><input id="m_url" style="width:auto;flex:1" data-i18n-ph="video_ph" placeholder="YouTube link"></div>
-      <div class="setup-row"><label data-i18n="lbl_goals">Our goals (actual)</label><input id="m_goals" type="number" min="0"></div>
-      <div class="setup-row"><label data-i18n="lbl_periods">Periods (e.g. 4 quarters)</label><input id="m_periods" type="number" min="1" max="12" style="width:auto"></div>
-      <div class="setup-row"><label data-i18n="lbl_minper">Min / quarter</label><input id="m_minper" type="number" min="1" max="60" style="width:auto"></div>
+      <div class="setup-row matchonly"><label data-i18n="lbl_goals">Our goals (actual)</label><input id="m_goals" type="number" min="0"></div>
+      <div class="setup-row matchonly"><label data-i18n="lbl_periods">Periods (e.g. 4 quarters)</label><input id="m_periods" type="number" min="1" max="12" style="width:auto"></div>
+      <div class="setup-row matchonly"><label data-i18n="lbl_minper">Min / quarter</label><input id="m_minper" type="number" min="1" max="60" style="width:auto"></div>
       <div class="setup-row" style="align-items:flex-start"><label data-i18n="lbl_match_notes">Notes / comments</label><textarea id="m_notes" style="min-height:54px"></textarea></div>
       <button class="dangerbtn" id="delmatch" style="margin-top:12px" data-i18n="del_match">Delete this match</button>
       </div>
@@ -1078,7 +1084,7 @@ const I18N={
   s_fin_on:"On target",s_fin_off:"Off target",s_pass_ok:"Pass completed",s_pass_no:"Pass lost",s_foul:"Foul",s_ssg_press:"Press attempt",s_ssg_win:"Ball won",s_ssg_cpress:"Counter-press win",s_ssg_winbox:"Win in final third",s_ssg_pass:"Pass completed",s_ssg_dribble:"Dribble past",s_ssg_turnover:"Turnover (lost ball)",s_ssg_lossbox:"Lost ball near own goal",s_d1_att:"1v1 attack won",s_d1_def:"1v1 defence won",s_d2_att:"2v1 attack won",s_d2_def:"2v1 defence won",
   s_d1_att_l:"1v1 attack lost",s_d1_def_l:"1v1 defence lost",s_d2_att_l:"2v1 attack lost",s_d2_def_l:"2v1 defence lost",
   h_train_summary:"Training summary",col_on:"On",col_off:"Off",col_acc:"Acc %",col_d1a:"1v1 atk",col_d1d:"1v1 def",col_d2a:"2v1 atk",col_d2d:"2v1 def",
-  tab_tag:"Tag",tab_stats:"Stats",tab_checks:"Checks",tab_team:"Team",tab_match:"Match",lbl_level:"Type",lvl_comp:"Competitive",lvl_friendly:"Friendly",h_lineup:"Lineup & minutes",in_squad:"Played this match",change_photo:"Change photo",photo_updated:"Photo updated",photo_fail:"Could not read that image",train_rep_hint:"Compare training vs match per player in Reports → Development → pick a player.",sync_fail_warn:"⚠️ Some tags/edits did not save to the cloud — re-run supabase_fix_events.sql",tab_settings:"Settings",
+  tab_tag:"Tag",tab_stats:"Stats",tab_checks:"Checks",tab_team:"Team",tab_match:"Match",lbl_level:"Type",lvl_comp:"Competitive",lvl_friendly:"Friendly",h_lineup:"Lineup & minutes",h_training_setup:"Training settings",rename_match_title:"Edit match name / opponent",rename_train_title:"Edit training topic",rename_ph_topic:"e.g. Finishing in the box, Wing attacks",rename_ph_opp:"Opponent name",topic_recent:"Recent topics",btn_save:"Save",btn_cancel:"Cancel",in_squad:"Played this match",change_photo:"Change photo",photo_updated:"Photo updated",photo_fail:"Could not read that image",train_rep_hint:"Compare training vs match per player in Reports → Development → pick a player.",sync_fail_warn:"⚠️ Some tags/edits did not save to the cloud — re-run supabase_fix_events.sql",tab_settings:"Settings",
   h_video:"Match video",load:"Load",open:"Open ↗",upload:"Upload video file",url_ph:"Paste a video link (YouTube, Facebook, Veo…)",
   upload_hint:"or use a local file — best playback & full sync",
   empty_video:"Paste a video link or upload a video file.<br>You can still tag using the clock below.",
@@ -1150,7 +1156,7 @@ const I18N={
   s_fin_on:"ยิงเข้ากรอบ",s_fin_off:"ยิงไม่เข้ากรอบ",s_pass_ok:"ส่งสำเร็จ",s_pass_no:"ส่งไม่สำเร็จ",s_foul:"ฟาวล์",s_ssg_press:"พยายามแย่งบอล",s_ssg_win:"แย่งบอลสำเร็จ",s_ssg_cpress:"แย่งบอลคืนทันที",s_ssg_winbox:"แย่งบอลหน้าประตู",s_ssg_pass:"ส่งบอลสำเร็จ",s_ssg_dribble:"เลี้ยงผ่าน",s_ssg_turnover:"ทำเสียบอล",s_ssg_lossbox:"เสียบอลหน้าประตูตัวเอง",s_d1_att:"1v1 ชนะเกมรุก",s_d1_def:"1v1 ชนะเกมรับ",s_d2_att:"2v1 ชนะเกมรุก",s_d2_def:"2v1 ชนะเกมรับ",
   s_d1_att_l:"1v1 แพ้เกมรุก",s_d1_def_l:"1v1 แพ้เกมรับ",s_d2_att_l:"2v1 แพ้เกมรุก",s_d2_def_l:"2v1 แพ้เกมรับ",
   h_train_summary:"สรุปเทรนนิ่ง",col_on:"เข้า",col_off:"ไม่เข้า",col_acc:"แม่น %",col_d1a:"1v1 รุก",col_d1d:"1v1 รับ",col_d2a:"2v1 รุก",col_d2d:"2v1 รับ",
-  tab_tag:"ติดแท็ก",tab_stats:"สถิติ",tab_checks:"ตรวจสอบ",tab_team:"ทีม",tab_match:"แมตช์",lbl_level:"ประเภท",lvl_comp:"แข่งขัน",lvl_friendly:"อุ่นเครื่อง",h_lineup:"ตัวผู้เล่น & เวลาลงเล่น",in_squad:"ลงเล่นแมตช์นี้",change_photo:"เปลี่ยนรูป",photo_updated:"อัปเดตรูปแล้ว",photo_fail:"อ่านไฟล์รูปไม่สำเร็จ",train_rep_hint:"ดูเปรียบเทียบ ซ้อม ↔ เกมจริง รายคน ได้ที่ รายงาน → พัฒนาการ → เลือกผู้เล่น",sync_fail_warn:"⚠️ บางแท็ก/การแก้ไข ยังไม่ถูกบันทึกขึ้นคลาวด์ — กรุณารัน supabase_fix_events.sql อีกครั้ง",tab_settings:"ตั้งค่า",
+  tab_tag:"ติดแท็ก",tab_stats:"สถิติ",tab_checks:"ตรวจสอบ",tab_team:"ทีม",tab_match:"แมตช์",lbl_level:"ประเภท",lvl_comp:"แข่งขัน",lvl_friendly:"อุ่นเครื่อง",h_lineup:"ตัวผู้เล่น & เวลาลงเล่น",h_training_setup:"ตั้งค่าการฝึกซ้อม",rename_match_title:"แก้ชื่อแมตช์ / คู่แข่ง",rename_train_title:"แก้หัวข้อการฝึกซ้อม",rename_ph_topic:"เช่น จบสกอร์ในกรอบ, เกมรุกริมเส้น",rename_ph_opp:"ชื่อคู่แข่ง",topic_recent:"หัวข้อที่ใช้ล่าสุด",btn_save:"บันทึก",btn_cancel:"ยกเลิก",in_squad:"ลงเล่นแมตช์นี้",change_photo:"เปลี่ยนรูป",photo_updated:"อัปเดตรูปแล้ว",photo_fail:"อ่านไฟล์รูปไม่สำเร็จ",train_rep_hint:"ดูเปรียบเทียบ ซ้อม ↔ เกมจริง รายคน ได้ที่ รายงาน → พัฒนาการ → เลือกผู้เล่น",sync_fail_warn:"⚠️ บางแท็ก/การแก้ไข ยังไม่ถูกบันทึกขึ้นคลาวด์ — กรุณารัน supabase_fix_events.sql อีกครั้ง",tab_settings:"ตั้งค่า",
   h_video:"วิดีโอแมตช์",load:"โหลด",open:"เปิด ↗",upload:"อัปโหลดไฟล์วิดีโอ",url_ph:"วางลิงก์วิดีโอ (YouTube, Facebook, Veo…)",
   upload_hint:"หรือใช้ไฟล์ในเครื่อง — เล่นชัวร์ที่สุดและซิงค์เต็มรูปแบบ",
   empty_video:"วางลิงก์วิดีโอ หรืออัปโหลดไฟล์วิดีโอ<br>ระหว่างนี้ติดแท็กด้วยนาฬิกาด้านล่างได้",
@@ -1291,7 +1297,7 @@ function applyKbHints(){document.querySelectorAll(".kbhint").forEach(el=>el.data
 function relocalizeAll(){applyStaticI18n();renderMatchBar();renderRoster();renderStatBtns();renderLog();renderSubs&&renderSubs();paintClock();paintSaveStatus();if($("v-stats").classList.contains("on")){renderDashboard();renderStatsTable();}if($("v-reports").classList.contains("on"))renderReports();if($("v-checks").classList.contains("on")){if(qaRan)runAllChecks();else renderQueue();}if($("v-team").classList.contains("on"))renderTeam();if($("v-match")&&$("v-match").classList.contains("on"))renderMatch();}
 
 let roster=[],matches=[],eventsByMatch={},currentMatchId=null,veoByMatch={},minsByMatch={},footByPlayer={};
-const K_VEO="gp_veo_v1";const K_MINS="gp_mins_v1";const K_FOOT="gp_foot_v1";const K_SQUAD="gp_squad_v1";const K_LEVEL="gp_level_v1";let tagFoot="R";let squadByMatch={},levelByMatch={};
+const K_VEO="gp_veo_v1";const K_MINS="gp_mins_v1";const K_FOOT="gp_foot_v1";const K_SQUAD="gp_squad_v1";const K_LEVEL="gp_level_v1";const K_TOPICS="gp_topics_v1";let tagFoot="R";let squadByMatch={},levelByMatch={},trainTopics=[];
 const preferredFoot=pid=>footByPlayer[pid]||"";
 const footExercise=()=>{const m=curMatch();return !!(m&&m.kind==="training"&&(m.exercise==="finishing"||m.exercise==="fd"||m.exercise==="passing"));};
 function footClass(e){const pf=preferredFoot(e.player_id);if(!e.foot)return "unknown";if(pf==="B")return "strong";if(!pf)return "unknown";return e.foot===pf?"strong":"weak";}
@@ -1299,7 +1305,7 @@ let activeId=null,editingId=null,manualSec=0,running=false,ticker=null,fieldOpen
 
 const $=id=>document.getElementById(id);
 /* ===== build id + automatic update check (beats GitHub Pages / browser cache) ===== */
-const BUILD="06-29-z";
+const BUILD="06-29-ab";
 (function(){const el=$("buildMarker");if(el)el.textContent="build "+BUILD;const vf=$("verFoot");if(vf)vf.textContent="Analyz+ · v"+BUILD;})();
 function showUpdateBanner(newBuild){
   if($("updbanner"))return;
@@ -1395,14 +1401,44 @@ $("gearbtn").onclick=()=>{
 /* match bar */
 function renderMatchBar(){
   $("matchsel").innerHTML=matches.map(m=>{
-    const note=m.kind==="training"?m.details:m.notes;
     const dt=(m.date||"")+(m.time?(" "+m.time):"");
-    const label=m.kind==="training"
-      ?(t("train_tag")+" · "+dt+(note?(" · "+note.slice(0,22)):""))
-      :(dt+" "+(m.opponent?(t("vs")+" "+m.opponent):t("untitled"))+(m.format?(" · "+m.format):"")+(note?(" · "+note.slice(0,16)):""));
+    let label;
+    if(m.kind==="training"){
+      const tp=(m.details||"").trim();
+      label=t("train_tag")+" · "+dt+(m.exercise?(" · "+exLabel(m.exercise)):"")+(tp?(" ["+tp.slice(0,28)+"]"):"");
+    }else{
+      const note=m.notes;
+      label=dt+" "+(m.opponent?(t("vs")+" "+m.opponent):t("untitled"))+(m.format?(" · "+m.format):"")+(note?(" · "+note.slice(0,16)):"");
+    }
     return `<option value="${m.id}" ${m.id===currentMatchId?"selected":""}>${label}</option>`;
   }).join("");
 }
+const escA=s=>String(s==null?"":s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+function rememberTopic(s){s=(s||"").trim();if(!s)return;trainTopics=[s].concat(trainTopics.filter(x=>x!==s)).slice(0,40);store.set(K_TOPICS,trainTopics);}
+function openRenameModal(){
+  const m=curMatch();if(!m){showToast(t("untitled"));return;}
+  const isTrain=m.kind==="training";
+  const val=isTrain?(m.details||""):(m.opponent||"");
+  const ov=document.createElement("div");ov.className="printover";ov.id="renameModal";
+  const dl=isTrain?`<datalist id="rnDL">${trainTopics.map(s=>`<option value="${escA(s)}">`).join("")}</datalist>`:"";
+  const chips=(isTrain&&trainTopics.length)?`<div class="prlab" style="margin-top:14px">${t("topic_recent")}</div><div class="rnchips">${trainTopics.slice(0,14).map(s=>`<button type="button" class="rnchip" data-v="${escA(s)}">${escA(s)}</button>`).join("")}</div>`:"";
+  ov.innerHTML=`<div class="printcard"><div class="printhd"><span>${t(isTrain?"rename_train_title":"rename_match_title")}</span><button class="iconbtn" data-x title="Close">✕</button></div>
+    <div class="printbody"><input id="rnInput" ${isTrain?'list="rnDL"':""} value="${escA(val)}" placeholder="${t(isTrain?"rename_ph_topic":"rename_ph_opp")}" style="width:100%;box-sizing:border-box;font-size:15px;padding:11px 12px;border-radius:10px;background:var(--surface2);border:1px solid var(--line);color:var(--chalk)">${dl}${chips}</div>
+    <div class="printfoot"><button class="btn" data-x>${t("btn_cancel")}</button><button class="btnlime" id="rnSave">${t("btn_save")}</button></div></div>`;
+  document.body.appendChild(ov);
+  const close=()=>ov.remove();
+  ov.addEventListener("click",e=>{if(e.target===ov)close();});
+  ov.querySelectorAll("[data-x]").forEach(b=>b.onclick=close);
+  ov.querySelectorAll(".rnchip").forEach(b=>b.onclick=()=>{ov.querySelector("#rnInput").value=b.dataset.v;ov.querySelector("#rnInput").focus();});
+  const inp=ov.querySelector("#rnInput");inp.focus();inp.select();
+  const save=()=>{const v=inp.value.trim();
+    if(isTrain){m.details=v;rememberTopic(v);if($("mDetails"))$("mDetails").value=v;}
+    else{m.opponent=v;cw.match(m);}
+    saveAll();renderMatchBar();if($("v-match")&&$("v-match").classList.contains("on"))renderMatch();showToast(t("saved"));close();};
+  ov.querySelector("#rnSave").onclick=save;
+  inp.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();save();}else if(e.key==="Escape")close();});
+}
+$("renameMatch").onclick=openRenameModal;
 $("matchsel").onchange=e=>{currentMatchId=e.target.value;store.set(K_CUR,currentMatchId);switchMatch();if(cloud.active){cloudPullEvents(currentMatchId).then(()=>{renderStatBtns();renderLog();});cloudSubscribe();}};
 
 /* ===== new-session wizard ===== */
@@ -2856,8 +2892,16 @@ function renderMatch(){
   const m=curMatch();
   if(m){$("m_date").value=m.date||"";$("m_time").value=m.time||"";$("m_opp").value=m.opponent||"";segPick($("mFmt"),m.format||"");$("m_url").value=m.video_url||"";$("m_goals").value=m.our_goals||0;$("m_periods").value=m.periods||4;$("m_minper").value=m.minPer||10;$("m_notes").value=m.notes||"";}
   const isTrain=m&&m.kind==="training";
-  const lr=$("levelRow");if(lr)lr.style.display=isTrain?"none":"";
-  if(m&&!isTrain)segPick($("mLevel"),matchLevel(m));
+  const hdr=$("matchCard")&&$("matchCard").querySelector("summary h2");if(hdr)hdr.textContent=t(isTrain?"h_training_setup":"h_thismatch");
+  document.querySelectorAll("#v-match .matchonly").forEach(el=>el.style.display=isTrain?"none":"");
+  document.querySelectorAll("#v-match .trainonly").forEach(el=>el.style.display=isTrain?"":"none");
+  if(isTrain){
+    const ex=m.exercise||"fd";
+    const seg=$("mExercise");
+    if(seg){seg.innerHTML=EXERCISES.map(e=>`<button type="button" data-ex="${e}" aria-pressed="${ex===e}">${exLabel(e)}</button>`).join("");
+      seg.querySelectorAll("button").forEach(b=>b.onclick=()=>{m.exercise=b.dataset.ex;saveAll();seg.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));renderStatBtns();renderMatchBar();if($("v-stats")&&$("v-stats").classList.contains("on")){renderDashboard();renderStatsTable();}});}
+    if($("mDetails"))$("mDetails").value=m.details||"";
+  }else if(m){segPick($("mLevel"),matchLevel(m));}
   renderSubs();
 }
 function renderSubs(){
@@ -2890,6 +2934,7 @@ $("m_time").onchange=e=>{curMatch().time=e.target.value;saveAll();renderMatchBar
 (function(){const box=$("mLevel");if(box)box.querySelectorAll("button").forEach(b=>b.onclick=()=>{const m=curMatch();if(!m)return;levelByMatch[m.id]=b.dataset.v;store.set(K_LEVEL,levelByMatch);segPick(box,b.dataset.v);});})();
 $("squadAll")&&($("squadAll").onclick=()=>{const m=curMatch();if(!m)return;delete squadByMatch[m.id];store.set(K_SQUAD,squadByMatch);renderSubs();});
 $("squadNone")&&($("squadNone").onclick=()=>{const m=curMatch();if(!m)return;squadByMatch[m.id]=[];store.set(K_SQUAD,squadByMatch);renderSubs();});
+$("mDetails")&&($("mDetails").onchange=()=>{const m=curMatch();if(m){m.details=$("mDetails").value;saveAll();renderMatchBar();}});
 $("m_opp").onchange=e=>{curMatch().opponent=e.target.value;cw.match(curMatch());saveAll();renderMatchBar();};
 $("m_url").onchange=e=>{curMatch().video_url=e.target.value;saveAll();};
 $("m_goals").onchange=e=>{curMatch().our_goals=parseInt(e.target.value||"0",10);cw.match(curMatch());saveAll();};
@@ -3165,6 +3210,7 @@ const _repE=$("repExport");if(_repE)_repE.onclick=exportSession;
   footByPlayer=await store.get(K_FOOT)||{};
   squadByMatch=await store.get(K_SQUAD)||{};
   levelByMatch=await store.get(K_LEVEL)||{};
+  trainTopics=await store.get(K_TOPICS)||[];
   minsByMatch=await store.get(K_MINS)||{};
   applyTheme();applyAccent();
   roster=await store.get(K_ROSTER)||[];
