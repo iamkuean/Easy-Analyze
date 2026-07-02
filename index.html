@@ -1453,7 +1453,7 @@ let activeId=null,editingId=null,manualSec=0,running=false,ticker=null,fieldOpen
 
 const $=id=>document.getElementById(id);
 /* ===== build id + automatic update check (beats GitHub Pages / browser cache) ===== */
-const BUILD="06-29-bb";
+const BUILD="06-29-bc";
 (function(){const el=$("buildMarker");if(el)el.textContent="build "+BUILD;const vf=$("verFoot");if(vf)vf.textContent="Analyz+ · v"+BUILD;})();
 function showUpdateBanner(newBuild){
   if($("updbanner"))return;
@@ -2236,6 +2236,7 @@ const cw={
   setPart(e){if(!cloud.active||!e||!e.dbid)return;cloud.sb.from("events").update({video_part:e.video_part||0}).eq("id",e.dbid).then(()=>{},()=>{});},
   meta(m){if(!cloud.active||!m)return;cloud.sb.from("matches").update({meta:metaOf(m)}).eq("id",m.id).then(()=>{},()=>{});},
   delMatch(id){if(!cloud.active)return;cloud.sb.from("matches").delete().eq("id",id).then(()=>{},()=>{});},
+  delPlayer(playerId){if(!cloud.active||!cloud.teamId||!playerId)return;cloud.sb.from("team_players").update({active:false}).eq("team_id",cloud.teamId).eq("player_id",playerId).then(()=>{},()=>{});},
   photo(playerId,dataUrl){if(!cloud.active)return;cloud.sb.from("players").update({photo_url:dataUrl}).eq("id",playerId).then(()=>{},()=>{});},
   player(playerId,fields){if(!cloud.active||!playerId||!fields)return;cloud.sb.from("players").update(fields).eq("id",playerId).then(()=>{},()=>{});},
   async addPlayer(p){
@@ -3488,7 +3489,7 @@ function renderTeam(){
     const rp=row.querySelector("[data-rmphoto]");if(rp)rp.onclick=e=>{e.preventDefault();e.stopPropagation();P(id).photo="";saveAll();cw.photo(id,null);renderTeam();renderRoster();showToast(t("photo_removed"));};
     const fsel=row.querySelector("[data-foot]");if(fsel)fsel.onchange=e=>{const v=e.target.value;if(v)footByPlayer[id]=v;else delete footByPlayer[id];persistMap(K_FOOT,footByPlayer);cw.player(id,{preferred_foot:v||null});};
     const psel=row.querySelector("[data-setphoto]");if(psel)psel.onchange=ev=>{const f=ev.target.files[0];if(!f)return;downscale(f,data=>{if(!data){showToast(t("photo_fail"));return;}P(id).photo=data;saveAll();cw.photo(id,data);renderTeam();renderRoster();showToast(t("photo_updated"));});};
-    row.querySelector("[data-rm]").onclick=()=>{if(!confirm(tf("confirm_remove_player",{name:P(id)?P(id).name:""})))return;roster=roster.filter(p=>p.id!==id);saveAll();renderTeam();renderRoster();renderSubs();};
+    row.querySelector("[data-rm]").onclick=()=>{if(!confirm(tf("confirm_remove_player",{name:P(id)?P(id).name:""})))return;cw.delPlayer(id);roster=roster.filter(p=>p.id!==id);saveAll();renderTeam();renderRoster();renderSubs();};
   });
 }
 function matchLevel(m){m=m||curMatch();if(!m)return "competitive";return levelByMatch[m.id]||"competitive";}
